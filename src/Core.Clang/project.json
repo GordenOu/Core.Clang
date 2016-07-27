@@ -1,7 +1,8 @@
 ﻿{
   "buildOptions": {
     "allowUnsafe": true,
-    "platform": "x64"
+    "platform": "x64",
+    "xmlDoc": true
   },
   "dependencies": {
     "NETStandard.Library": "1.6.0"
