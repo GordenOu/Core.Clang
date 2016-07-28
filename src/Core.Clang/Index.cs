@@ -51,7 +51,9 @@ namespace Core.Clang
         /// itself and not in a precompiled header that was used by the translation unit. If false,
         /// all declarations will be enumerated.
         /// </param>
-        /// <param name="displayDiagnostics"></param>
+        /// <param name="displayDiagnostics">
+        /// true to print diagnostics to standard error; otherwise, false.
+        /// </param>
         public Index(bool excludeDeclarationsFromPCH, bool displayDiagnostics)
         {
             Ptr = NativeMethods.clang_createIndex(
