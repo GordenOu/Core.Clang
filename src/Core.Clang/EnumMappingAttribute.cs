@@ -2,7 +2,7 @@
 
 namespace Core.Clang
 {
-    [AttributeUsage(AttributeTargets.Enum)]
+    [AttributeUsage(AttributeTargets.Enum, Inherited = false)]
     internal sealed class EnumMappingAttribute : Attribute
     {
         public Type Type { get; }

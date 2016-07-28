@@ -30,7 +30,8 @@ namespace Core.Clang
         /// Used to indicate that all threads that libclang creates should use background priority.
         /// </summary>
         ThreadBackgroundPriorityForAll =
-            ThreadBackgroundPriorityForIndexing | ThreadBackgroundPriorityForEditing
+            ThreadBackgroundPriorityForIndexing |
+            ThreadBackgroundPriorityForEditing
     }
 
     /// <summary>
@@ -61,7 +62,7 @@ namespace Core.Clang
         private bool disposed;
 
         /// <summary>
-        /// Destroy the given index.
+        /// Destroys the index.
         /// </summary>
         /// <remarks>
         /// The index must not be destroyed until all of the translation units created within that
@@ -79,7 +80,7 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Destroy the given index.
+        /// Destroys the index.
         /// </summary>
         ~Index()
         {

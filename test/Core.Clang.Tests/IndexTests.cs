@@ -31,7 +31,7 @@ namespace Core.Clang.Tests
             var options = GlobalOptions.ThreadBackgroundPriorityForAll;
             index.SetGlobalOptions(options);
             Assert.AreEqual(options, index.GetGlobalOptions());
-            
+
             options =
                 GlobalOptions.ThreadBackgroundPriorityForEditing |
                 GlobalOptions.ThreadBackgroundPriorityForIndexing;
