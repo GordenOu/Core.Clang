@@ -10,10 +10,7 @@ namespace Core.Clang
     {
         internal CXFileImpl* Ptr { get; }
 
-        /// <summary>
-        /// The <see cref="TranslationUnit"/> associated with the <see cref="SourceFile"/>.
-        /// </summary>
-        public TranslationUnit TranslationUnit { get; }
+        internal TranslationUnit TranslationUnit { get; }
 
         internal SourceFile(CXFileImpl* ptr, TranslationUnit translationUnit)
         {
@@ -39,7 +36,7 @@ namespace Core.Clang
         /// </param>
         /// <returns>
         /// true if the current instance and the <paramref name="other"/> parameter represents the
-        /// same file; otherwise, false.
+        /// same file.
         /// </returns>
         public bool Equals(SourceFile other)
         {
@@ -67,7 +64,7 @@ namespace Core.Clang
         /// <param name="obj">The object to compare to this instance.</param>
         /// <returns>
         /// true if the current instance and the <paramref name="obj"/> parameter represents the
-        /// same file; otherwise, false.
+        /// same file.
         /// </returns>
         public override bool Equals(object obj)
         {
@@ -131,13 +128,55 @@ namespace Core.Clang
         /// conventional #ifndef/#define/#endif macro guards or with #pragma once.
         /// </summary>
         /// <returns>
-        /// true if the header is guarded against multiple inclusions; otherwise false.
+        /// true if the header is guarded against multiple inclusions.
         /// </returns>
         public bool IsMultipleIncludeGuarded()
         {
             ThrowIfDisposed();
 
             return NativeMethods.clang_isFileMultipleIncludeGuarded(TranslationUnit.Ptr, Ptr) != 0;
+        }
+
+        /// <summary>
+        /// Gets the source location associated with the given line/column.
+        /// </summary>
+        /// <param name="line">The line to which the source location points.</param>
+        /// <param name="column">The column to which the source location points.</param>
+        /// <returns>
+        /// The source location associated with the given line/column, or null if the parameters
+        /// are invalid.
+        /// </returns>
+        public SourceLocation GetLocation(uint line, uint column)
+        {
+            ThrowIfDisposed();
+
+            var cxSourceLocation = NativeMethods.clang_getLocation(
+                TranslationUnit.Ptr,
+                Ptr,
+                line,
+                column);
+            return SourceLocation.GetSpellingLocation(cxSourceLocation, TranslationUnit);
+        }
+
+        /// <summary>
+        /// Gets the source location associated with a given character offset.
+        /// </summary>
+        /// <param name="offset">
+        /// The offset into the buffer to which the source location points.
+        /// </param>
+        /// <returns>
+        /// The source location associated with a given character offset, or null if the parameters
+        /// are invalid.
+        /// </returns>
+        public SourceLocation GetLocationFromOffset(uint offset)
+        {
+            ThrowIfDisposed();
+
+            var cxSourceLocation = NativeMethods.clang_getLocationForOffset(
+                TranslationUnit.Ptr,
+                Ptr,
+                offset);
+            return SourceLocation.GetSpellingLocation(cxSourceLocation, TranslationUnit);
         }
     }
 }

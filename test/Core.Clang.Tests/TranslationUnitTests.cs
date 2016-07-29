@@ -21,14 +21,14 @@ namespace Core.Clang.Tests
             Monitor.Enter(TestFiles.Locker);
             index = new Index(true, true);
             CXTranslationUnitImpl* ptr;
-            using (var sourceFileName = new CString(TestFiles.AddSource))
+            using (var fileName = new CString(TestFiles.AddSource))
             {
                 NativeMethods.clang_parseTranslationUnit2(
                     index.Ptr,
-                    sourceFileName.Ptr,
+                    fileName.Ptr,
                     null, 0,
                     null, 0,
-                    0,
+                    (uint)CXTranslationUnit_Flags.CXTranslationUnit_DetailedPreprocessingRecord,
                     &ptr).Check();
             }
             tranlsationUnit = new TranslationUnit(ptr, index);
@@ -45,10 +45,19 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void GetSourceFile()
         {
-            Assert.IsNotNull(tranlsationUnit.GetSourceFile(TestFiles.AddSource));
-            Assert.IsNotNull(tranlsationUnit.GetSourceFile(TestFiles.AddHeader));
-            Assert.IsNotNull(tranlsationUnit.GetSourceFile(TestFiles.CommonHeader));
-            Assert.IsNull(tranlsationUnit.GetSourceFile(TestFiles.CommonHeader + "pp"));
+            Assert.IsNotNull(tranlsationUnit.GetFile(TestFiles.AddSource));
+            Assert.IsNotNull(tranlsationUnit.GetFile(TestFiles.AddHeader));
+            Assert.IsNotNull(tranlsationUnit.GetFile(TestFiles.CommonHeader));
+            Assert.IsNull(tranlsationUnit.GetFile(TestFiles.CommonHeader + "pp"));
+        }
+
+        [TestMethod]
+        public void SkipsConditionalCompilationSections()
+        {
+            var file = tranlsationUnit.GetFile(TestFiles.AddSource);
+            var skippedRanges = tranlsationUnit.GetSkippedRanges(file);
+            Assert.IsNotNull(skippedRanges);
+            Assert.AreEqual(1, skippedRanges.Length);
         }
     }
 }

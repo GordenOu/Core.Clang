@@ -52,7 +52,7 @@ namespace Core.Clang
         /// all declarations will be enumerated.
         /// </param>
         /// <param name="displayDiagnostics">
-        /// true to print diagnostics to standard error; otherwise, false.
+        /// true to print diagnostics to standard error.
         /// </param>
         public Index(bool excludeDeclarationsFromPCH, bool displayDiagnostics)
         {
