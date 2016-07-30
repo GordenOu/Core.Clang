@@ -6,8 +6,7 @@ namespace Core.Clang.Tests
 {
     public unsafe class SourceLocationTests : IDisposable
     {
-        private Index index;
-        private TranslationUnit translationUnit;
+        private Disposables disposables;
 
         public SourceLocationTests()
         {
@@ -18,32 +17,20 @@ namespace Core.Clang.Tests
         public void Initialize()
         {
             Monitor.Enter(TestFiles.Locker);
-            index = new Index(true, true);
-            CXTranslationUnitImpl* ptr;
-            using (var fileName = new CString(TestFiles.AddSource))
-            {
-                NativeMethods.clang_parseTranslationUnit2(
-                    index.Ptr,
-                    fileName.Ptr,
-                    null, 0,
-                    null, 0,
-                    0,
-                    &ptr).Check();
-            }
-            translationUnit = new TranslationUnit(ptr, index);
+            disposables = new Disposables();
         }
 
         [TestCleanup]
         public void Dispose()
         {
-            translationUnit.Dispose();
-            index.Dispose();
+            disposables.Dispose();
             Monitor.Exit(TestFiles.Locker);
         }
 
         [TestMethod]
         public void SourceLocationEquatable()
         {
+            var translationUnit = disposables.Add;
             var file = translationUnit.GetFile(TestFiles.MultiplyHeader);
 
             var location1 = file.GetLocation(1, 2);
@@ -61,6 +48,8 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void FileProperties()
         {
+            var translationUnit = disposables.Add;
+
             var file = translationUnit.GetFile(TestFiles.AddHeader);
             Assert.IsFalse(file.GetLocation(1, 1).IsInSystemHeader());
             Assert.IsFalse(file.GetLocation(1, 2).IsFromMainFile());

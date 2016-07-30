@@ -6,9 +6,7 @@ namespace Core.Clang.Tests
 {
     public unsafe class SourceFileTests : IDisposable
     {
-        private Index index;
-        private TranslationUnit tuAdd;
-        private TranslationUnit tuMultiply;
+        private Disposables disposables;
 
         public SourceFileTests()
         {
@@ -19,47 +17,25 @@ namespace Core.Clang.Tests
         public void Initialize()
         {
             Monitor.Enter(TestFiles.Locker);
-            index = new Index(true, true);
-            CXTranslationUnitImpl* ptr;
-            using (var fileName = new CString(TestFiles.AddSource))
-            {
-                NativeMethods.clang_parseTranslationUnit2(
-                    index.Ptr,
-                    fileName.Ptr,
-                    null, 0,
-                    null, 0,
-                    0,
-                    &ptr).Check();
-            }
-            tuAdd = new TranslationUnit(ptr, index);
-            using (var fileName = new CString(TestFiles.MultiplySource))
-            {
-                NativeMethods.clang_parseTranslationUnit2(
-                    index.Ptr,
-                    fileName.Ptr,
-                    null, 0,
-                    null, 0,
-                    0,
-                    &ptr).Check();
-            }
-            tuMultiply = new TranslationUnit(ptr, index);
+            disposables = new Disposables();
         }
 
         [TestCleanup]
         public void Dispose()
         {
-            tuAdd.Dispose();
-            tuMultiply.Dispose();
-            index.Dispose();
+            disposables.Dispose();
             Monitor.Exit(TestFiles.Locker);
         }
 
         [TestMethod]
         public void SourceFileEquatable()
         {
+            var tuAdd = disposables.Add;
+            var tuMultiply = disposables.Multiply;
+
             Assert.AreEqual(
-            tuAdd.GetFile(TestFiles.CommonHeader),
-            tuMultiply.GetFile(TestFiles.CommonHeader));
+                tuAdd.GetFile(TestFiles.CommonHeader),
+                tuMultiply.GetFile(TestFiles.CommonHeader));
             Assert.IsTrue(
                 tuAdd.GetFile(TestFiles.CommonHeader).Equals(
                     tuMultiply.GetFile(TestFiles.CommonHeader)));
@@ -98,9 +74,12 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void GetName()
         {
+            var tuAdd = disposables.Add;
+            var tuMultiply = disposables.Multiply;
+
             Assert.AreEqual(
-               TestFiles.CommonHeader,
-               tuAdd.GetFile(TestFiles.CommonHeader).GetName());
+                TestFiles.CommonHeader,
+                tuAdd.GetFile(TestFiles.CommonHeader).GetName());
             Assert.AreEqual(
                 TestFiles.AddHeader,
                 tuAdd.GetFile(TestFiles.AddHeader).GetName());
@@ -112,6 +91,8 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void MultipleIncludeGuarded()
         {
+            var tuAdd = disposables.Add;
+
             Assert.IsFalse(tuAdd.GetFile(TestFiles.CommonHeader).IsMultipleIncludeGuarded());
             Assert.IsTrue(tuAdd.GetFile(TestFiles.AddHeader).IsMultipleIncludeGuarded());
             Assert.IsTrue(tuAdd.GetFile(TestFiles.MultiplyHeader).IsMultipleIncludeGuarded());
@@ -121,6 +102,8 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void GetValidLocation()
         {
+            var tuAdd = disposables.Add;
+
             var file = tuAdd.GetFile(TestFiles.AddHeader);
             Assert.IsNotNull(file.GetLocation(1, 1));
             Assert.IsNotNull(file.GetLocationFromOffset(0));
@@ -129,6 +112,8 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void GetInvalidLocation()
         {
+            var tuAdd = disposables.Add;
+
             var file = tuAdd.GetFile(TestFiles.AddHeader);
             Assert.IsNull(file.GetLocation(0, 0));
         }

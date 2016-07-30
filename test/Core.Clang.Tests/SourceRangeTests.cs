@@ -6,8 +6,7 @@ namespace Core.Clang.Tests
 {
     public unsafe class SourceRangeTests : IDisposable
     {
-        private Index index;
-        private TranslationUnit translationUnit;
+        private Disposables disposables;
 
         public SourceRangeTests()
         {
@@ -18,32 +17,21 @@ namespace Core.Clang.Tests
         public void Initialize()
         {
             Monitor.Enter(TestFiles.Locker);
-            index = new Index(true, true);
-            CXTranslationUnitImpl* ptr;
-            using (var fileName = new CString(TestFiles.AddSource))
-            {
-                NativeMethods.clang_parseTranslationUnit2(
-                    index.Ptr,
-                    fileName.Ptr,
-                    null, 0,
-                    null, 0,
-                    0,
-                    &ptr).Check();
-            }
-            translationUnit = new TranslationUnit(ptr, index);
+            disposables = new Disposables();
         }
 
         [TestCleanup]
         public void Dispose()
         {
-            translationUnit.Dispose();
-            index.Dispose();
+            disposables.Dispose();
             Monitor.Exit(TestFiles.Locker);
         }
 
         [TestMethod]
         public void CreateInvalidRangeReturnsNull()
         {
+            var translationUnit = disposables.Add;
+
             var file = translationUnit.GetFile(TestFiles.AddSource);
             var range = SourceRange.Create(file.GetLocation(1, 1), file.GetLocation(2, 1));
             Assert.IsNotNull(range);
@@ -57,6 +45,8 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void GetStartAndGetEndReturnOriginalLocations()
         {
+            var translationUnit = disposables.Add;
+
             var file = translationUnit.GetFile(TestFiles.AddSource);
             var begin = file.GetLocation(1, 1);
             var end = file.GetLocation(2, 1);
