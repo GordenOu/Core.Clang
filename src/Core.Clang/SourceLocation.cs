@@ -13,7 +13,7 @@ namespace Core.Clang
         /// <summary>
         /// The <see cref="SourceFile"/> associated with the <see cref="SourceLocation"/>.
         /// </summary>
-        public SourceFile SourceFile { get; }
+        internal SourceFile SourceFile { get; }
 
         /// <summary>
         /// The line to which the source location points.

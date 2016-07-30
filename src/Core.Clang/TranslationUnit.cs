@@ -12,10 +12,7 @@ namespace Core.Clang
     {
         internal CXTranslationUnitImpl* Ptr { get; }
 
-        /// <summary>
-        /// The <see cref="Index"/> associated with the <see cref="TranslationUnit"/>.
-        /// </summary>
-        public Index Index { get; }
+        internal Index Index { get; }
 
         internal TranslationUnit(CXTranslationUnitImpl* ptr, Index index)
         {
