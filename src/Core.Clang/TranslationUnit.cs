@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Core.Diagnostics;
 using Core.Linq;
 
@@ -27,7 +29,7 @@ namespace Core.Clang
         private bool disposed;
 
         /// <summary>
-        /// Destroys the specified <see cref="TranslationUnit"/> object.
+        /// Destroys the <see cref="TranslationUnit"/> object.
         /// </summary>
         public void Dispose()
         {
@@ -41,7 +43,7 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Destroys the specified <see cref="TranslationUnit"/> object.
+        /// Destroys the <see cref="TranslationUnit"/> object.
         /// </summary>
         ~TranslationUnit()
         {
@@ -55,6 +57,17 @@ namespace Core.Clang
                 throw new ObjectDisposedException(typeof(TranslationUnit).Name);
             }
             Index.ThrowIfDisposed();
+        }
+
+        /// <summary>
+        /// Gets the set of flags that is suitable for parsing a translation unit that is being
+        /// edited.
+        /// </summary>
+        /// <returns></returns>
+        public static TranslationUnitCreationOptions GetDefaultEditingOptions()
+        {
+            var options = NativeMethods.clang_defaultEditingTranslationUnitOptions();
+            return (TranslationUnitCreationOptions)options;
         }
 
         /// <summary>
@@ -97,7 +110,6 @@ namespace Core.Clang
         public SourceRange[] GetSkippedRanges(SourceFile file)
         {
             Requires.NotNull(file, nameof(file));
-            file.ThrowIfDisposed();
             ThrowIfDisposed();
 
             var ptr = NativeMethods.clang_getSkippedRanges(Ptr, file.Ptr);
@@ -118,6 +130,112 @@ namespace Core.Clang
                     NativeMethods.clang_disposeSourceRangeList(ptr);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the original translation unit source file name.
+        /// </summary>
+        /// <returns>The original translation unit source file name.</returns>
+        public string GetSpelling()
+        {
+            ThrowIfDisposed();
+
+            var cxString = NativeMethods.clang_getTranslationUnitSpelling(Ptr);
+            using (var str = new String(cxString))
+            {
+                return str.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Saves a translation unit into a serialized representation of that translation unit on
+        /// disk.
+        /// </summary>
+        /// <param name="fileName">The file to which the translation unit will be saved.</param>
+        /// <returns>
+        /// <see cref="TranslationUnitSaveError.None"/> if the translation unit was saved
+        /// successfully, otherwise a problem occurred.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="fileName"/> is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="fileName"/> is empty.
+        /// </exception>
+        public TranslationUnitSaveError TrySave(string fileName)
+        {
+            Requires.NotNullOrEmpty(fileName, nameof(fileName));
+            ThrowIfDisposed();
+
+            using (var cString = new CString(fileName))
+            {
+                return (TranslationUnitSaveError)NativeMethods.clang_saveTranslationUnit(
+                    Ptr,
+                    cString.Ptr,
+                    (uint)CXSaveTranslationUnit_Flags.CXSaveTranslationUnit_None);
+            }
+        }
+
+        /// <summary>
+        /// Reparse the source files that produced this translation unit.
+        /// </summary>
+        /// <param name="unsavedFiles">
+        /// The files that have not yet been saved to disk but may be required for parsing,
+        /// including the contents of those files.
+        /// </param>
+        /// <param name="translationUnit">
+        /// The translation unit whose contents were re-parsed.
+        /// </param>
+        /// <returns>
+        /// <see cref="ErrorCode.Success"/> if the sources could be reparsed. Another error code
+        /// will be returned if reparsing was impossible, such that the translation unit is
+        /// invalid. In such cases, the only valid call for <paramref name="translationUnit"/> is
+        /// <see cref="Dispose"/>.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// This routine can be used to re-parse the source files that originally created the
+        /// given translation unit, for example because those source files have changed (either on
+        /// disk or as passed via <paramref name="unsavedFiles"/>). The source code will be
+        /// reparsed with the same command-line options as it was originally parsed.
+        /// </para>
+        /// <para> 
+        /// Reparsing a translation unit invalidates all cursors and source locations that refer
+        /// into that translation unit. This makes reparsing a translation unit semantically
+        /// equivalent to destroying the translation unit and then creating a new translation unit
+        /// with the same command-line arguments. However, it may be more efficient to reparse a
+        /// translation unit using this routine.
+        /// </para>
+        /// </remarks>
+        public ErrorCode TryReparse(
+            IEnumerable<UnsavedFile> unsavedFiles,
+            out TranslationUnit translationUnit)
+        {
+            ThrowIfDisposed();
+
+            var files = unsavedFiles?.ToArray() ?? Array.Empty<UnsavedFile>();
+            var filesPtr = stackalloc CXUnsavedFile[files.Length];
+            files.Apply((file, i) =>
+            {
+                file.ThrowIfDisposed();
+                filesPtr[i] = file.Struct;
+            });
+            var errorCode = (ErrorCode)NativeMethods.clang_reparseTranslationUnit(
+                Ptr,
+                (uint)files.Length,
+                filesPtr,
+                NativeMethods.clang_defaultReparseOptions(Ptr));
+            if (errorCode != ErrorCode.Success)
+            {
+                translationUnit = null;
+                Dispose();
+            }
+            else
+            {
+                translationUnit = new TranslationUnit(Ptr, Index);
+                disposed = true;
+            }
+            return errorCode;
         }
     }
 }

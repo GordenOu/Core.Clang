@@ -29,21 +29,6 @@ namespace Core.Clang.Diagnostics
             DiagnosticSet.ThrowIfDisposed();
         }
 
-        /// <summary>
-        /// Gets the child diagnostics of the <see cref="Diagnostic"/>. 
-        /// </summary>
-        /// <returns>
-        /// The child diagnostics of the <see cref="Diagnostic"/>, or null if there is no child
-        /// diagnostic. This <see cref="Diagnostics.DiagnosticSet"/> does not need to be disposed.
-        /// </returns>
-        public DiagnosticSet GetChildDiagnostics()
-        {
-            ThrowIfDisposed();
-
-            var ptr = NativeMethods.clang_getChildDiagnostics(Ptr);
-            return ptr == null ? null : new DiagnosticSet(ptr, TranslationUnit);
-        }
-
         private string ToString(uint options)
         {
             var cxString = NativeMethods.clang_formatDiagnostic(Ptr, options);
@@ -77,6 +62,21 @@ namespace Core.Clang.Diagnostics
             ThrowIfDisposed();
 
             return ToString((uint)options);
+        }
+
+        /// <summary>
+        /// Gets the child diagnostics of the <see cref="Diagnostic"/>. 
+        /// </summary>
+        /// <returns>
+        /// The child diagnostics of the <see cref="Diagnostic"/>, or null if there is no child
+        /// diagnostic. This <see cref="Diagnostics.DiagnosticSet"/> does not need to be disposed.
+        /// </returns>
+        public DiagnosticSet GetChildDiagnostics()
+        {
+            ThrowIfDisposed();
+
+            var ptr = NativeMethods.clang_getChildDiagnostics(Ptr);
+            return ptr == null ? null : new DiagnosticSet(ptr, TranslationUnit);
         }
 
         /// <summary>
@@ -217,7 +217,9 @@ namespace Core.Clang.Diagnostics
         /// Gets a source range associated with the diagnostic.
         /// </summary>
         /// <param name="index">The zero-based index specifying which range to extract.</param>
-        /// <returns>The requested source range.</returns>
+        /// <returns>
+        /// The requested source range, or null if <paramref name="index"/> is invalid.
+        /// </returns>
         /// <remarks>
         /// A diagnostic's source ranges highlight important elements in the source code. On the
         /// command line, Clang displays source ranges by underlining them with '~' characters.

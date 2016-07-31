@@ -80,15 +80,8 @@ namespace Core.Clang
         /// Gets the hash code for this <see cref="SourceFile"/>.
         /// </summary>
         /// <returns>A hash code for the current <see cref="SourceFile"/>.</returns>
-        /// <remarks>
-        /// See:
-        /// <para>
-        /// https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CIndex.cpp
-        /// </para>
-        /// <para>
-        /// https://github.com/llvm-mirror/llvm/blob/master/include/llvm/Support/FileSystem.h
-        /// </para>
-        /// </remarks>
+        /// <seealso href="https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CIndex.cpp"/>
+        /// <seealso href="https://github.com/llvm-mirror/llvm/blob/master/include/llvm/Support/FileSystem.h"/>
         [Unstable]
         public override int GetHashCode()
         {
@@ -109,7 +102,7 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Gets the complete file and path name of the given file.
+        /// Gets the complete file and path name of the file.
         /// </summary>
         /// <returns>The complete file and path name.</returns>
         public string GetName()
@@ -165,8 +158,8 @@ namespace Core.Clang
         /// The offset into the buffer to which the source location points.
         /// </param>
         /// <returns>
-        /// The source location associated with a given character offset, or null if the parameters
-        /// are invalid.
+        /// The source location associated with a given character offset, or null if
+        /// <paramref name="offset"/> is invalid.
         /// </returns>
         public SourceLocation GetLocationFromOffset(uint offset)
         {

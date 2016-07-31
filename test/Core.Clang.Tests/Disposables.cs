@@ -13,29 +13,14 @@ namespace Core.Clang.Tests
         public Disposables()
         {
             Index = new Index(true, true);
-            CXTranslationUnitImpl* ptr;
-            using (var fileName = new CString(TestFiles.AddSource))
-            {
-                NativeMethods.clang_parseTranslationUnit2(
-                    Index.Ptr,
-                    fileName.Ptr,
-                    null, 0,
-                    null, 0,
-                    (uint)CXTranslationUnit_Flags.CXTranslationUnit_DetailedPreprocessingRecord,
-                    &ptr).Check();
-            }
-            Add = new TranslationUnit(ptr, Index);
-            using (var fileName = new CString(TestFiles.MultiplySource))
-            {
-                NativeMethods.clang_parseTranslationUnit2(
-                    Index.Ptr,
-                    fileName.Ptr,
-                    null, 0,
-                    null, 0,
-                    (uint)CXTranslationUnit_Flags.CXTranslationUnit_DetailedPreprocessingRecord,
-                    &ptr).Check();
-            }
-            Multiply = new TranslationUnit(ptr, Index);
+            Add = Index.ParseTranslationUnit(
+                TestFiles.AddSource,
+                null,
+                options: TranslationUnitCreationOptions.DetailedPreprocessingRecord);
+            Multiply = Index.ParseTranslationUnit(
+                TestFiles.MultiplySource,
+                null,
+                options: TranslationUnitCreationOptions.DetailedPreprocessingRecord);
         }
 
         public void Dispose()

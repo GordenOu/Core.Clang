@@ -88,11 +88,11 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Gets a source location representing the first character within a source range.
+        /// Gets a source location representing the first character within the source range.
         /// </summary>
         /// <returns>
-        /// The source location representing the first character within a source range, or null if
-        /// the range is invalid.
+        /// The source location representing the first character within the source range, or null
+        /// if the range is invalid.
         /// </returns>
         public SourceLocation GetStart()
         {
@@ -103,10 +103,10 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Gets a source location representing the last character within a source range.
+        /// Gets a source location representing the last character within the source range.
         /// </summary>
         /// <returns>
-        /// The source location representing the last character within a source range, or null if
+        /// The source location representing the last character within the source range, or null if
         /// the range is invalid.
         /// </returns>
         public SourceLocation GetEnd()

@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Core.Diagnostics;
+using Core.Linq;
 
 namespace Core.Clang
 {
@@ -66,7 +70,7 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Sets general options associated with a <see cref="Index"/>.
+        /// Sets general options associated with the <see cref="Index"/>.
         /// </summary>
         /// <param name="options">
         /// A bitmask of options, a bitwise OR of <see cref="GlobalOptions"/>.
@@ -90,6 +94,187 @@ namespace Core.Clang
             ThrowIfDisposed();
 
             return (GlobalOptions)NativeMethods.clang_CXIndex_getGlobalOptions(Ptr);
+        }
+
+        /// <summary>
+        /// Create a translation unit from an AST file (-emit-ast).
+        /// </summary>
+        /// <param name="astFileName">The path to the AST file.</param>
+        /// <returns>
+        /// The translation unit from the AST file.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="astFileName"/> is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="astFileName"/> is empty.
+        /// </exception>
+        /// <exception cref="ErrorCodeException">
+        /// The error code returned by libclang is not <see cref="ErrorCode.Success"/>.
+        /// </exception>
+        public TranslationUnit CreateTranslationUnit(string astFileName)
+        {
+            Requires.NotNullOrEmpty(astFileName, nameof(astFileName));
+            ThrowIfDisposed();
+
+            using (var cString = new CString(astFileName))
+            {
+                CXTranslationUnitImpl* ptr;
+                NativeMethods.clang_createTranslationUnit2(
+                    Ptr,
+                    cString.Ptr,
+                    &ptr).Check();
+                return new TranslationUnit(ptr, this);
+            }
+        }
+
+        /// <summary>
+        /// Parse the given source file and the translation unit corresponding to that file.
+        /// </summary>
+        /// <param name="sourceFileName">
+        /// The name of the source file to load, or null if the source file is included in
+        /// <paramref name="commandLineArgs"/>.
+        /// </param>
+        /// <param name="commandLineArgs">
+        /// The command-line arguments that would be passed to the clang executable if it were
+        /// being invoked out-of-process. These command-line options will be parsed and will affect
+        /// how the translation unit is parsed. Note that the following options are ignored: '-c',
+        /// '-emit-ast', '-fsyntax-only' (which is the default), and '-o &lt;output file&gt;'.
+        /// </param>
+        /// <param name="unsavedFiles">
+        /// The files that have not yet been saved to disk but may be required for parsing,
+        /// including the contents of those files.
+        /// </param>
+        /// <param name="options">
+        /// A bitmask of options that affects how the translation unit is managed but not its
+        /// compilation. This should be a bitwise OR of the
+        /// <see cref="TranslationUnitCreationOptions"/> flags.
+        /// </param>
+        /// <returns>
+        /// The created <see cref="TranslationUnit"/>, describing the parsed code and containing
+        /// any diagnostics produced by the compiler.
+        /// </returns>
+        /// <remarks>
+        /// This method is the main entry point for the Clang C API, providing the ability to
+        /// parse a source file into a translation unit that can then be queried by other functions
+        /// in the API. This routine accepts a set of command-line arguments so that the
+        /// compilation can be configured in the same way that the compiler is configured on the
+        /// command line.
+        /// </remarks>
+        /// <exception cref="ErrorCodeException">
+        /// The error code returned by libclang is not <see cref="ErrorCode.Success"/>.
+        /// </exception>
+        public TranslationUnit ParseTranslationUnit(
+            string sourceFileName,
+            IEnumerable<string> commandLineArgs,
+            IEnumerable<UnsavedFile> unsavedFiles = null,
+            TranslationUnitCreationOptions options = TranslationUnitCreationOptions.None)
+        {
+            ThrowIfDisposed();
+
+            var args = commandLineArgs?.ToArray(x => new CString(x)) ?? Array.Empty<CString>();
+            var files = unsavedFiles?.ToArray() ?? Array.Empty<UnsavedFile>();
+            using (var cString = new CString(sourceFileName))
+            {
+                var argsPtr = stackalloc sbyte*[args.Length];
+                args.Apply((arg, i) => argsPtr[i] = arg.Ptr);
+                var filesPtr = stackalloc CXUnsavedFile[files.Length];
+                files.Apply((file, i) =>
+                {
+                    file.ThrowIfDisposed();
+                    filesPtr[i] = file.Struct;
+                });
+                CXTranslationUnitImpl* ptr;
+                try
+                {
+                    NativeMethods.clang_parseTranslationUnit2(
+                        Ptr,
+                        cString.Ptr,
+                        argsPtr,
+                        args.Length,
+                        filesPtr,
+                        (uint)files.Length,
+                        (uint)options,
+                        &ptr).Check();
+                    return new TranslationUnit(ptr, this);
+                }
+                finally
+                {
+                    args.DisposeMany();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Same as clang_parseTranslationUnit2 but requires a full command line for
+        /// <paramref name="commandLineArgs"/> including args[0]. This is useful if the standard
+        /// library paths are relative to the binary.
+        /// </summary>
+        /// <param name="sourceFileName">
+        /// The name of the source file to load, or null if the source file is included in
+        /// <paramref name="commandLineArgs"/>.
+        /// </param>
+        /// <param name="commandLineArgs">
+        /// The command-line arguments that would be passed to the clang executable if it were
+        /// being invoked out-of-process. These command-line options will be parsed and will affect
+        /// how the translation unit is parsed. Note that the following options are ignored: '-c',
+        /// '-emit-ast', '-fsyntax-only' (which is the default), and '-o &lt;output file&gt;'.
+        /// </param>
+        /// <param name="unsavedFiles">
+        /// The files that have not yet been saved to disk but may be required for parsing,
+        /// including the contents of those files.
+        /// </param>
+        /// <param name="options">
+        /// A bitmask of options that affects how the translation unit is managed but not its
+        /// compilation. This should be a bitwise OR of the
+        /// <see cref="TranslationUnitCreationOptions"/> flags.
+        /// </param>
+        /// <returns>
+        /// The created <see cref="TranslationUnit"/>, describing the parsed code and containing
+        /// any diagnostics produced by the compiler.
+        /// </returns>
+        /// <exception cref="ErrorCodeException">
+        /// The error code returned by libclang is not <see cref="ErrorCode.Success"/>.
+        /// </exception>
+        public TranslationUnit ParseTranslationUnitFullArgv(
+            string sourceFileName,
+            IEnumerable<string> commandLineArgs,
+            IEnumerable<UnsavedFile> unsavedFiles = null,
+            TranslationUnitCreationOptions options = TranslationUnitCreationOptions.None)
+        {
+            ThrowIfDisposed();
+
+            var args = commandLineArgs?.ToArray(x => new CString(x)) ?? Array.Empty<CString>();
+            var files = unsavedFiles?.ToArray() ?? Array.Empty<UnsavedFile>();
+            using (var cString = new CString(sourceFileName))
+            {
+                var argsPtr = stackalloc sbyte*[args.Length];
+                args.Apply((arg, i) => argsPtr[i] = arg.Ptr);
+                var filesPtr = stackalloc CXUnsavedFile[files.Length];
+                files.Apply((file, i) =>
+                {
+                    file.ThrowIfDisposed();
+                    filesPtr[i] = file.Struct;
+                });
+                CXTranslationUnitImpl* ptr;
+                try
+                {
+                    NativeMethods.clang_parseTranslationUnit2FullArgv(
+                        Ptr,
+                        cString.Ptr,
+                        argsPtr,
+                        args.Length,
+                        filesPtr,
+                        (uint)files.Length,
+                        (uint)options,
+                        &ptr).Check();
+                    return new TranslationUnit(ptr, this);
+                }
+                finally
+                {
+                    args.DisposeMany();
+                }
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Core.Clang
         /// <summary>
         /// The <see cref="SourceFile"/> associated with the <see cref="SourceLocation"/>.
         /// </summary>
-        internal SourceFile SourceFile { get; }
+        public SourceFile SourceFile { get; }
 
         /// <summary>
         /// The line to which the source location points.
@@ -148,12 +148,7 @@ namespace Core.Clang
         /// Gets the hash code for this <see cref="SourceLocation"/>.
         /// </summary>
         /// <returns>A hash code for the current <see cref="SourceLocation"/>.</returns>
-        /// <remarks>
-        /// See:
-        /// <para>
-        /// https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXSourceLocation.cpp
-        /// </para>
-        /// </remarks>
+        /// <seealso href="https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXSourceLocation.cpp"/>
         [Unstable]
         public override int GetHashCode()
         {
