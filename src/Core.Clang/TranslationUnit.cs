@@ -237,5 +237,29 @@ namespace Core.Clang
             }
             return errorCode;
         }
+
+        /// <summary>
+        /// Gets the memory usage of a translation unit.
+        /// </summary>
+        /// <returns>The memory usage of a translation unit.</returns>
+        public TUResourceUsageEntry[] GetResourceUsage()
+        {
+            ThrowIfDisposed();
+
+            var cxTUResourceUsage = NativeMethods.clang_getCXTUResourceUsage(Ptr);
+            try
+            {
+                var entries = new TUResourceUsageEntry[cxTUResourceUsage.numEntries];
+                entries.SetValues(
+                    i => new TUResourceUsageEntry(
+                        (TUResourceUsageKind)cxTUResourceUsage.entries[i].kind,
+                        cxTUResourceUsage.entries[i].amount));
+                return entries;
+            }
+            finally
+            {
+                NativeMethods.clang_disposeCXTUResourceUsage(cxTUResourceUsage);
+            }
+        }
     }
 }

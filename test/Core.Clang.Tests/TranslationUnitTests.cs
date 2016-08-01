@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using Core.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Clang.Tests
@@ -76,6 +77,13 @@ namespace Core.Clang.Tests
             Assert.AreEqual(ErrorCode.Success, disposables.Add.TryReparse(null, out add));
             Assert.ThrowsException<ObjectDisposedException>(() => disposables.Add.GetSpelling());
             Assert.AreEqual(TestFiles.AddSource, add.GetSpelling());
+        }
+
+        [TestMethod]
+        public void ResourceUsageEntriesNotEmpty()
+        {
+            var entries = disposables.Add.GetResourceUsage();
+            Assert.IsTrue(entries.Length != 0);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Core.Clang.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,6 +17,7 @@ namespace Core.Clang.Tests
         [TestInitialize]
         public void Initialize()
         {
+            Monitor.Enter(TestFiles.Locker);
             disposables = new Disposables();
         }
 
@@ -23,6 +25,7 @@ namespace Core.Clang.Tests
         public void Dispose()
         {
             disposables.Dispose();
+            Monitor.Exit(TestFiles.Locker);
         }
 
         [TestMethod]
