@@ -796,4 +796,91 @@
         /// </summary>
         OverloadCandidate = 700
     }
+
+    /// <summary>
+    /// CursorKind extensions methods for range assertion.
+    /// </summary>
+    public static class CursorKindExtensions
+    {
+        /// <summary>
+        /// Determines whether the cursor kind represents a declaration.
+        /// </summary>
+        /// <returns>true if the cursor kind represents a declaration.</returns>
+        public static bool IsDecalration(this CursorKind kind)
+        {
+            return NativeMethods.clang_isDeclaration((CXCursorKind)kind) != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the cursor kind represents a simple reference.
+        /// </summary>
+        /// <returns>true if the cursor kind represents a simple reference.</returns>
+        /// <remarks>
+        /// Note that other kinds of cursors (such as expressions) can also refer to other cursors.
+        /// Use <see cref="Cursor.GetCursorReferenced"/> to determine whether a particular cursor
+        /// refers to another entity.
+        /// </remarks>
+        public static bool IsReference(this CursorKind kind)
+        {
+            return NativeMethods.clang_isReference((CXCursorKind)kind) != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the cursor kind represents an expression.
+        /// </summary>
+        /// <returns>true if the cursor kind represents an expression.</returns>
+        public static bool IsExpression(this CursorKind kind)
+        {
+            return NativeMethods.clang_isExpression((CXCursorKind)kind) != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the cursor kind represents a statement.
+        /// </summary>
+        /// <returns>true if the cursor kind represents a statement.</returns>
+        public static bool IsStatement(this CursorKind kind)
+        {
+            return NativeMethods.clang_isStatement((CXCursorKind)kind) != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the cursor kind is invalid.
+        /// </summary>
+        /// <returns>true if the cursor kind is invalid.</returns>
+        public static bool IsInvalid(this CursorKind kind)
+        {
+            return NativeMethods.clang_isInvalid((CXCursorKind)kind) != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the cursor kind represents a translation unit.
+        /// </summary>
+        /// <returns>true if the cursor kind represents a translation unit.</returns>
+        public static bool IsTranslationUnit(this CursorKind kind)
+        {
+            return NativeMethods.clang_isTranslationUnit((CXCursorKind)kind) != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the cursor kind represents a preprocessing element, such as a
+        /// preprocessor directive or macro instantiation.
+        /// </summary>
+        /// <returns>true if the cursor kind represents a preprocessing element.</returns>
+        public static bool IsPreprocessing(this CursorKind kind)
+        {
+            return NativeMethods.clang_isPreprocessing((CXCursorKind)kind) != 0;
+        }
+
+        /// <summary>
+        /// Determine whether the cursor kind represents a currently unexposed piece of the AST 
+        /// (e.g., <see cref="CursorKind.UnexposedStmt"/>).
+        /// </summary>
+        /// <returns>
+        /// true if the cursor kind represents a currently unexposed piece of the AST.
+        /// </returns>
+        public static bool IsUnexposed(this CursorKind kind)
+        {
+            return NativeMethods.clang_isUnexposed((CXCursorKind)kind) != 0;
+        }
+    }
 }

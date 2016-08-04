@@ -24,5 +24,7 @@ namespace Core.Clang.Tests
         public static string MultiplyHeader { get; } = Path.Combine(Directory, "multiply.h");
 
         public static string MultiplySource { get; } = Path.Combine(Directory, "multiply.cpp");
+
+        public static string Empty { get; } = Path.Combine(Directory, "empty.cpp");
     }
 }

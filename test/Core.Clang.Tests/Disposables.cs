@@ -23,6 +23,15 @@ namespace Core.Clang.Tests
                 options: TranslationUnitCreationOptions.DetailedPreprocessingRecord);
         }
 
+        public TranslationUnit WriteToEmpty(string sourceCode)
+        {
+            return Index.ParseTranslationUnit(
+                TestFiles.Empty,
+                null,
+                new[] { new UnsavedFile(TestFiles.Empty, sourceCode) },
+                TranslationUnitCreationOptions.DetailedPreprocessingRecord);
+        }
+
         public void Dispose()
         {
             Add.Dispose();

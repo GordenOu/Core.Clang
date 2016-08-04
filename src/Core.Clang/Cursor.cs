@@ -33,6 +33,11 @@ namespace Core.Clang
         /// </summary>
         public TranslationUnit TranslationUnit { get; private set; }
 
+        /// <summary>
+        /// Gets the kind of the cursor.
+        /// </summary>
+        public CursorKind Kind => (CursorKind)Struct.kind;
+
         private Cursor(CXCursor cxCursor, TranslationUnit translationUnit)
         {
             Struct = cxCursor;
@@ -115,116 +120,6 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Gets the kind of the cursor.
-        /// </summary>
-        /// <returns>
-        /// The kind of the cursor.
-        /// </returns>
-        public CursorKind GetKind()
-        {
-            ThrowIfDisposed();
-
-            return (CursorKind)NativeMethods.clang_getCursorKind(Struct);
-        }
-
-        /// <summary>
-        /// Determines whether the cursor represents a declaration.
-        /// </summary>
-        /// <returns>true if the cursor represents a declaration.</returns>
-        public bool IsDecalration()
-        {
-            ThrowIfDisposed();
-
-            return NativeMethods.clang_isDeclaration((CXCursorKind)GetKind()) != 0;
-        }
-
-        /// <summary>
-        /// Determines whether the cursor represents a simple reference.
-        /// </summary>
-        /// <returns>true if the cursor represents a simple reference.</returns>
-        /// <remarks>
-        /// Note that other kinds of cursors (such as expressions) can also refer to other cursors.
-        /// Use <see cref="GetCursorReferenced"/> to determine whether a particular cursor refers
-        /// to another entity.
-        /// </remarks>
-        public bool IsReference()
-        {
-            ThrowIfDisposed();
-
-            return NativeMethods.clang_isReference((CXCursorKind)GetKind()) != 0;
-        }
-
-        /// <summary>
-        /// Determines whether the cursor represents an expression.
-        /// </summary>
-        /// <returns>true if the cursor represents an expression.</returns>
-        public bool IsExpression()
-        {
-            ThrowIfDisposed();
-
-            return NativeMethods.clang_isExpression((CXCursorKind)GetKind()) != 0;
-        }
-
-        /// <summary>
-        /// Determines whether the cursor represents a statement.
-        /// </summary>
-        /// <returns>true if the cursor represents a statement.</returns>
-        public bool IsStatement()
-        {
-            ThrowIfDisposed();
-
-            return NativeMethods.clang_isStatement((CXCursorKind)GetKind()) != 0;
-        }
-
-        /// <summary>
-        /// Determines whether the cursor is invalid.
-        /// </summary>
-        /// <returns>true if the cursor is invalid.</returns>
-        public bool IsInvalid()
-        {
-            ThrowIfDisposed();
-
-            return NativeMethods.clang_isInvalid((CXCursorKind)GetKind()) != 0;
-        }
-
-        /// <summary>
-        /// Determines whether the cursor represents a translation unit.
-        /// </summary>
-        /// <returns>true if the cursor represents a translation unit.</returns>
-        public bool IsTranslationUnit()
-        {
-            ThrowIfDisposed();
-
-            return NativeMethods.clang_isTranslationUnit((CXCursorKind)GetKind()) != 0;
-        }
-
-        /// <summary>
-        /// Determines whether the cursor represents a preprocessing element, such as a
-        /// preprocessor directive or macro instantiation.
-        /// </summary>
-        /// <returns>true if the cursor represents a preprocessing element.</returns>
-        public bool IsPreprocessing()
-        {
-            ThrowIfDisposed();
-
-            return NativeMethods.clang_isPreprocessing((CXCursorKind)GetKind()) != 0;
-        }
-
-        /// <summary>
-        /// Determine whether the cursor represents a currently unexposed piece of the AST (e.g.,
-        /// <see cref="CursorKind.UnexposedStmt"/>).
-        /// </summary>
-        /// <returns>
-        /// true if the cursor represents a currently unexposed piece of the AST.
-        /// </returns>
-        public bool IsUnexposed()
-        {
-            ThrowIfDisposed();
-
-            return NativeMethods.clang_isUnexposed((CXCursorKind)GetKind()) != 0;
-        }
-
-        /// <summary>
         /// Gets the linkage of the entity referred to.
         /// </summary>
         /// <returns>The linkage of the entity referred to.</returns>
@@ -233,21 +128,6 @@ namespace Core.Clang
             ThrowIfDisposed();
 
             return (LinkageKind)NativeMethods.clang_getCursorLinkage(Struct);
-        }
-
-        /// <summary>
-        /// Gets the visibility of the entity referred to.
-        /// </summary>
-        /// <returns>The visibility of the cursor.</returns>
-        /// <remarks>
-        /// This returns the default visibility if not explicitly specified by a visibility
-        /// attribute. The default visibility may be changed by commandline arguments.
-        /// </remarks>
-        public VisibilityKind GetVisibility()
-        {
-            ThrowIfDisposed();
-
-            return (VisibilityKind)NativeMethods.clang_getCursorVisibility(Struct);
         }
 
         /// <summary>
