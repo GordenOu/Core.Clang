@@ -31,16 +31,18 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void GetOneDiagnosticInTranslationUnit()
         {
-            var translationUnit = disposables.Add;
+            string source = "#endif";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var set = DiagnosticSet.FromTranslationUnit(empty);
+                Assert.AreEqual<uint>(1, set.GetNumDiagnostics());
+                Assert.IsNotNull(set.GetDiagnostic(0));
+                Assert.IsNull(set.GetDiagnostic(1));
 
-            var set = DiagnosticSet.FromTranslationUnit(translationUnit);
-            Assert.AreEqual<uint>(1, set.GetNumDiagnostics());
-            Assert.IsNotNull(set.GetDiagnostic(0));
-            Assert.IsNull(set.GetDiagnostic(1));
-
-            var diagnostic = set.GetDiagnostic(0);
-            Assert.IsNull(diagnostic.GetChildDiagnostics());
-            Assert.AreEqual(DiagnosticSeverity.Error, diagnostic.GetSeverity());
+                var diagnostic = set.GetDiagnostic(0);
+                Assert.IsNull(diagnostic.GetChildDiagnostics());
+                Assert.AreEqual(DiagnosticSeverity.Error, diagnostic.GetSeverity());
+            }
         }
     }
 }

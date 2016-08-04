@@ -30,14 +30,14 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void CreateInvalidRangeReturnsNull()
         {
-            var translationUnit = disposables.Add;
+            var add = disposables.Add;
 
-            var file = translationUnit.GetFile(TestFiles.AddSource);
+            var file = add.GetFile(TestFiles.AddSource);
             var range = SourceRange.Create(file.GetLocation(1, 1), file.GetLocation(2, 1));
             Assert.IsNotNull(range);
 
             range = SourceRange.Create(
-                translationUnit.GetFile(TestFiles.AddHeader).GetLocation(1, 1),
+                add.GetFile(TestFiles.AddHeader).GetLocation(1, 1),
                 file.GetLocation(1, 1));
             Assert.IsNull(range);
         }
@@ -45,9 +45,9 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void GetStartAndGetEndReturnOriginalLocations()
         {
-            var translationUnit = disposables.Add;
+            var add = disposables.Add;
 
-            var file = translationUnit.GetFile(TestFiles.AddSource);
+            var file = add.GetFile(TestFiles.AddSource);
             var begin = file.GetLocation(1, 1);
             var end = file.GetLocation(2, 1);
             var range = SourceRange.Create(begin, end);

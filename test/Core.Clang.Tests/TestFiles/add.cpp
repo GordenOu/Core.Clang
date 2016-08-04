@@ -7,5 +7,3 @@ int add(int a, int b)
 
 #ifdef Undefined
 #endif
-
-#endif

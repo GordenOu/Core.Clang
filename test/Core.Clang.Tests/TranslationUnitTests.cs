@@ -33,21 +33,21 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void GetSourceFile()
         {
-            var translationUnit = disposables.Add;
+            var add = disposables.Add;
 
-            Assert.IsNotNull(translationUnit.GetFile(TestFiles.AddSource));
-            Assert.IsNotNull(translationUnit.GetFile(TestFiles.AddHeader));
-            Assert.IsNotNull(translationUnit.GetFile(TestFiles.CommonHeader));
-            Assert.IsNull(translationUnit.GetFile(TestFiles.CommonHeader + "pp"));
+            Assert.IsNotNull(add.GetFile(TestFiles.AddSource));
+            Assert.IsNotNull(add.GetFile(TestFiles.AddHeader));
+            Assert.IsNotNull(add.GetFile(TestFiles.CommonHeader));
+            Assert.IsNull(add.GetFile(TestFiles.CommonHeader + "pp"));
         }
 
         [TestMethod]
         public void SkipsConditionalCompilationSections()
         {
-            var translationUnit = disposables.Add;
+            var add = disposables.Add;
 
-            var file = translationUnit.GetFile(TestFiles.AddSource);
-            var skippedRanges = translationUnit.GetSkippedRanges(file);
+            var file = add.GetFile(TestFiles.AddSource);
+            var skippedRanges = add.GetSkippedRanges(file);
             Assert.IsNotNull(skippedRanges);
             Assert.AreEqual(1, skippedRanges.Length);
         }

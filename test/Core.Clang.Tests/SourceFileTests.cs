@@ -30,81 +30,81 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void SourceFileEquatable()
         {
-            var tuAdd = disposables.Add;
-            var tuMultiply = disposables.Multiply;
+            var add = disposables.Add;
+            var multiply = disposables.Multiply;
 
             Assert.AreEqual(
-                tuAdd.GetFile(TestFiles.CommonHeader),
-                tuMultiply.GetFile(TestFiles.CommonHeader));
+                add.GetFile(TestFiles.CommonHeader),
+                multiply.GetFile(TestFiles.CommonHeader));
             Assert.IsTrue(
-                tuAdd.GetFile(TestFiles.CommonHeader).Equals(
-                    tuMultiply.GetFile(TestFiles.CommonHeader)));
+                add.GetFile(TestFiles.CommonHeader).Equals(
+                    multiply.GetFile(TestFiles.CommonHeader)));
             Assert.AreEqual(
-                tuAdd.GetFile(TestFiles.CommonHeader).GetHashCode(),
-                tuMultiply.GetFile(TestFiles.CommonHeader).GetHashCode());
+                add.GetFile(TestFiles.CommonHeader).GetHashCode(),
+                multiply.GetFile(TestFiles.CommonHeader).GetHashCode());
 
             Assert.AreEqual(
-                tuAdd.GetFile(TestFiles.AddHeader),
-                tuMultiply.GetFile(TestFiles.AddHeader));
+                add.GetFile(TestFiles.AddHeader),
+                multiply.GetFile(TestFiles.AddHeader));
             Assert.IsTrue(
-                tuAdd.GetFile(TestFiles.AddHeader).Equals(
-                    tuMultiply.GetFile(TestFiles.AddHeader)));
+                add.GetFile(TestFiles.AddHeader).Equals(
+                    multiply.GetFile(TestFiles.AddHeader)));
             Assert.AreEqual(
-                tuAdd.GetFile(TestFiles.AddHeader).GetHashCode(),
-                tuMultiply.GetFile(TestFiles.AddHeader).GetHashCode());
+                add.GetFile(TestFiles.AddHeader).GetHashCode(),
+                multiply.GetFile(TestFiles.AddHeader).GetHashCode());
 
             Assert.AreEqual(
-                tuAdd.GetFile(TestFiles.MultiplyHeader),
-                tuMultiply.GetFile(TestFiles.MultiplyHeader));
+                add.GetFile(TestFiles.MultiplyHeader),
+                multiply.GetFile(TestFiles.MultiplyHeader));
             Assert.IsTrue(
-                tuAdd.GetFile(TestFiles.MultiplyHeader).Equals(
-                    tuMultiply.GetFile(TestFiles.MultiplyHeader)));
+                add.GetFile(TestFiles.MultiplyHeader).Equals(
+                    multiply.GetFile(TestFiles.MultiplyHeader)));
             Assert.AreEqual(
-                tuAdd.GetFile(TestFiles.MultiplyHeader).GetHashCode(),
-                tuMultiply.GetFile(TestFiles.MultiplyHeader).GetHashCode());
+                add.GetFile(TestFiles.MultiplyHeader).GetHashCode(),
+                multiply.GetFile(TestFiles.MultiplyHeader).GetHashCode());
 
             Assert.AreNotEqual(
-                tuAdd.GetFile(TestFiles.AddHeader),
-                tuMultiply.GetFile(TestFiles.MultiplyHeader));
+                add.GetFile(TestFiles.AddHeader),
+                multiply.GetFile(TestFiles.MultiplyHeader));
             Assert.AreNotEqual(
-                tuAdd.GetFile(TestFiles.AddHeader).GetHashCode(),
-                tuMultiply.GetFile(TestFiles.MultiplyHeader).GetHashCode());
+                add.GetFile(TestFiles.AddHeader).GetHashCode(),
+                multiply.GetFile(TestFiles.MultiplyHeader).GetHashCode());
         }
 
         [TestMethod]
         public void GetName()
         {
-            var tuAdd = disposables.Add;
-            var tuMultiply = disposables.Multiply;
+            var add = disposables.Add;
+            var multiply = disposables.Multiply;
 
             Assert.AreEqual(
                 TestFiles.CommonHeader,
-                tuAdd.GetFile(TestFiles.CommonHeader).GetName());
+                add.GetFile(TestFiles.CommonHeader).GetName());
             Assert.AreEqual(
                 TestFiles.AddHeader,
-                tuAdd.GetFile(TestFiles.AddHeader).GetName());
+                add.GetFile(TestFiles.AddHeader).GetName());
             Assert.AreEqual(
                 TestFiles.AddSource,
-                tuAdd.GetFile(TestFiles.AddSource).GetName());
+                add.GetFile(TestFiles.AddSource).GetName());
         }
 
         [TestMethod]
         public void MultipleIncludeGuarded()
         {
-            var tuAdd = disposables.Add;
+            var add = disposables.Add;
 
-            Assert.IsFalse(tuAdd.GetFile(TestFiles.CommonHeader).IsMultipleIncludeGuarded());
-            Assert.IsTrue(tuAdd.GetFile(TestFiles.AddHeader).IsMultipleIncludeGuarded());
-            Assert.IsTrue(tuAdd.GetFile(TestFiles.MultiplyHeader).IsMultipleIncludeGuarded());
-            Assert.IsFalse(tuAdd.GetFile(TestFiles.AddSource).IsMultipleIncludeGuarded());
+            Assert.IsFalse(add.GetFile(TestFiles.CommonHeader).IsMultipleIncludeGuarded());
+            Assert.IsTrue(add.GetFile(TestFiles.AddHeader).IsMultipleIncludeGuarded());
+            Assert.IsTrue(add.GetFile(TestFiles.MultiplyHeader).IsMultipleIncludeGuarded());
+            Assert.IsFalse(add.GetFile(TestFiles.AddSource).IsMultipleIncludeGuarded());
         }
 
         [TestMethod]
         public void GetValidLocation()
         {
-            var tuAdd = disposables.Add;
+            var add = disposables.Add;
 
-            var file = tuAdd.GetFile(TestFiles.AddHeader);
+            var file = add.GetFile(TestFiles.AddHeader);
             Assert.IsNotNull(file.GetLocation(1, 1));
             Assert.IsNotNull(file.GetLocationFromOffset(0));
         }
@@ -112,9 +112,9 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void GetInvalidLocation()
         {
-            var tuAdd = disposables.Add;
+            var add = disposables.Add;
 
-            var file = tuAdd.GetFile(TestFiles.AddHeader);
+            var file = add.GetFile(TestFiles.AddHeader);
             Assert.IsNull(file.GetLocation(0, 0));
         }
     }

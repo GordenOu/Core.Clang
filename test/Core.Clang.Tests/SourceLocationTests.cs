@@ -30,8 +30,8 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void SourceLocationEquatable()
         {
-            var translationUnit = disposables.Add;
-            var file = translationUnit.GetFile(TestFiles.MultiplyHeader);
+            var add = disposables.Add;
+            var file = add.GetFile(TestFiles.MultiplyHeader);
 
             var location1 = file.GetLocation(1, 2);
             var location2 = file.GetLocationFromOffset(1);
@@ -48,13 +48,13 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void FileProperties()
         {
-            var translationUnit = disposables.Add;
+            var add = disposables.Add;
 
-            var file = translationUnit.GetFile(TestFiles.AddHeader);
+            var file = add.GetFile(TestFiles.AddHeader);
             Assert.IsFalse(file.GetLocation(1, 1).IsInSystemHeader());
             Assert.IsFalse(file.GetLocation(1, 2).IsFromMainFile());
 
-            file = translationUnit.GetFile(TestFiles.AddSource);
+            file = add.GetFile(TestFiles.AddSource);
             Assert.IsFalse(file.GetLocationFromOffset(0).IsInSystemHeader());
             Assert.IsTrue(file.GetLocationFromOffset(1).IsFromMainFile());
         }
