@@ -261,5 +261,48 @@ namespace Core.Clang
                 NativeMethods.clang_disposeCXTUResourceUsage(cxTUResourceUsage);
             }
         }
+
+        /// <summary>
+        /// Gets the cursor that represents the translation unit.
+        /// </summary>
+        /// <returns>The cursor that represents the translation unit.</returns>
+        /// <remarks>
+        /// The translation unit cursor can be used to start traversing the various declarations
+        /// within the translation unit.
+        /// </remarks>
+        public Cursor GetCursor()
+        {
+            ThrowIfDisposed();
+
+            var cxCursor = NativeMethods.clang_getTranslationUnitCursor(Ptr);
+            return Cursor.Create(cxCursor, this);
+        }
+
+        /// <summary>
+        /// Maps a source location to the cursor that describes the entity at that location in the
+        /// source code.
+        /// </summary>
+        /// <param name="location">The source location to be mapped.</param>
+        /// <returns>
+        /// A cursor representing the entity at the given source location, or null if no such
+        /// entity can be found.
+        /// </returns>
+        /// <remarks>
+        /// <see cref="GetCursor(SourceLocation)"/> maps an arbitrary source location within a
+        /// translation unit down to the most specific cursor that describes the entity at that
+        /// location. For example, given an expression <c>x + y</c>, invoking
+        /// <see cref="GetCursor(SourceLocation)"/> with a source location pointing to "x" will
+        /// return the cursor for "x"; similarly for "y". If the cursor points anywhere between "x"
+        /// or "y" (e.g., on the + or the whitespace around it),
+        /// <see cref="GetCursor(SourceLocation)"/> will return a cursor referring to the "+"
+        /// expression.
+        /// </remarks>
+        public Cursor GetCursor(SourceLocation location)
+        {
+            ThrowIfDisposed();
+
+            var cxCursor = NativeMethods.clang_getCursor(Ptr, location.Struct);
+            return Cursor.Create(cxCursor, this);
+        }
     }
 }

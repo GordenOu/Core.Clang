@@ -6,7 +6,7 @@ namespace Core.Clang
     /// Indicates that a method depends on Clang's internal implementation.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public class UnstableAttribute
+    public sealed class UnstableAttribute
         : Attribute
     { }
 }

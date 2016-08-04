@@ -9,6 +9,8 @@ namespace Core.Clang
 
         public string Prefix { get; set; }
 
+        public object[] Excluded { get; set; }
+
         public EnumMappingAttribute(Type type)
         {
             Type = type;

@@ -50,7 +50,7 @@ namespace Core.Clang.Diagnostics
         }
 
         /// <summary>
-        /// Formats the given diagnostic in a manner that is suitable for display.
+        /// Formats the diagnostic in a manner that is suitable for display.
         /// </summary>
         /// <param name="options">
         /// A set of options that control the diagnostic display, created by combining
@@ -176,7 +176,7 @@ namespace Core.Clang.Diagnostics
         /// <remarks>
         /// Diagnostics can be categorized into groups along with other, related diagnostics
         /// (e.g., diagnostics under the same warning flag). This routine retrieves the category
-        /// number for the given diagnostic.
+        /// number for the diagnostic.
         /// </remarks>
         public uint GetCategory()
         {

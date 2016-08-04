@@ -77,6 +77,7 @@ namespace Core.Clang.Tests
             Assert.AreEqual(ErrorCode.Success, disposables.Add.TryReparse(null, out add));
             Assert.ThrowsException<ObjectDisposedException>(() => disposables.Add.GetSpelling());
             Assert.AreEqual(TestFiles.AddSource, add.GetSpelling());
+            add.Dispose();
         }
 
         [TestMethod]

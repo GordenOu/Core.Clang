@@ -6,7 +6,13 @@ namespace Core.Clang
     /// <summary>
     /// Flags that control the creation of translation units.
     /// </summary>
-    [EnumMapping(typeof(CXTranslationUnit_Flags), Prefix = "CXTranslationUnit_")]
+    [EnumMapping(typeof(CXTranslationUnit_Flags),
+        Prefix = "CXTranslationUnit_",
+        Excluded = new object[]
+        {
+            CXTranslationUnit_Flags.CXTranslationUnit_CXXChainedPCH,
+            CXTranslationUnit_Flags.CXTranslationUnit_IncludeBriefCommentsInCodeCompletion
+        })]
     [Flags]
     public enum TranslationUnitCreationOptions
     {
@@ -75,12 +81,6 @@ namespace Core.Clang
         ForSerialization = 0x10,
 
         /// <summary>
-        /// Enabled chained precompiled preambles in C++.
-        /// </summary>
-        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
-        CXXChainedPCH = 0x20,
-
-        /// <summary>
         /// Used to indicate that function/method bodies should be skipped while parsing.
         /// </summary>
         /// <remarks>
@@ -88,13 +88,6 @@ namespace Core.Clang
         /// usages.
         /// </remarks>
         SkipFunctionBodies = 0x40,
-
-        /// <summary>
-        /// Used to indicate that brief documentation comments should be included into the set of
-        /// code completions returned from this translation unit.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        IncludeBriefCommentsInCodeCompletion = 0x80,
 
         /// <summary>
         /// Used to indicate that the precompiled preamble should be created on the first parse.

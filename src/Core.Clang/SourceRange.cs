@@ -68,7 +68,7 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Determine whether the current instance is equal to another <see cref="SourceRange"/>
+        /// Determines whether the current instance is equal to another <see cref="SourceRange"/>
         /// object.
         /// </summary>
         /// <param name="other">
@@ -81,10 +81,45 @@ namespace Core.Clang
         public bool Equals(SourceRange other)
         {
             ThrowIfDisposed();
-            other?.ThrowIfDisposed();
 
-            return other != null
-                && NativeMethods.clang_equalRanges(Struct, other.Struct) != 0;
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            other.ThrowIfDisposed();
+
+            return NativeMethods.clang_equalRanges(Struct, other.Struct) != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the current instance is equal to another object, which must be of
+        /// type <see cref="SourceRange"/> and represents the same source range.
+        /// </summary>
+        /// <param name="obj">The object to compare to this instance.</param>
+        /// <returns>
+        /// true if the current instance and the <paramref name="obj"/> parameter represents the
+        /// same source range.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as SourceRange);
+        }
+
+        /// <summary>
+        /// Gets the hash code for this <see cref="SourceRange"/>.
+        /// </summary>
+        /// <returns>The hash code for this <see cref="SourceRange"/>.</returns>
+        /// <seealso href="https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXSourceLocation.cpp"/>
+        [Unstable]
+        public override int GetHashCode()
+        {
+            return Struct.GetHashCode();
         }
 
         /// <summary>

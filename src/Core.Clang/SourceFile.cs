@@ -70,8 +70,7 @@ namespace Core.Clang
         {
             ThrowIfDisposed();
 
-            var other = obj as SourceFile;
-            return other == null ? false : Equals(other);
+            return Equals(obj as SourceFile);
         }
 
         private CXFileUniqueID? id;

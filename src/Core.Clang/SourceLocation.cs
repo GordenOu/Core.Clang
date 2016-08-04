@@ -99,8 +99,8 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Determine whether two source locations, which must refer into the same translation unit,
-        /// refer to exactly the same point in the source code.
+        /// Determines whether two source locations, which must refer into the same translation
+        /// unit, refer to exactly the same point in the source code.
         /// </summary>
         /// <param name="other">
         /// The <see cref="SourceLocation"/> to compare with this instance.
@@ -140,8 +140,7 @@ namespace Core.Clang
         {
             ThrowIfDisposed();
 
-            var other = obj as SourceLocation;
-            return other == null ? false : Equals(other);
+            return Equals(obj as SourceLocation);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,10 +20,16 @@ namespace Core.Clang.Tests
                 }
                 var names = Enum.GetNames(attribute.Type);
                 var values = Enum.GetValues(attribute.Type);
+                var excluded = from value in attribute.Excluded ?? Array.Empty<object>()
+                               where value != null
+                               select Enum.ToObject(attribute.Type, value);
                 Assert.IsTrue(names.Length == values.Length);
                 foreach (var value in values)
                 {
-                    Assert.IsTrue(Enum.IsDefined(type, Enum.ToObject(type, value)));
+                    if (!excluded.Contains(value))
+                    {
+                        Assert.IsTrue(Enum.IsDefined(type, Enum.ToObject(type, value)));
+                    }
                 }
                 foreach (var name in Enum.GetNames(type))
                 {

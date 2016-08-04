@@ -17,12 +17,16 @@ namespace Core.Clang.Diagnostics
         /// Display the source-location information where the diagnostic was located.
         /// </summary>
         /// <remarks>
+        /// <para>
         /// When set, diagnostics will be prefixed by the file, line, and (optionally) column to
         /// which the diagnostic refers. For example,
+        /// </para>
         /// <code>
         /// test.c:28: warning: extra tokens at end of #endif directive
         /// </code>
+        /// <para>
         /// This option corresponds to the clang flag -fshow-source-location.
+        /// </para>
         /// </remarks>
         DisplaySourceLocation = 0x01,
 

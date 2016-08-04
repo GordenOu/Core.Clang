@@ -87,7 +87,7 @@ namespace Core.Clang
         /// </summary>
         /// <returns>
         /// A bitmask of options, a bitwise OR of <see cref="GlobalOptions"/> flags that are
-        /// associated with the given <see cref="Index"/> object.
+        /// associated with the <see cref="Index"/> object.
         /// </returns>
         public GlobalOptions GetGlobalOptions()
         {
