@@ -1,4 +1,6 @@
 ﻿using System;
+using Core.Clang.Diagnostics;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Clang.Tests
 {
@@ -12,7 +14,7 @@ namespace Core.Clang.Tests
 
         public Disposables()
         {
-            Index = new Index(true, true);
+            Index = new Index(true, false);
             Add = Index.ParseTranslationUnit(
                 TestFiles.AddSource,
                 null,
@@ -23,13 +25,17 @@ namespace Core.Clang.Tests
                 options: TranslationUnitCreationOptions.DetailedPreprocessingRecord);
         }
 
-        public TranslationUnit WriteToEmpty(string sourceCode)
+        public TranslationUnit WriteToEmpty(string source)
         {
-            return Index.ParseTranslationUnit(
+            var translationUnit = Index.ParseTranslationUnit(
                 TestFiles.Empty,
                 null,
-                new[] { new UnsavedFile(TestFiles.Empty, sourceCode) },
+                new[] { new UnsavedFile(TestFiles.Empty, source) },
                 TranslationUnitCreationOptions.DetailedPreprocessingRecord);
+            Assert.AreEqual(
+                0u,
+                DiagnosticSet.FromTranslationUnit(translationUnit).GetNumDiagnostics());
+            return translationUnit;
         }
 
         public void Dispose()

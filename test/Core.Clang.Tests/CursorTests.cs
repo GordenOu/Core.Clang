@@ -223,5 +223,20 @@ namespace Core.Clang.Tests
                 Assert.AreEqual(file.GetLocation(1, 10), range.GetEnd());
             }
         }
+
+        [DataTestMethod]
+        [DataRow("typedef int Int32;", CursorKind.TypedefDecl)]
+        [DataRow("using Int32 = int;", CursorKind.TypeAliasDecl)]
+        public void GetTypedefDeclUnderlyingType(string source, CursorKind cursorKind)
+        {
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var typedef = empty.GetCursor(file.GetLocation(1, 1));
+                Assert.AreEqual(cursorKind, typedef.Kind);
+                Assert.AreEqual(TypeKind.Typedef, typedef.GetTypeInfo().Kind);
+                Assert.AreEqual(TypeKind.Int, typedef.GetTypedefDeclUnderlyingType().Kind);
+            }
+        }
     }
 }

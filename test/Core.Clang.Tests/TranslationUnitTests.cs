@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using Core.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Clang.Tests

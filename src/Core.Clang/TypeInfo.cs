@@ -144,18 +144,6 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Determines whether the <see cref="TypeInfo"/> has the "restrict" qualifier set, without
-        /// looking through typedefs that may have added "volatile" at a different level.
-        /// </summary>
-        /// <returns>true if the <see cref="TypeInfo"/> has the "restrict" qualifier set.</returns>
-        public bool IsRestrictQualified()
-        {
-            ThrowIfDisposed();
-
-            return NativeMethods.clang_isRestrictQualifiedType(Struct) != 0;
-        }
-
-        /// <summary>
         /// Gets the type of the pointee for pointer types.
         /// </summary>
         /// <returns>The pointee for pointer types.</returns>
@@ -362,8 +350,8 @@ namespace Core.Clang
         /// <see cref="TypeLayoutError.Dependent"/> is returned.
         /// </para>
         /// <para>
-        /// If the field's name S is not found, <see cref="TypeLayoutError.InvalidFieldName"/> is
-        /// returned.
+        /// If the field's name <paramref name="fieldName"/> is not found,
+        /// <see cref="TypeLayoutError.InvalidFieldName"/> is returned.
         /// </para>
         /// </returns>
         public TypeLayoutError? TryGetOffsetOf(string fieldName, out long offset)

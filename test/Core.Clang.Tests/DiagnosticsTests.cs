@@ -32,7 +32,11 @@ namespace Core.Clang.Tests
         public void GetOneDiagnosticInTranslationUnit()
         {
             string source = "#endif";
-            using (var empty = disposables.WriteToEmpty(source))
+            using (var empty = disposables.Index.ParseTranslationUnit(
+                TestFiles.Empty,
+                null,
+                new[] { new UnsavedFile(TestFiles.Empty, source) },
+                TranslationUnitCreationOptions.DetailedPreprocessingRecord))
             {
                 var set = DiagnosticSet.FromTranslationUnit(empty);
                 Assert.AreEqual<uint>(1, set.GetNumDiagnostics());
