@@ -206,7 +206,7 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Same as clang_parseTranslationUnit2 but requires a full command line for
+        /// Same as <see cref="ParseTranslationUnit"/> but requires a full command line for
         /// <paramref name="commandLineArgs"/> including args[0]. This is useful if the standard
         /// library paths are relative to the binary.
         /// </summary>

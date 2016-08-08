@@ -1,12 +1,23 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Core.Clang
 {
-    /// <summary>
-    /// Indicates that a method depends on Clang's internal implementation.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
-    public sealed class UnstableAttribute
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    internal sealed class UnstableAttribute
         : Attribute
-    { }
+    {
+        public string Version { get; }
+
+        public string[] Urls { get; }
+
+        public UnstableAttribute(string version, string[] seealso)
+        {
+            Debug.Assert(version != null);
+            Debug.Assert(seealso != null);
+
+            Version = version;
+            Urls = seealso;
+        }
+    }
 }

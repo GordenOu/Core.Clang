@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Clang.Tests
 {
+    [TestClass]
     public class TypeInfoTests : IDisposable
     {
         private Disposables disposables;

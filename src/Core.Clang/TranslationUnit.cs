@@ -31,6 +31,13 @@ namespace Core.Clang
         /// <summary>
         /// Destroys the <see cref="TranslationUnit"/> object.
         /// </summary>
+        /// <remarks>
+        /// This method invalidates the associated <see cref="Diagnostics.DiagnosticSet"/>.
+        /// </remarks>
+        [Unstable(version: "3.8.1", seealso: new[]
+        {
+            "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CIndex.cpp"
+        })]
         public void Dispose()
         {
             if (!disposed)

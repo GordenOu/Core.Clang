@@ -63,10 +63,12 @@ namespace Core.Clang.Tests
         {
             var fileName = Path.GetTempFileName();
             Assert.AreEqual(TranslationUnitSaveError.None, disposables.Add.TrySave(fileName));
-            var add = disposables.Index.CreateTranslationUnit(fileName);
-            Assert.AreEqual(
-                disposables.Add.GetFile(TestFiles.AddSource),
-                add.GetFile(TestFiles.AddSource));
+            using (var add = disposables.Index.CreateTranslationUnit(fileName))
+            {
+                Assert.AreEqual(
+                    disposables.Add.GetFile(TestFiles.AddSource),
+                    add.GetFile(TestFiles.AddSource));
+            }
         }
 
         [TestMethod]

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Clang.Tests
 {
+    [TestClass]
     public unsafe class SourceFileTests : IDisposable
     {
         private Disposables disposables;

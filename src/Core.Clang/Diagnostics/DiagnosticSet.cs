@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Core.Diagnostics;
 
 namespace Core.Clang.Diagnostics
@@ -7,7 +6,7 @@ namespace Core.Clang.Diagnostics
     /// <summary>
     /// A group of <see cref="Diagnostic"/>s.
     /// </summary>
-    public sealed unsafe class DiagnosticSet : IDisposable
+    public sealed unsafe class DiagnosticSet
     {
         internal CXDiagnosticSetImpl* Ptr { get; }
 
@@ -23,36 +22,8 @@ namespace Core.Clang.Diagnostics
             TranslationUnit = translationUnit;
         }
 
-        bool disposed;
-
-        /// <summary>
-        /// Release a <see cref="DiagnosticSet"/> and all of its contained diagnostics.
-        /// </summary>
-        public void Dispose()
-        {
-            if (!disposed)
-            {
-                NativeMethods.clang_disposeDiagnosticSet(Ptr);
-
-                disposed = true;
-            }
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Release a <see cref="DiagnosticSet"/> and all of its contained diagnostics.
-        /// </summary>
-        ~DiagnosticSet()
-        {
-            Dispose();
-        }
-
         internal void ThrowIfDisposed()
         {
-            if (disposed)
-            {
-                throw new ObjectDisposedException(typeof(DiagnosticSet).Name);
-            }
             TranslationUnit.ThrowIfDisposed();
         }
 

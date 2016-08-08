@@ -115,8 +115,10 @@ namespace Core.Clang
         /// Gets the hash code for this <see cref="SourceRange"/>.
         /// </summary>
         /// <returns>The hash code for this <see cref="SourceRange"/>.</returns>
-        /// <seealso href="https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXSourceLocation.cpp"/>
-        [Unstable]
+        [Unstable(version: "3.8.1", seealso: new[]
+        {
+            "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXSourceLocation.cpp"
+        })]
         public override int GetHashCode()
         {
             return Struct.GetHashCode();

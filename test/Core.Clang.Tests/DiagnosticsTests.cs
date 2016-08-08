@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Clang.Tests
 {
+    [TestClass]
     public class DiagnosticsTests : IDisposable
     {
         private Disposables disposables;
@@ -32,10 +33,11 @@ namespace Core.Clang.Tests
         public void GetOneDiagnosticInTranslationUnit()
         {
             string source = "#endif";
+            using (var file = new UnsavedFile(TestFiles.Empty, source))
             using (var empty = disposables.Index.ParseTranslationUnit(
                 TestFiles.Empty,
                 null,
-                new[] { new UnsavedFile(TestFiles.Empty, source) },
+                new[] { file },
                 TranslationUnitCreationOptions.DetailedPreprocessingRecord))
             {
                 var set = DiagnosticSet.FromTranslationUnit(empty);
