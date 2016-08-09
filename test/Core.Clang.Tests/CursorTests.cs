@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Core.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -237,6 +238,378 @@ namespace Core.Clang.Tests
                 Assert.AreEqual(cursorKind, typedef.Kind);
                 Assert.AreEqual(TypeKind.Typedef, typedef.GetTypeInfo().Kind);
                 Assert.AreEqual(TypeKind.Int, typedef.GetTypedefDeclUnderlyingType().Kind);
+            }
+        }
+
+        [TestMethod]
+        public void GetEnumIntegerTypeAndValue()
+        {
+            string source = "enum A : unsigned long long { Value = 1 };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration = empty.GetCursor(file.GetLocation(1, 1));
+                Assert.AreEqual(CursorKind.EnumDecl, declaration.Kind);
+                Assert.AreEqual(TypeKind.ULongLong, declaration.GetEnumDeclIntegerType().Kind);
+
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("Value"));
+                var constant = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.EnumConstantDecl, constant.Kind);
+                Assert.AreEqual(1ul, constant.GetEnumConstantDeclUnsignedValue());
+            }
+
+            source = "enum A : long long { Value = -1 };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration = empty.GetCursor(file.GetLocation(1, 1));
+                Assert.AreEqual(CursorKind.EnumDecl, declaration.Kind);
+                Assert.AreEqual(TypeKind.LongLong, declaration.GetEnumDeclIntegerType().Kind);
+
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("Value"));
+                var constant = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.EnumConstantDecl, constant.Kind);
+                Assert.AreEqual(-1L, constant.GetEnumConstantDeclValue());
+            }
+        }
+
+        [TestMethod]
+        public void GetBitFieldWidth()
+        {
+            string source = "struct A { unsigned int a : 3; };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration = empty.GetCursor(file.GetLocation(1, 12));
+                Assert.AreEqual(CursorKind.FieldDecl, declaration.Kind);
+                Assert.IsTrue(declaration.IsBitField());
+                Assert.AreEqual(3, declaration.GetFieldDeclBitWidth());
+            }
+        }
+
+        [TestMethod]
+        public void GetFunctionArguments()
+        {
+            string source = "void foo(int a, int b);";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration = empty.GetCursor(file.GetLocation(1, 1));
+                Assert.AreEqual(CursorKind.FunctionDecl, declaration.Kind);
+                Assert.AreEqual(2, declaration.GetNumArguments());
+
+                var a = declaration.GetArgument(0);
+                Assert.AreEqual(CursorKind.ParmDecl, a.Kind);
+                Assert.AreEqual(TypeKind.Int, a.GetTypeInfo().Kind);
+
+                var b = declaration.GetArgument(1);
+                Assert.AreEqual(CursorKind.ParmDecl, b.Kind);
+                Assert.AreEqual(TypeKind.Int, b.GetTypeInfo().Kind);
+            }
+        }
+
+        [TestMethod]
+        public void GetTemplateFunctionInfo()
+        {
+            string source = string.Join(" ",
+                "template<typename T, int kInt, bool kBool> void foo();",
+                "template<> void foo<float, -7, true>();");
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("template<>"));
+                var declaration = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.FunctionDecl, declaration.Kind);
+                Assert.AreEqual(3, declaration.GetNumTemplateArguments());
+
+                Assert.AreEqual(
+                    TemplateArgumentKind.Type,
+                    declaration.GetTemplateArgumentKind(0));
+                Assert.AreEqual(
+                    TemplateArgumentKind.Integral,
+                    declaration.GetTemplateArgumentKind(1));
+                Assert.AreEqual(
+                    TemplateArgumentKind.Integral,
+                    declaration.GetTemplateArgumentKind(2));
+
+                Assert.AreEqual(
+                    TypeKind.Float,
+                    declaration.GetTemplateArgumentType(0).Kind);
+                Assert.AreEqual(
+                    TypeKind.Invalid,
+                    declaration.GetTemplateArgumentType(1).Kind);
+                Assert.AreEqual(
+                    TypeKind.Invalid,
+                    declaration.GetTemplateArgumentType(2).Kind);
+
+                Assert.AreEqual(
+                    -7L,
+                    declaration.GetTemplateArgumentValue(1));
+                Assert.AreEqual(
+                    Convert.ToInt64(true),
+                    declaration.GetTemplateArgumentValue(2));
+
+                Assert.AreEqual(
+                   Convert.ToUInt64(true),
+                   declaration.GetTemplateArgumentUnsignedValue(2));
+
+                Assert.AreEqual(TypeKind.Void, declaration.GetResultType().Kind);
+            }
+        }
+
+        [TestMethod]
+        public void GetFieldOffset()
+        {
+            string source = "struct A { int a; int b; };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf('a'));
+                var declaration = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.FieldDecl, declaration.Kind);
+                long offset;
+                var error = declaration.TryGetOffsetOfField(out offset);
+                Assert.IsNull(error);
+                Assert.AreEqual(0, offset);
+
+                location = file.GetLocationFromOffset((uint)source.IndexOf('b'));
+                declaration = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.FieldDecl, declaration.Kind);
+                error = declaration.TryGetOffsetOfField(out offset);
+                Assert.IsNull(error);
+                Assert.AreEqual(32, offset);
+            }
+        }
+
+        [TestMethod]
+        public void AnonymousStruct()
+        {
+            string source = "struct { struct { int a; }; } b;";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration = empty.GetCursor(file.GetLocation(1, 10));
+                Assert.AreEqual(CursorKind.StructDecl, declaration.Kind);
+                Assert.IsTrue(declaration.IsAnonymous());
+            }
+        }
+
+        [TestMethod]
+        public void VirtualInheritanceAndPublicMember()
+        {
+            string source = "class A { }; class B : virtual A { public: int a; };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("virtual"));
+                var specifier = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.CXXBaseSpecifier, specifier.Kind);
+                Assert.IsTrue(specifier.IsVirtualBase());
+
+                location = file.GetLocationFromOffset((uint)source.IndexOf("int a"));
+                var field = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.FieldDecl, field.Kind);
+                Assert.AreEqual(CXXAccessSpecifier.Public, field.GetCXXAccessSpecifier());
+            }
+        }
+
+        [TestMethod]
+        public void StaticVariableInFunction()
+        {
+            string source = "int foo() { static int a = 0; return a++; }";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration = empty.GetCursor(file.GetLocation(1, 13));
+                Assert.AreEqual(CursorKind.VarDecl, declaration.Kind);
+                Assert.AreEqual(StorageClass.Static, declaration.GetStorageClass());
+            }
+        }
+
+        [TestMethod]
+        public void FunctionOverloadsAreUnresolvedInUsingDeclarations()
+        {
+            string source = "void foo(int a); void foo(float a); using ::foo;";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("foo;"));
+                var reference = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.OverloadedDeclRef, reference.Kind);
+                Assert.AreEqual(2u, reference.GetNumOverloadedDecls());
+
+                var declaration1 = empty.GetCursor(file.GetLocation(1, 1));
+                var declaration2 = empty.GetCursor(file.GetLocation(1, 18));
+
+                Assert.AreEqual(CursorKind.FunctionDecl, declaration1.Kind);
+                Assert.AreEqual(CursorKind.FunctionDecl, declaration2.Kind);
+                CollectionAssert.AreEquivalent(
+                    new[] { declaration1, declaration2 },
+                    new[] { reference.GetOverloadedDecl(0), reference.GetOverloadedDecl(1) });
+            }
+        }
+
+        [TestMethod]
+        public void USRsAreNotEqual()
+        {
+            string source = "void foo(int a); void foo(float a);";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration1 = empty.GetCursor(file.GetLocation(1, 1));
+                var declaration2 = empty.GetCursor(file.GetLocation(1, 18));
+                Assert.AreNotEqual(declaration1.GetUSR(), declaration2.GetUSR());
+            }
+        }
+
+        [TestMethod]
+        public void SpellingsOfFunctionDeclarationsAreFunctionNames()
+        {
+            string source = "void foo(int a); void bar(float a);";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration1 = empty.GetCursor(file.GetLocation(1, 1));
+                var declaration2 = empty.GetCursor(file.GetLocation(1, 18));
+                Assert.AreEqual("foo", declaration1.GetSpelling());
+                Assert.AreEqual("bar", declaration2.GetSpelling());
+
+                var range = declaration1.GetSpellingNameRange();
+                Assert.AreEqual(5u, range.GetStart().Offset);
+                Assert.AreEqual(8u, range.GetEnd().Offset);
+            }
+        }
+
+        [TestMethod]
+        public void FunctionDisplayNamesIncludeSignatures()
+        {
+            string source = "void foo(int a);";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration = empty.GetCursor(file.GetLocation(1, 1));
+                Assert.AreEqual("foo(int)", declaration.GetDisplayName());
+            }
+        }
+
+        [TestMethod]
+        public void GetReferencedCursor()
+        {
+            string source = "int foo(int a) { return a; }";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var reference = empty.GetCursor(file.GetLocation(1, 25));
+                Assert.AreEqual(CursorKind.DeclRefExpr, reference.Kind);
+                var declaration = empty.GetCursor(file.GetLocation(1, 9));
+                Assert.AreEqual(CursorKind.ParmDecl, declaration.Kind);
+                Assert.AreEqual(declaration, reference.GetCursorReferenced());
+            }
+        }
+
+        [TestMethod]
+        public void GetDefinition()
+        {
+            string source = string.Join(" ",
+                "int f(int, int);",
+                "int g(int x, int y) { return f(x, y); }",
+                "int f(int a, int b) { return a + b; }",
+                "int f(int, int);");
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("int f(int a"));
+                var definition = empty.GetCursor(location);
+                Assert.IsTrue(definition.IsDefinition());
+
+                var declaration = empty.GetCursor(file.GetLocation(1, 1));
+                Assert.AreEqual(definition, declaration.GetDefinition());
+
+                location = file.GetLocationFromOffset((uint)source.IndexOf("f(x, y)"));
+                declaration = empty.GetCursor(location);
+                Assert.AreEqual(definition, declaration.GetDefinition());
+
+                location = file.GetLocationFromOffset((uint)source.IndexOf("int f(int, int);"));
+                declaration = empty.GetCursor(location);
+                Assert.AreEqual(definition, declaration.GetDefinition());
+            }
+        }
+
+        [TestMethod]
+        public void CanonicalCursorsAreEqualForDuplicatedDeclarations()
+        {
+            string source = "struct A; struct A; struct A { int a; };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration1 = empty.GetCursor(file.GetLocation(1, 1));
+                var declaration2 = empty.GetCursor(file.GetLocation(1, 11));
+                Assert.AreNotEqual(declaration1, declaration2);
+                Assert.AreEqual(
+                    declaration1.GetCanonicalCursor(),
+                    declaration2.GetCanonicalCursor());
+            }
+        }
+
+        [TestMethod]
+        public void VirtualFunctionCallsAreDynamicCalls()
+        {
+            string source = "class A { public: virtual void foo(); }; void bar() { A().foo(); }";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.LastIndexOf("foo"));
+                var call = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.MemberRefExpr, call.Kind);
+                Assert.IsTrue(call.IsDynamicCall());
+            }
+        }
+
+        [TestMethod]
+        public void VariadicFunction()
+        {
+            string source = "void foo(int...);";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var declaration = empty.GetCursor(file.GetLocation(1, 1));
+                Assert.IsTrue(declaration.IsVariadic());
+            }
+        }
+
+        [TestMethod]
+        public void GetComment()
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("/// test");
+            builder.AppendLine("void foo();");
+            string source = builder.ToString();
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("void"));
+                var declaration = empty.GetCursor(location);
+                var range = declaration.GetCommentRange();
+                Assert.IsNotNull(range);
+                Assert.AreEqual("/// test", declaration.GetRawCommentText());
+                Assert.AreEqual("test", declaration.GetBriefCommentText());
+            }
+        }
+
+        [TestMethod]
+        public void NameMangling()
+        {
+            string source = "class A { public: A(); void foo(); };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("A()"));
+                var constructor = empty.GetCursor(location);
+                Assert.AreNotEqual(0, constructor.GetCXXManglings().Length);
+
+                location = file.GetLocationFromOffset((uint)source.IndexOf("void"));
+                var method = empty.GetCursor(location);
+                Assert.IsFalse(string.IsNullOrEmpty(method.GetMangling()));
             }
         }
     }

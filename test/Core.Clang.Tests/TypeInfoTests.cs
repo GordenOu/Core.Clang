@@ -142,7 +142,7 @@ namespace Core.Clang.Tests
             object outParameter)
         {
             TestMethods(source, offset, methodName, parameters, expected, resultAdapter);
-            Assert.AreEqual(parameters.Last(), outParameter);
+            Assert.AreEqual(outParameter, parameters.Last());
         }
     }
 }

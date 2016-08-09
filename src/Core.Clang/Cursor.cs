@@ -975,7 +975,7 @@ namespace Core.Clang
         /// Given a cursor that represents a declaration, returns the associated comment's source
         /// range. The range may include multiple consecutive comments with whitespace in between.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The cursor's associated comment's source range.</returns>
         public SourceRange GetCommentRange()
         {
             ThrowIfDisposed();
@@ -985,16 +985,36 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Given a cursor that represents a declaration, return the associated comment text.
+        /// For a cursor that represents a declaration, returns the associated comment text,
+        /// including comment markers.
         /// </summary>
         /// <returns>
         /// The associated comment text if the cursor represents a declaration.
         /// </returns>
-        public string GetCommentText()
+        public string GetRawCommentText()
         {
             ThrowIfDisposed();
 
             var cxString = NativeMethods.clang_Cursor_getRawCommentText(Struct);
+            using (var str = new String(cxString))
+            {
+                return str.ToString();
+            }
+        }
+
+        /// <summary>
+        /// For a cursor that represents a documentable entity (e.g., declaration), returns the
+        /// first paragraph of the associated comment text.
+        /// </summary>
+        /// <returns>
+        /// The first paragraph of the comment associated comment text if the cursor represents a
+        /// documentable entity.
+        /// </returns>
+        public string GetBriefCommentText()
+        {
+            ThrowIfDisposed();
+
+            var cxString = NativeMethods.clang_Cursor_getBriefCommentText(Struct);
             using (var str = new String(cxString))
             {
                 return str.ToString();
