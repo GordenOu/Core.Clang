@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Core.Diagnostics;
 using Core.Linq;
 
@@ -220,16 +219,12 @@ namespace Core.Clang
         {
             ThrowIfDisposed();
 
-            var files = unsavedFiles?.ToArray() ?? Array.Empty<UnsavedFile>();
-            var filesPtr = stackalloc CXUnsavedFile[files.Length];
-            files.Apply((file, i) =>
-            {
-                file.ThrowIfDisposed();
-                filesPtr[i] = file.Struct;
-            });
+            var files = new CXUnsavedFiles(unsavedFiles);
+            var filesPtr = stackalloc CXUnsavedFile[files.Count];
+            files.Apply((file, i) => filesPtr[i] = files[i]);
             var errorCode = (ErrorCode)NativeMethods.clang_reparseTranslationUnit(
                 Ptr,
-                (uint)files.Length,
+                (uint)files.Count,
                 filesPtr,
                 NativeMethods.clang_defaultReparseOptions(Ptr));
             if (errorCode != ErrorCode.Success)

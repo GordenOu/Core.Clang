@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Core.Diagnostics;
+using Core.Linq;
 
 namespace Core.Clang
 {
@@ -11,9 +15,17 @@ namespace Core.Clang
     /// Each <see cref="UnsavedFile"/> instance provides the name of a file on the system along
     /// with the current contents of that file that have not yet been saved to disk.
     /// </remarks>
-    public sealed unsafe class UnsavedFile : IDisposable
+    public class UnsavedFile
     {
-        internal CXUnsavedFile Struct { get; }
+        /// <summary>
+        /// Gets the name of this file.
+        /// </summary>
+        public string FileName { get; }
+
+        /// <summary>
+        /// Gets a string containing the unsaved contents of this file.
+        /// </summary>
+        public string Contents { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnsavedFile"/> class.
@@ -34,67 +46,63 @@ namespace Core.Clang
             Requires.NotNullOrEmpty(fileName, nameof(fileName));
             Requires.NotNull(contents, nameof(contents));
 
-            Struct = new CXUnsavedFile
-            {
-                Filename = (sbyte*)Marshal.StringToHGlobalAnsi(fileName).ToPointer(),
-                Contents = (sbyte*)Marshal.StringToHGlobalAnsi(contents).ToPointer(),
-                Length = (uint)contents.Length
-            };
+            FileName = fileName;
+            Contents = contents;
+        }
+    }
+
+    internal unsafe class CXUnsavedFiles : IDisposable, IReadOnlyList<CXUnsavedFile>
+    {
+        internal CXUnsavedFile[] Structs { get; }
+
+        public int Count => Structs.Length;
+
+        public CXUnsavedFile this[int index] => Structs[index];
+
+        public CXUnsavedFiles(IEnumerable<UnsavedFile> unsavedFiles)
+        {
+            unsavedFiles = unsavedFiles ?? Array.Empty<UnsavedFile>();
+
+            Structs = unsavedFiles
+                ?.Where(file => file != null)
+                .ToArray(file => new CXUnsavedFile
+                {
+                    Filename = (sbyte*)Marshal.StringToHGlobalAnsi(file.FileName).ToPointer(),
+                    Contents = (sbyte*)Marshal.StringToHGlobalAnsi(file.Contents).ToPointer(),
+                    Length = (uint)file.Contents.Length
+                }) ?? Array.Empty<CXUnsavedFile>();
         }
 
         private bool disposed;
 
-        /// <summary>
-        /// Disposes the buffer containing the unsaved contents of this file.
-        /// </summary>
         public void Dispose()
         {
             if (!disposed)
             {
-                Marshal.FreeHGlobal(new IntPtr(Struct.Filename));
-                Marshal.FreeHGlobal(new IntPtr(Struct.Contents));
+                foreach (var file in Structs)
+                {
+                    Marshal.FreeHGlobal(new IntPtr(file.Filename));
+                    Marshal.FreeHGlobal(new IntPtr(file.Contents));
+                }
 
                 disposed = true;
             }
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// Disposes the buffer containing the unsaved contents of this file.
-        /// </summary>
-        ~UnsavedFile()
+        ~CXUnsavedFiles()
         {
             Dispose();
         }
 
-        internal void ThrowIfDisposed()
+        public IEnumerator<CXUnsavedFile> GetEnumerator()
         {
-            if (disposed)
-            {
-                throw new ObjectDisposedException(typeof(UnsavedFile).Name);
-            }
+            return ((IReadOnlyCollection<CXUnsavedFile>)Structs).GetEnumerator();
         }
 
-        /// <summary>
-        /// Gets the name of this file.
-        /// </summary>
-        /// <returns>The name of this file.</returns>
-        public string GetFileName()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            ThrowIfDisposed();
-
-            return Marshal.PtrToStringAnsi(new IntPtr(Struct.Filename));
-        }
-
-        /// <summary>
-        /// Gets a string containing the unsaved contents of this file.
-        /// </summary>
-        /// <returns>A string containing the unsaved contents of this file.</returns>
-        public string GetContents()
-        {
-            ThrowIfDisposed();
-
-            return Marshal.PtrToStringAnsi(new IntPtr(Struct.Contents), (int)Struct.Length);
+            return ((IReadOnlyCollection<CXUnsavedFile>)Structs).GetEnumerator();
         }
     }
 }

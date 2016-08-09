@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Core.Diagnostics;
 using Core.Linq;
 
@@ -172,36 +171,26 @@ namespace Core.Clang
         {
             ThrowIfDisposed();
 
-            var args = commandLineArgs?.ToArray(x => new CString(x)) ?? Array.Empty<CString>();
-            var files = unsavedFiles?.ToArray() ?? Array.Empty<UnsavedFile>();
             using (var cString = new CString(sourceFileName))
+            using (var args = new CStrings(commandLineArgs))
+            using (var files = new CXUnsavedFiles(unsavedFiles))
             {
-                var argsPtr = stackalloc sbyte*[args.Length];
+                var argsPtr = stackalloc sbyte*[args.Count];
                 args.Apply((arg, i) => argsPtr[i] = arg.Ptr);
-                var filesPtr = stackalloc CXUnsavedFile[files.Length];
-                files.Apply((file, i) =>
-                {
-                    file.ThrowIfDisposed();
-                    filesPtr[i] = file.Struct;
-                });
+                var filesPtr = stackalloc CXUnsavedFile[files.Count];
+                files.Apply((file, i) => filesPtr[i] = files[i]);
+
                 CXTranslationUnitImpl* ptr;
-                try
-                {
-                    NativeMethods.clang_parseTranslationUnit2(
-                        Ptr,
-                        cString.Ptr,
-                        argsPtr,
-                        args.Length,
-                        filesPtr,
-                        (uint)files.Length,
-                        (uint)options,
-                        &ptr).Check();
-                    return new TranslationUnit(ptr, this);
-                }
-                finally
-                {
-                    args.DisposeMany();
-                }
+                NativeMethods.clang_parseTranslationUnit2(
+                    Ptr,
+                    cString.Ptr,
+                    argsPtr,
+                    args.Count,
+                    filesPtr,
+                    (uint)files.Count,
+                    (uint)options,
+                    &ptr).Check();
+                return new TranslationUnit(ptr, this);
             }
         }
 
@@ -244,36 +233,26 @@ namespace Core.Clang
         {
             ThrowIfDisposed();
 
-            var args = commandLineArgs?.ToArray(x => new CString(x)) ?? Array.Empty<CString>();
-            var files = unsavedFiles?.ToArray() ?? Array.Empty<UnsavedFile>();
             using (var cString = new CString(sourceFileName))
+            using (var args = new CStrings(commandLineArgs))
+            using (var files = new CXUnsavedFiles(unsavedFiles))
             {
-                var argsPtr = stackalloc sbyte*[args.Length];
+                var argsPtr = stackalloc sbyte*[args.Count];
                 args.Apply((arg, i) => argsPtr[i] = arg.Ptr);
-                var filesPtr = stackalloc CXUnsavedFile[files.Length];
-                files.Apply((file, i) =>
-                {
-                    file.ThrowIfDisposed();
-                    filesPtr[i] = file.Struct;
-                });
+                var filesPtr = stackalloc CXUnsavedFile[files.Count];
+                files.Apply((file, i) => filesPtr[i] = files[i]);
+
                 CXTranslationUnitImpl* ptr;
-                try
-                {
-                    NativeMethods.clang_parseTranslationUnit2FullArgv(
-                        Ptr,
-                        cString.Ptr,
-                        argsPtr,
-                        args.Length,
-                        filesPtr,
-                        (uint)files.Length,
-                        (uint)options,
-                        &ptr).Check();
-                    return new TranslationUnit(ptr, this);
-                }
-                finally
-                {
-                    args.DisposeMany();
-                }
+                NativeMethods.clang_parseTranslationUnit2FullArgv(
+                    Ptr,
+                    cString.Ptr,
+                    argsPtr,
+                    args.Count,
+                    filesPtr,
+                    (uint)files.Count,
+                    (uint)options,
+                    &ptr).Check();
+                return new TranslationUnit(ptr, this);
             }
         }
     }

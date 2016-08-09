@@ -27,17 +27,14 @@ namespace Core.Clang.Tests
 
         public TranslationUnit WriteToEmpty(string source)
         {
-            using (var file = new UnsavedFile(TestFiles.Empty, source))
-            {
-                var translationUnit = Index.ParseTranslationUnit(
-                    TestFiles.Empty,
-                    null,
-                    new[] { file },
-                    TranslationUnitCreationOptions.DetailedPreprocessingRecord);
-                var set = DiagnosticSet.FromTranslationUnit(translationUnit);
-                Assert.AreEqual(0u, set.GetNumDiagnostics());
-                return translationUnit;
-            }
+            var translationUnit = Index.ParseTranslationUnit(
+                   TestFiles.Empty,
+                   null,
+                   new[] { new UnsavedFile(TestFiles.Empty, source) },
+                   TranslationUnitCreationOptions.DetailedPreprocessingRecord);
+            var set = DiagnosticSet.FromTranslationUnit(translationUnit);
+            Assert.AreEqual(0u, set.GetNumDiagnostics());
+            return translationUnit;
         }
 
         public void Dispose()

@@ -33,11 +33,10 @@ namespace Core.Clang.Tests
         public void GetOneDiagnosticInTranslationUnit()
         {
             string source = "#endif";
-            using (var file = new UnsavedFile(TestFiles.Empty, source))
             using (var empty = disposables.Index.ParseTranslationUnit(
                 TestFiles.Empty,
                 null,
-                new[] { file },
+                new[] { new UnsavedFile(TestFiles.Empty, source) },
                 TranslationUnitCreationOptions.DetailedPreprocessingRecord))
             {
                 var set = DiagnosticSet.FromTranslationUnit(empty);
