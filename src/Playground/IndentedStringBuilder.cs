@@ -7,7 +7,7 @@ namespace Playground
     {
         private static readonly string indent = new string(' ', 4);
 
-        private StringBuilder builder;
+        private readonly StringBuilder builder;
 
         public string IndentString { get; }
 

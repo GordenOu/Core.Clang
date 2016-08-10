@@ -5,7 +5,7 @@ namespace Playground
 {
     public class IndentedCursorVisitor : CursorVisitor
     {
-        private IndentedStringBuilder builder;
+        private readonly IndentedStringBuilder builder;
 
         public IndentedCursorVisitor(IndentedStringBuilder builder)
         {

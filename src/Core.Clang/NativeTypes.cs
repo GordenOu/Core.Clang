@@ -26,6 +26,10 @@ namespace Core.Clang
         public uint Count;
     }
 
+    internal struct CXVirtualFileOverlayImpl { }
+
+    internal struct CXModuleMapDescriptorImpl { }
+
     internal struct CXIndexImpl { }
 
     internal struct CXTranslationUnitImpl { }
