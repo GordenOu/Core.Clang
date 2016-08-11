@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -119,13 +120,13 @@ namespace Playground
                     if (pointeeType.GetResultType().Kind != TypeKind.Invalid)
                     {
                         // Function pointer.
-                        if (usings.Any(syntax => syntax.Name.ToString() == "System"))
+                        if (usings.Any(syntax => syntax.Name.ToString() == nameof(System)))
                         {
-                            return "IntPtr";
+                            return nameof(IntPtr);
                         }
                         else
                         {
-                            return "System.IntPtr";
+                            return typeof(IntPtr).FullName;
                         }
                     }
                     else
@@ -281,7 +282,7 @@ namespace Playground
             var fields = cursor.GetChildren();
             Debug.Assert(fields.All(field => field.Kind == CursorKind.FieldDecl));
 
-            if (usings.Any(syntax => syntax.Name.ToString() == "System.Runtime.InteropServices"))
+            if (usings.Any(syntax => syntax.Name.ToString() == typeof(LayoutKind).Namespace))
             {
                 builder.AppendLine("[StructLayout(LayoutKind.Sequential)]");
             }
@@ -299,7 +300,7 @@ namespace Playground
                 var field = fields[i];
                 var fieldType = field.GetTypeInfo();
                 var cononicalType = fieldType.GetCanonicalType();
-                string fieldName = fields[i].GetSpelling();
+                string fieldName = field.GetSpelling();
                 string fieldTypeName = GetTypeName(fieldType, out suffix);
 
                 if (cononicalType.Kind == TypeKind.Pointer &&
@@ -320,6 +321,7 @@ namespace Playground
                     fieldName = '@' + fieldName;
                 }
 
+                // e.g. public fixed int a[3];
                 fieldDeclarations.Add($"public {fieldTypeName} {fieldName}{suffix};");
             }
             if (isUnsafe)
@@ -373,24 +375,28 @@ namespace Playground
                 {
                     var child = children[0];
 
-                    if (children[0].Kind == CursorKind.StructDecl || // e.g. typedef struct { } A;
-                        children[0].Kind == CursorKind.EnumDecl) // e.g. typedef enum { } A;
+                    if (child.Kind == CursorKind.StructDecl || // e.g. typedef struct { } A;
+                        child.Kind == CursorKind.EnumDecl) // e.g. typedef enum { } A;
                     {
                         return;
                     }
-                    else if (child.Kind == CursorKind.TypeRef) // e.g. typedef AImpl* A;
+                    else if (child.Kind == CursorKind.TypeRef) // e.g. typedef struct AImpl* A;
                     {
-                        string typeName = child.GetCursorReferenced().GetSpelling();
-                        string spelling = cursor.GetSpelling();
-
-                        /// Added in <see cref="VisitStructDeclaration(Cursor)"/>.
-                        Debug.Assert(knownTypes.ContainsKey(spelling));
-
-                        knownTypes[spelling] = typeName;
+                        string typeName = child.GetCursorReferenced().GetSpelling(); // AImpl
+                        string spelling = cursor.GetSpelling(); // A
+                        if (knownTypes.ContainsKey(spelling))
+                        {
+                            /// Added in <see cref="VisitStructDeclaration(Cursor)"/>.
+                            Debug.Assert(knownTypes[spelling] == typeName + '*');
+                        }
+                        else
+                        {
+                            BreakOrFail(spelling);
+                        }
                     }
                     else
                     {
-                        BreakOrFail(children[0].Kind.ToString());
+                        BreakOrFail(child.Kind.ToString());
                     }
                 }
                 else
@@ -404,7 +410,7 @@ namespace Playground
                     }
                     else
                     {
-                        BreakOrFail(children[0].Kind.ToString());
+                        BreakOrFail(underlyingType.Kind.ToString());
                     }
                 }
             }

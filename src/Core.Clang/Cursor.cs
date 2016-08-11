@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Core.Linq;
 
 namespace Core.Clang
@@ -1044,6 +1045,10 @@ namespace Core.Clang
         /// The strings representing the mangled symbols of the C++ constructor or destructor at
         /// the cursor.
         /// </returns>
+        [Unstable("3.8.1", seealso: new[]
+        {
+            "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXString.cpp"
+        })]
         public string[] GetCXXManglings()
         {
             ThrowIfDisposed();
@@ -1060,10 +1065,8 @@ namespace Core.Clang
                     var manglings = new string[ptr->Count];
                     manglings.SetValues(i =>
                     {
-                        using (var str = new String(ptr->Strings[i]))
-                        {
-                            return str.ToString();
-                        }
+                        var cString = NativeMethods.clang_getCString(ptr->Strings[i]);
+                        return Marshal.PtrToStringAnsi(new IntPtr(cString));
                     });
                     return manglings;
                 }

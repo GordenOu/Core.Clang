@@ -9,16 +9,6 @@ namespace Core.Clang.Tests
     public unsafe class VersionTests
     {
         [TestMethod]
-        public void ClangVersion()
-        {
-            var cxString = NativeMethods.clang_getClangVersion();
-            using (var str = new String(cxString))
-            {
-                Assert.AreEqual("clang version 3.8.1 (branches/release_38)", str.ToString());
-            }
-        }
-
-        [TestMethod]
         public void UnstableAttributesAreUpToDate()
         {
             var assembly = typeof(Index).GetTypeInfo().Assembly;

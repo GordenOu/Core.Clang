@@ -33,7 +33,10 @@ namespace Core.Clang.Tests
                    new[] { new UnsavedFile(TestFiles.Empty, source) },
                    TranslationUnitCreationOptions.DetailedPreprocessingRecord);
             var set = DiagnosticSet.FromTranslationUnit(translationUnit);
-            Assert.AreEqual(0u, set.GetNumDiagnostics());
+            if (set.GetNumDiagnostics() != 0)
+            {
+                Assert.Fail(set.GetDiagnostic(0).ToString());
+            }
             return translationUnit;
         }
 
