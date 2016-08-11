@@ -3,20 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8CE6CB8D-F6FC-4960-B774-E59EE9254021}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{8CE6CB8D-F6FC-4960-B774-E59EE9254021}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{506B09AB-CCC5-4F07-A2F1-D4934148EE9F}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Core.Clang", "src\Core.Clang\Core.Clang.xproj", "{549466A1-0A18-4B5B-ACED-A05DCE056BB5}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Core.Clang", "Source\Core.Clang\Core.Clang.xproj", "{549466A1-0A18-4B5B-ACED-A05DCE056BB5}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Playground", "src\Playground\Playground.xproj", "{35408A6C-F256-45AA-8BC0-EB4B22C5424F}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Playground", "Source\Playground\Playground.xproj", "{35408A6C-F256-45AA-8BC0-EB4B22C5424F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{679E0A24-ED6F-44F7-BDE0-1A23F68D7EFA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{679E0A24-ED6F-44F7-BDE0-1A23F68D7EFA}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Core.Clang.Tests", "test\Core.Clang.Tests\Core.Clang.Tests.xproj", "{CAE1B3B7-6CFC-47E6-9E2F-136DD0EE1D9E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Core.Clang.Tests", "Test\Core.Clang.Tests\Core.Clang.Tests.xproj", "{CAE1B3B7-6CFC-47E6-9E2F-136DD0EE1D9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

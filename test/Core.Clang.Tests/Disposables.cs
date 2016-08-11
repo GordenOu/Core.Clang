@@ -29,7 +29,7 @@ namespace Core.Clang.Tests
         {
             var translationUnit = Index.ParseTranslationUnit(
                    TestFiles.Empty,
-                   null,
+                   new[] { "-std=c++11" },
                    new[] { new UnsavedFile(TestFiles.Empty, source) },
                    TranslationUnitCreationOptions.DetailedPreprocessingRecord);
             var set = DiagnosticSet.FromTranslationUnit(translationUnit);
