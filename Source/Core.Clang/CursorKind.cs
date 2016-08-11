@@ -85,26 +85,19 @@
             CXCursorKind.CXCursor_OMPTaskLoopSimdDirective,
             CXCursorKind.CXCursor_OMPDistributeDirective,
 
-            CXCursorKind.CXCursor_UnexposedAttr,
             CXCursorKind.CXCursor_IBActionAttr,
             CXCursorKind.CXCursor_IBOutletAttr,
             CXCursorKind.CXCursor_IBOutletCollectionAttr,
             CXCursorKind.CXCursor_CXXFinalAttr,
             CXCursorKind.CXCursor_CXXOverrideAttr,
             CXCursorKind.CXCursor_AnnotateAttr,
-            CXCursorKind.CXCursor_AsmLabelAttr,
+
             CXCursorKind.CXCursor_PackedAttr,
             CXCursorKind.CXCursor_PureAttr,
             CXCursorKind.CXCursor_ConstAttr,
             CXCursorKind.CXCursor_NoDuplicateAttr,
-            CXCursorKind.CXCursor_CUDAConstantAttr,
-            CXCursorKind.CXCursor_CUDADeviceAttr,
-            CXCursorKind.CXCursor_CUDAGlobalAttr,
-            CXCursorKind.CXCursor_CUDAHostAttr,
-            CXCursorKind.CXCursor_CUDASharedAttr,
+
             CXCursorKind.CXCursor_VisibilityAttr,
-            CXCursorKind.CXCursor_DLLExport,
-            CXCursorKind.CXCursor_DLLImport,
 
             CXCursorKind.CXCursor_ModuleImportDecl,
             CXCursorKind.CXCursor_TypeAliasTemplateDecl
@@ -766,6 +759,55 @@
         /// the contents of a translation unit.
         /// </remarks>
         TranslationUnit = 300,
+
+        #region Attributes
+
+        /// <summary>
+        /// An attribute whose specific kind is not exposed via this interface.
+        /// </summary>
+        UnexposedAttr = 400,
+
+        /// <summary>
+        /// Assembly label.
+        /// </summary>
+        AsmLabelAttr = 407,
+
+        /// <summary>
+        /// "__constant__ ".
+        /// </summary>
+        CUDAConstantAttr = 412,
+
+        /// <summary>
+        /// "__device__ ".
+        /// </summary>
+        CUDADeviceAttr = 413,
+
+        /// <summary>
+        /// "__global__ ".
+        /// </summary>
+        CUDAGlobalAttr = 414,
+
+        /// <summary>
+        /// "__host__ ".
+        /// </summary>
+        CUDAHostAttr = 415,
+
+        /// <summary>
+        /// "__shared__ ".
+        /// </summary>
+        CUDASharedAttr = 416,
+
+        /// <summary>
+        /// "__declspec(dllexport)".
+        /// </summary>
+        DLLExport = 418,
+
+        /// <summary>
+        /// "__declspec(dllimport)".
+        /// </summary>
+        DLLImport = 419,
+
+        #endregion
 
         #region Preprocessing
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,13 +12,15 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Playground
 {
-    public class ClangCursorVisitor : CursorVisitor
+    internal class ClangCursorVisitor : CursorVisitor
     {
         private readonly IndentedStringBuilder builder;
 
         private readonly Dictionary<string, string> knownTypes;
 
         private readonly IReadOnlyList<UsingDirectiveSyntax> usings;
+
+        public ImmutableList<MethodDeclarationSyntax> Methods { get; private set; }
 
         public ClangCursorVisitor(IndentedStringBuilder builder)
         {
@@ -27,6 +30,7 @@ namespace Playground
             knownTypes = new Dictionary<string, string>();
             var syntaxTree = CSharpSyntaxTree.ParseText(builder.ToString());
             usings = syntaxTree.GetCompilationUnitRoot().Usings;
+            Methods = ImmutableList<MethodDeclarationSyntax>.Empty;
         }
 
         protected override ChildVisitResult Visit(Cursor cursor, Cursor parent)
@@ -43,6 +47,9 @@ namespace Playground
                         break;
                     case CursorKind.TypedefDecl:
                         VisitTypedefDeclaration(cursor);
+                        break;
+                    case CursorKind.FunctionDecl:
+                        VisitFunctionDeclaration(cursor);
                         break;
                     default:
                         break;
@@ -65,7 +72,7 @@ namespace Playground
 
         private string GetTypeName(TypeInfo info, out string suffix)
         {
-            suffix = string.Empty;
+            suffix = string.Empty; // For fixed size buffers.
             string typeName;
             switch (info.Kind)
             {
@@ -271,14 +278,6 @@ namespace Playground
             }
             knownTypes.Add(typeName, typeName);
 
-            string suffix = "Impl";
-            if (typeName.EndsWith(suffix)) // e.g. typedef struct AImpl* A;
-            {
-                builder.AppendLine($"internal struct {typeName} {{ }}");
-                knownTypes.Add(typeName.Remove(typeName.Length - suffix.Length), typeName + '*');
-                return;
-            }
-
             var fields = cursor.GetChildren();
             Debug.Assert(fields.All(field => field.Kind == CursorKind.FieldDecl));
 
@@ -293,14 +292,20 @@ namespace Playground
                 builder.AppendLine($"[{attribute}({argument})]");
             }
 
+            if (fields.Length == 0)
+            {
+                builder.AppendLine($"internal struct {typeName} {{ }}");
+                return;
+            }
+
             bool isUnsafe = false;
             var fieldDeclarations = new List<string>();
-            for (int i = 0; i < fields.Length; i++)
+            foreach (var field in fields)
             {
-                var field = fields[i];
                 var fieldType = field.GetTypeInfo();
                 var cononicalType = fieldType.GetCanonicalType();
                 string fieldName = field.GetSpelling();
+                string suffix;
                 string fieldTypeName = GetTypeName(fieldType, out suffix);
 
                 if (cononicalType.Kind == TypeKind.Pointer &&
@@ -324,6 +329,7 @@ namespace Playground
                 // e.g. public fixed int a[3];
                 fieldDeclarations.Add($"public {fieldTypeName} {fieldName}{suffix};");
             }
+
             if (isUnsafe)
             {
                 builder.AppendLine($"internal unsafe struct {typeName}");
@@ -333,10 +339,7 @@ namespace Playground
                 builder.AppendLine($"internal struct {typeName}");
             }
             builder.AppendLine("{");
-            {
-                var builder = this.builder.IncreaseIndent();
-                fieldDeclarations.Apply(builder.AppendLine);
-            }
+            fieldDeclarations.Apply(builder.IncreaseIndent().AppendLine);
             builder.AppendLine("}");
         }
 
@@ -375,28 +378,26 @@ namespace Playground
                 {
                     var child = children[0];
 
-                    if (child.Kind == CursorKind.StructDecl || // e.g. typedef struct { } A;
-                        child.Kind == CursorKind.EnumDecl) // e.g. typedef enum { } A;
+                    switch (child.Kind)
                     {
-                        return;
-                    }
-                    else if (child.Kind == CursorKind.TypeRef) // e.g. typedef struct AImpl* A;
-                    {
-                        string typeName = child.GetCursorReferenced().GetSpelling(); // AImpl
-                        string spelling = cursor.GetSpelling(); // A
-                        if (knownTypes.ContainsKey(spelling))
-                        {
-                            /// Added in <see cref="VisitStructDeclaration(Cursor)"/>.
-                            Debug.Assert(knownTypes[spelling] == typeName + '*');
-                        }
-                        else
-                        {
-                            BreakOrFail(spelling);
-                        }
-                    }
-                    else
-                    {
-                        BreakOrFail(child.Kind.ToString());
+                        case CursorKind.StructDecl: // e.g. typedef struct { } A;
+                        case CursorKind.EnumDecl: // e.g. typedef enum { } A;
+                            break;
+                        case CursorKind.TypeRef:
+                            string typeName = child.GetCursorReferenced().GetSpelling(); // AImpl
+                            string spelling = cursor.GetSpelling(); // A
+                            if (cursor.GetTypedefDeclUnderlyingType().Kind == TypeKind.Pointer)
+                            {
+                                knownTypes.Add(spelling, typeName + '*');
+                            }
+                            else
+                            {
+                                BreakOrFail(spelling);
+                            }
+                            break;
+                        default:
+                            BreakOrFail(child.Kind.ToString());
+                            break;
                     }
                 }
                 else
@@ -414,6 +415,51 @@ namespace Playground
                     }
                 }
             }
+        }
+
+        public void VisitFunctionDeclaration(Cursor cursor)
+        {
+            string functionName = cursor.GetSpelling();
+            string suffix;
+            string resultTypeName = GetTypeName(cursor.GetResultType(), out suffix);
+            var method = SyntaxFactory.MethodDeclaration(
+                SyntaxFactory.ParseTypeName(resultTypeName),
+                functionName);
+
+            var parameters = new List<string>();
+            foreach (var child in cursor.GetChildren())
+            {
+                if (child.Kind == CursorKind.ParmDecl)
+                {
+                    var parameterType = child.GetTypeInfo();
+                    if (parameterType.Kind == TypeKind.Void) // e.g. void foo(void);
+                    {
+                        break;
+                    }
+                    string typeName = GetTypeName(parameterType, out suffix);
+
+                    string parameterName = child.GetSpelling();
+                    if (string.IsNullOrEmpty(parameterName))
+                    {
+                        parameterName = $"arg{parameters.Count + 1}";
+                    }
+                    // Escape keywords
+                    if (SyntaxFacts.GetKeywordKind(parameterName) != SyntaxKind.None)
+                    {
+                        parameterName = '@' + parameterName;
+                    }
+
+                    parameters.Add($"{typeName} {parameterName}");
+                }
+            }
+
+            if (parameters.Count != 0)
+            {
+                var parameterList = SyntaxFactory.ParseParameterList(string.Join(",", parameters));
+                method = method.WithParameterList(parameterList);
+            }
+
+            Methods = Methods.Add(method);
         }
     }
 }

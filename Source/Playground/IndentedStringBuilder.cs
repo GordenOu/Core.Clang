@@ -23,9 +23,15 @@ namespace Playground
             : this(new StringBuilder(), string.Empty)
         { }
 
+        private IndentedStringBuilder next;
+
         public IndentedStringBuilder IncreaseIndent()
         {
-            return new IndentedStringBuilder(builder, IndentString + indent);
+            if (next == null)
+            {
+                next = new IndentedStringBuilder(builder, IndentString + indent);
+            }
+            return next;
         }
 
         public IndentedStringBuilder Append(string value)

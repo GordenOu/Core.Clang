@@ -20,6 +20,64 @@ namespace Core.Clang
             CXStringSet* set);
 
         [DllImport(dllName)]
+        public static extern ulong clang_getBuildSessionTimestamp();
+
+        [DllImport(dllName)]
+        public static extern CXVirtualFileOverlayImpl* clang_VirtualFileOverlay_create(
+            uint options);
+
+        [DllImport(dllName)]
+        public static extern CXErrorCode clang_VirtualFileOverlay_addFileMapping(
+            CXVirtualFileOverlayImpl* arg1,
+            sbyte* virtualPath,
+            sbyte* realPath);
+
+        [DllImport(dllName)]
+        public static extern CXErrorCode clang_VirtualFileOverlay_setCaseSensitivity(
+            CXVirtualFileOverlayImpl* arg1,
+            int caseSensitive);
+
+        [DllImport(dllName)]
+        public static extern CXErrorCode clang_VirtualFileOverlay_writeToBuffer(
+            CXVirtualFileOverlayImpl* arg1,
+            uint options,
+            sbyte** out_buffer_ptr,
+            uint* out_buffer_size);
+
+        [DllImport(dllName)]
+        public static extern void clang_free(
+            void* buffer);
+
+        [DllImport(dllName)]
+        public static extern void clang_VirtualFileOverlay_dispose(
+            CXVirtualFileOverlayImpl* arg1);
+
+        [DllImport(dllName)]
+        public static extern CXModuleMapDescriptorImpl* clang_ModuleMapDescriptor_create(
+            uint options);
+
+        [DllImport(dllName)]
+        public static extern CXErrorCode clang_ModuleMapDescriptor_setFrameworkModuleName(
+            CXModuleMapDescriptorImpl* arg1,
+            sbyte* name);
+
+        [DllImport(dllName)]
+        public static extern CXErrorCode clang_ModuleMapDescriptor_setUmbrellaHeader(
+            CXModuleMapDescriptorImpl* arg1,
+            sbyte* name);
+
+        [DllImport(dllName)]
+        public static extern CXErrorCode clang_ModuleMapDescriptor_writeToBuffer(
+            CXModuleMapDescriptorImpl* arg1,
+            uint options,
+            sbyte** out_buffer_ptr,
+            uint* out_buffer_size);
+
+        [DllImport(dllName)]
+        public static extern void clang_ModuleMapDescriptor_dispose(
+            CXModuleMapDescriptorImpl* arg1);
+
+        [DllImport(dllName)]
         public static extern CXIndexImpl* clang_createIndex(
             int excludeDeclarationsFromPCH,
             int displayDiagnostics);

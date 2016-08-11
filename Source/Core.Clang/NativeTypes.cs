@@ -26,12 +26,15 @@ namespace Core.Clang
         public uint Count;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     internal struct CXVirtualFileOverlayImpl { }
 
+    [StructLayout(LayoutKind.Sequential)]
     internal struct CXModuleMapDescriptorImpl { }
 
     internal struct CXIndexImpl { }
 
+    [StructLayout(LayoutKind.Sequential)]
     internal struct CXTranslationUnitImpl { }
 
     internal struct CXClientDataImpl { }
@@ -457,6 +460,7 @@ namespace Core.Clang
         CXLanguage_CPlusPlus
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     internal struct CXCursorSetImpl { }
 
     internal enum CXTypeKind
