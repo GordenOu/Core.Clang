@@ -372,47 +372,44 @@ namespace Playground
                     BreakOrFail(underlyingType.Kind.ToString());
                 }
             }
+            else if (children.Length == 1)
+            {
+                var child = children[0];
+
+                switch (child.Kind)
+                {
+                    case CursorKind.StructDecl: // e.g. typedef struct { } A;
+                    case CursorKind.EnumDecl: // e.g. typedef enum { } A;
+                        break;
+                    case CursorKind.TypeRef: // e.g. typedef struct AImpl* A; 
+                        string typeName = child.GetCursorReferenced().GetSpelling(); // AImpl
+                        string spelling = cursor.GetSpelling(); // A
+                        if (cursor.GetTypedefDeclUnderlyingType().Kind == TypeKind.Pointer)
+                        {
+                            knownTypes.Add(spelling, typeName + '*');
+                        }
+                        else
+                        {
+                            BreakOrFail(spelling);
+                        }
+                        break;
+                    default:
+                        BreakOrFail(child.Kind.ToString());
+                        break;
+                }
+            }
             else
             {
-                if (children.Length == 1)
+                var underlyingType = cursor.GetTypedefDeclUnderlyingType();
+                if (underlyingType.Kind == TypeKind.Pointer &&
+                    underlyingType.GetPointeeType().GetResultType().Kind != TypeKind.Invalid)
                 {
-                    var child = children[0];
-
-                    switch (child.Kind)
-                    {
-                        case CursorKind.StructDecl: // e.g. typedef struct { } A;
-                        case CursorKind.EnumDecl: // e.g. typedef enum { } A;
-                            break;
-                        case CursorKind.TypeRef:
-                            string typeName = child.GetCursorReferenced().GetSpelling(); // AImpl
-                            string spelling = cursor.GetSpelling(); // A
-                            if (cursor.GetTypedefDeclUnderlyingType().Kind == TypeKind.Pointer)
-                            {
-                                knownTypes.Add(spelling, typeName + '*');
-                            }
-                            else
-                            {
-                                BreakOrFail(spelling);
-                            }
-                            break;
-                        default:
-                            BreakOrFail(child.Kind.ToString());
-                            break;
-                    }
+                    // e.g. typedef void (*foo)();
+                    return;
                 }
                 else
                 {
-                    var underlyingType = cursor.GetTypedefDeclUnderlyingType();
-                    if (underlyingType.Kind == TypeKind.Pointer &&
-                        underlyingType.GetPointeeType().GetResultType().Kind != TypeKind.Invalid)
-                    {
-                        // e.g. typedef void (*foo)();
-                        return;
-                    }
-                    else
-                    {
-                        BreakOrFail(underlyingType.Kind.ToString());
-                    }
+                    BreakOrFail(underlyingType.Kind.ToString());
                 }
             }
         }

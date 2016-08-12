@@ -27,11 +27,7 @@ namespace Playground
 
         public IndentedStringBuilder IncreaseIndent()
         {
-            if (next == null)
-            {
-                next = new IndentedStringBuilder(builder, IndentString + indent);
-            }
-            return next;
+            return next ?? (next = new IndentedStringBuilder(builder, IndentString + indent));
         }
 
         public IndentedStringBuilder Append(string value)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace Core.Clang
@@ -171,6 +172,19 @@ namespace Core.Clang
                 Ptr,
                 offset);
             return SourceLocation.GetSpellingLocation(cxSourceLocation, TranslationUnit);
+        }
+
+        /// <summary>
+        /// Gets the module that contains the header file, if one exists.
+        /// </summary>
+        /// <returns>The module that contains the header file, if one exists.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Module GetModule()
+        {
+            ThrowIfDisposed();
+
+            var ptr = NativeMethods.clang_getModuleForFile(TranslationUnit.Ptr, Ptr);
+            return ptr == null ? null : new Module(ptr, TranslationUnit);
         }
     }
 }

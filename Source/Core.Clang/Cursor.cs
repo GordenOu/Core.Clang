@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Core.Linq;
@@ -1075,6 +1076,21 @@ namespace Core.Clang
                     NativeMethods.clang_disposeStringSet(ptr);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the module associated with a <see cref="CursorKind.ModuleImportDecl"/> cursor.
+        /// </summary>
+        /// <returns>
+        /// The module associated with a <see cref="CursorKind.ModuleImportDecl"/> cursor.
+        /// </returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Module GetModule()
+        {
+            ThrowIfDisposed();
+
+            var ptr = NativeMethods.clang_Cursor_getModule(Struct);
+            return ptr == null ? null : new Module(ptr, TranslationUnit);
         }
     }
 }

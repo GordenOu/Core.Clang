@@ -7,7 +7,7 @@ namespace Playground
     public class Program
     {
         /// <summary>
-        /// Generates the source code in Core.Clang/NativeTypes.cs.
+        /// Generates the source code in Core.Clang/NativeTypes.cs and Core.Clang/NativeMethods.cs.
         /// </summary>
         /// <param name="includePath">Path to LLVM/include/</param>
         /// <param name="nativeMethods">
@@ -52,7 +52,7 @@ namespace Playground
                 methodBuilder.AppendLine().AppendLine("[DllImport(dllName)]");
 
                 string resultType = method.ReturnType.ToString();
-                var methodName = method.Identifier.Text;
+                var methodName = method.Identifier.ToString();
                 var parameters = method.ParameterList.Parameters;
                 if (parameters.Count == 0)
                 {
@@ -64,7 +64,7 @@ namespace Playground
                     for (int i = 0; i < parameters.Count; i++)
                     {
                         string end = i == parameters.Count - 1 ? ");" : ",";
-                        methodBuilder.IncreaseIndent().AppendLine(parameters[i] + end);
+                        methodBuilder.IncreaseIndent().AppendLine(parameters[i].ToString() + end);
                     }
                 }
             }

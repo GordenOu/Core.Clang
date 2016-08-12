@@ -1,4 +1,6 @@
-﻿namespace Core.Clang
+﻿using System.ComponentModel;
+
+namespace Core.Clang
 {
     /// <summary>
     /// Describes the kind of entity that a cursor refers to.
@@ -99,7 +101,6 @@
 
             CXCursorKind.CXCursor_VisibilityAttr,
 
-            CXCursorKind.CXCursor_ModuleImportDecl,
             CXCursorKind.CXCursor_TypeAliasTemplateDecl
         })]
     public enum CursorKind
@@ -830,6 +831,16 @@
         /// A inclusion directive.
         /// </summary>
         InclusionDirective = 503,
+
+        #endregion
+
+        #region Extra Declarations
+
+        /// <summary>
+        /// A module import declaration.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        ModuleImportDecl = 600,
 
         #endregion
 
