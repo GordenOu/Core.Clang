@@ -3,7 +3,7 @@
 namespace Core.Clang.Tests
 {
     [TestClass]
-    public class CursorKindTests
+    public class CursorKindTests : ClangTests
     {
         [TestMethod]
         public void AssertCursorKindRanges()

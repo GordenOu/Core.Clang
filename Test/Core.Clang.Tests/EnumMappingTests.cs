@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Core.Clang.Tests
 {
     [TestClass]
-    public class EnumMappingTests
+    public class EnumMappingTests : ClangTests
     {
         [TestMethod]
         public void DefinesAllValuesAndMatchesNames()

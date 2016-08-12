@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Core.Clang.Tests
 {
     [TestClass]
-    public class IndexTests : IDisposable
+    public class IndexTests : ClangTests, IDisposable
     {
         private Index index;
 

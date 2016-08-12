@@ -6,6 +6,15 @@ namespace Playground
 {
     public class Program
     {
+        static Program()
+        {
+            var path = Environment.GetEnvironmentVariable(nameof(Path));
+            path = string.Join(Path.PathSeparator.ToString(),
+                Path.Combine(Native.LibClang.Restore.Program.LLVMDirectory, "bin"),
+                path);
+            Environment.SetEnvironmentVariable(nameof(Path), path);
+        }
+
         /// <summary>
         /// Generates the source code in Core.Clang/NativeTypes.cs and Core.Clang/NativeMethods.cs.
         /// </summary>

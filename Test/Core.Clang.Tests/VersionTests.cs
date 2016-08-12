@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Core.Clang.Tests
 {
     [TestClass]
-    public unsafe class VersionTests
+    public unsafe class VersionTests : ClangTests
     {
         [TestMethod]
         public void UnstableAttributesAreUpToDate()

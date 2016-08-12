@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Core.Clang.Tests
 {
     [TestClass]
-    public class CursorTests : IDisposable
+    public class CursorTests : ClangTests, IDisposable
     {
         private Disposables disposables;
 

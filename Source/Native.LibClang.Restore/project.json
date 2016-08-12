@@ -1,15 +1,10 @@
 ﻿{
   "buildOptions": {
-    "emitEntryPoint": true
+    "emitEntryPoint": true,
+    "platform": "x64"
   },
   "dependencies": {
-    "Core.Clang": {
-      "target": "project"
-    },
-    "Native.LibClang.Restore": {
-      "target": "project"
-    },
-    "Microsoft.CodeAnalysis.CSharp": "1.3.0"
+    "Native.LibClang": "3.8.1.1"
   },
   "frameworks": {
     "netcoreapp1.0": {
