@@ -14,14 +14,6 @@ namespace Native.LibClang.Restore
             return filePath;
         }
 
-        public static string LLVMDirectory => new FileInfo(GetFilePath())
-            .Directory
-            .Parent
-            .Parent
-            .CreateSubdirectory("Native")
-            .CreateSubdirectory("LLVM")
-            .FullName;
-
         public static void Main(string[] args)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -30,7 +22,15 @@ namespace Native.LibClang.Restore
                 using (var stream = assembly.GetManifestResourceStream("Native.LibClang.LLVM.zip"))
                 using (var zipArchive = new ZipArchive(stream))
                 {
-                    zipArchive.ExtractToDirectory(LLVMDirectory);
+                    var directory = new FileInfo(GetFilePath())
+                        .Directory
+                        .Parent
+                        .Parent
+                        .CreateSubdirectory("Native")
+                        .CreateSubdirectory("LLVM")
+                        .FullName;
+                    Directory.Delete(directory, recursive: true);
+                    zipArchive.ExtractToDirectory(directory);
                 }
             }
             Console.WriteLine("Yo~");

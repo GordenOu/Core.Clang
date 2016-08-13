@@ -6,9 +6,6 @@
     "Core.Clang": {
       "target": "project"
     },
-    "Native.LibClang.Restore": {
-      "target": "project"
-    },
     "Microsoft.CodeAnalysis.CSharp": "1.3.0"
   },
   "frameworks": {

@@ -1,16 +1,23 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Core.Clang;
 
 namespace Playground
 {
     public class Program
     {
+        private static string GetFilePath([CallerFilePath] string filePath = null)
+        {
+            return filePath;
+        }
+
         static Program()
         {
+            var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent.Parent;
             var path = Environment.GetEnvironmentVariable(nameof(Path));
             path = string.Join(Path.PathSeparator.ToString(),
-                Path.Combine(Native.LibClang.Restore.Program.LLVMDirectory, "bin"),
+                Path.Combine(solutionDirectory.FullName, "Native", "LLVM", "bin"),
                 path);
             Environment.SetEnvironmentVariable(nameof(Path), path);
         }
