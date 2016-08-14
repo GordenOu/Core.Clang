@@ -33,6 +33,11 @@ namespace Core.Clang.Tests
                 }
                 foreach (var name in Enum.GetNames(type))
                 {
+                    if (type == typeof(NameReferenceFlags) && name == "None")
+                    {
+                        continue;
+                    }
+
                     CollectionAssert.Contains(names, attribute.Prefix + name);
                 }
             }

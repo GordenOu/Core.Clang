@@ -612,5 +612,81 @@ namespace Core.Clang.Tests
                 Assert.IsFalse(string.IsNullOrEmpty(method.GetMangling()));
             }
         }
+
+        [TestMethod]
+        public void CPlusPlusMethods()
+        {
+            string source = "class A { mutable int a; };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("a;"));
+                var field = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.FieldDecl, field.Kind);
+                Assert.IsTrue(field.IsMutableField());
+            }
+
+            source = "class A { virtual void foo() const = 0; };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("foo"));
+                var method = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.CXXMethod, method.Kind);
+                Assert.IsTrue(method.IsPureVirtualMethod());
+                Assert.IsTrue(method.IsVirtualMethod());
+                Assert.IsTrue(method.IsConstMethod());
+            }
+
+            source = "class A { static void foo(); };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("foo"));
+                var method = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.CXXMethod, method.Kind);
+                Assert.IsTrue(method.IsStaticMethod());
+            }
+        }
+
+        [TestMethod]
+        public void TemplateCursors()
+        {
+            string source = "template<typename T> class A { }; template<> class A<int> { };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("class A"));
+                var template = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.ClassTemplate, template.Kind);
+                Assert.AreEqual(CursorKind.ClassDecl, template.GetTemplateCursorKind());
+
+                location = file.GetLocationFromOffset((uint)source.IndexOf("class A<int>"));
+                var specialization = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.ClassDecl, specialization.Kind);
+                Assert.AreEqual(template, specialization.GetSpecializedTemplate());
+            }
+        }
+
+        [TestMethod]
+        public void GetQualifierInReferenceName()
+        {
+            string source = "namespace A { int a; } int b = A::a;";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.LastIndexOf("a;"));
+                var cursor = empty.GetCursor(location);
+                var range1 = cursor.GetReferenceNameRange(NameReferenceFlags.None, 0);
+                Assert.AreEqual((uint)source.LastIndexOf("a;"), range1.GetStart().Offset);
+                Assert.AreEqual((uint)source.LastIndexOf("a;") + 1, range1.GetEnd().Offset);
+                var range2 = cursor.GetReferenceNameRange(NameReferenceFlags.WantQualifier, 0);
+                Assert.AreEqual((uint)source.IndexOf("A::a"), range2.GetStart().Offset);
+                Assert.AreEqual((uint)source.LastIndexOf("a;"), range2.GetEnd().Offset);
+                var range3 = cursor.GetReferenceNameRange(NameReferenceFlags.WantQualifier, 1);
+                Assert.AreEqual(range1, range3);
+            }
+        }
     }
 }

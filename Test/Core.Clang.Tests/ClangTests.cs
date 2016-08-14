@@ -11,7 +11,7 @@ namespace Core.Clang.Tests
             return filePath;
         }
 
-        public ClangTests()
+        static ClangTests()
         {
             var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent.Parent;
             var path = Environment.GetEnvironmentVariable(nameof(Path));

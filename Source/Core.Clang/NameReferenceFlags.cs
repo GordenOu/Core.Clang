@@ -10,6 +10,11 @@ namespace Core.Clang
     public enum NameReferenceFlags
     {
         /// <summary>
+        /// return the default spanning range;
+        /// </summary>
+        None = 0x0,
+
+        /// <summary>
         /// Include the nested-name-specifier, e.g. Foo:: in x.Foo::y, in the range.
         /// </summary>
         WantQualifier = 0x1,
