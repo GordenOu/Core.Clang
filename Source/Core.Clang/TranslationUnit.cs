@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using Core.Diagnostics;
 using Core.Linq;
 
@@ -305,6 +307,78 @@ namespace Core.Clang
 
             var cxCursor = NativeMethods.clang_getCursor(Ptr, location.Struct);
             return Cursor.Create(cxCursor, this);
+        }
+
+        /// <summary>
+        /// Tokenizes the source code described by the given range into raw lexical tokens.
+        /// </summary>
+        /// <param name="range">
+        /// The source range in which text should be tokenized. All of the tokens produced by
+        /// tokenization will fall within this source range.
+        /// </param>
+        /// <returns>
+        /// The array of tokens that occur within the given source range.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="range"/> is null.
+        /// </exception>
+        public Token[] Tokenize(SourceRange range)
+        {
+            Requires.NotNull(range, nameof(range));
+            ThrowIfDisposed();
+
+            CXToken* cxTokens;
+            uint numTokens;
+            NativeMethods.clang_tokenize(Ptr, range.Struct, &cxTokens, &numTokens);
+            try
+            {
+                var tokens = new Token[numTokens];
+                for (int i = 0; i < tokens.Length; i++)
+                {
+                    tokens[i] = new Token(cxTokens[i], this);
+                }
+                return tokens;
+            }
+            finally
+            {
+                if (cxTokens != null)
+                {
+                    NativeMethods.clang_disposeTokens(Ptr, cxTokens, numTokens);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Annotates the given set of tokens by providing cursors for each token that can be
+        /// mapped to a specific entity within the abstract syntax tree.
+        /// </summary>
+        /// <param name="tokens">The set of tokens to annotate.</param>
+        /// <returns>
+        /// An array of cursors, whose contents will be replaced with the cursors corresponding to
+        /// each token.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="tokens"/> is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="tokens"/> has null items.
+        /// </exception>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Cursor[] AnnotateTokens(IEnumerable<Token> tokens)
+        {
+            Requires.NotNull(tokens, nameof(tokens));
+            var array = tokens.ToArray();
+            Requires.NotNullItems(array, nameof(tokens));
+            ThrowIfDisposed();
+
+            int numTokens = array.Length;
+            var cxTokens = stackalloc CXToken[numTokens];
+            array.Apply((token, i) => cxTokens[i] = token.Struct);
+            var cxCursors = stackalloc CXCursor[numTokens];
+            NativeMethods.clang_annotateTokens(Ptr, cxTokens, (uint)numTokens, cxCursors);
+            var cursors = new Cursor[numTokens];
+            cursors.SetValues(i => Cursor.Create(cxCursors[i], this));
+            return cursors;
         }
     }
 }

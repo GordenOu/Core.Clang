@@ -87,5 +87,39 @@ namespace Core.Clang.Tests
             var entries = disposables.Add.GetResourceUsage();
             Assert.IsTrue(entries.Length != 0);
         }
+
+        [TestMethod]
+        public void Tokenization()
+        {
+            string source = "void f(int x); void g(int x) { f(x); }";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var range = SourceRange.Create(
+                    file.GetLocationFromOffset((uint)source.IndexOf("f(x)")),
+                    file.GetLocationFromOffset((uint)(source.IndexOf("f(x)") + 3)));
+                var tokens = empty.Tokenize(range);
+                Assert.AreEqual(4, tokens.Length);
+
+                Assert.AreEqual(TokenKind.Identifier, tokens[0].GetKind());
+                Assert.AreEqual("f", tokens[0].GetSpelling());
+                Assert.AreEqual(
+                    file.GetLocationFromOffset((uint)source.IndexOf("f(x)")),
+                    tokens[0].GetLocation());
+                Assert.AreEqual(
+                    (uint)source.IndexOf("f(x)"),
+                    tokens[0].GetExtent().GetStart().Offset);
+                Assert.AreEqual(
+                    (uint)source.IndexOf("f(x)") + 1,
+                    tokens[0].GetExtent().GetEnd().Offset);
+
+                Assert.AreEqual(TokenKind.Punctuation, tokens[1].GetKind());
+                Assert.AreEqual("(", tokens[1].GetSpelling());
+                Assert.AreEqual(TokenKind.Identifier, tokens[2].GetKind());
+                Assert.AreEqual("x", tokens[2].GetSpelling());
+                Assert.AreEqual(TokenKind.Punctuation, tokens[3].GetKind());
+                Assert.AreEqual(")", tokens[3].GetSpelling());
+            }
+        }
     }
 }
