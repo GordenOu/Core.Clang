@@ -28,12 +28,12 @@ namespace Core.Clang
     /// </remarks>
     public sealed unsafe class Cursor : IEquatable<Cursor>
     {
-        internal CXCursor Struct { get; private set; }
+        internal CXCursor Struct { get; }
 
         /// <summary>
         /// Gets the translation unit that a cursor originated from.
         /// </summary>
-        public TranslationUnit TranslationUnit { get; private set; }
+        public TranslationUnit TranslationUnit { get; }
 
         /// <summary>
         /// Gets the kind of the cursor.

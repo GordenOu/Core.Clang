@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Core.Clang.Tests
 {
     [TestClass]
-    public unsafe class SourceRangeTests : ClangTests, IDisposable
+    public class SourceRangeTests : ClangTests, IDisposable
     {
         private Disposables disposables;
 

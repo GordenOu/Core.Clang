@@ -11,7 +11,7 @@ namespace Core.Clang
     /// Use <see cref="GetStart"/> and <see cref="GetEnd"/> to retrieve the starting and end
     /// locations from a source range, respectively.
     /// </remarks>
-    public sealed unsafe class SourceRange : IEquatable<SourceRange>
+    public sealed class SourceRange : IEquatable<SourceRange>
     {
         internal CXSourceRange Struct { get; }
 

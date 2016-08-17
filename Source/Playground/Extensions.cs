@@ -36,7 +36,7 @@ namespace Playground
 
             var start = range.GetStart();
             var end = range.GetEnd();
-            var text = File.ReadAllText(start.SourceFile.GetName());
+            string text = File.ReadAllText(start.SourceFile.GetName());
             return text.Substring((int)start.Offset, (int)(end.Offset - start.Offset));
         }
     }

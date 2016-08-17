@@ -160,7 +160,7 @@ namespace Core.Clang.Tests
                     (uint)source.IndexOf("virtual void", classA.Length));
                 var cMethod = file.GetLocationFromOffset(
                     (uint)source.IndexOf("virtual void", (classA + classB).Length));
-                var dMethod = file.GetLocationFromOffset((uint)(source.LastIndexOf("virtual")));
+                var dMethod = file.GetLocationFromOffset((uint)source.LastIndexOf("virtual"));
 
                 var overridenCursors = empty.GetCursor(dMethod).GetOverriddenCursors();
                 Assert.AreEqual(2, overridenCursors.Length);

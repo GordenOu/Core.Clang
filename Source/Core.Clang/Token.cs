@@ -5,7 +5,7 @@ namespace Core.Clang
     /// <summary>
     /// Describes a single preprocessing token.
     /// </summary>
-    public unsafe sealed class Token
+    public sealed unsafe class Token
     {
         internal CXToken Struct { get; }
 

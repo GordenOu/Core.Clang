@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Clang.Tests
 {
-    internal unsafe class Disposables : ClangTests, IDisposable
+    internal class Disposables : ClangTests, IDisposable
     {
         public Index Index { get; }
 

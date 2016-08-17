@@ -74,7 +74,7 @@ namespace Core.Clang
         /// <returns></returns>
         public static TranslationUnitCreationOptions GetDefaultEditingOptions()
         {
-            var options = NativeMethods.clang_defaultEditingTranslationUnitOptions();
+            uint options = NativeMethods.clang_defaultEditingTranslationUnitOptions();
             return (TranslationUnitCreationOptions)options;
         }
 

@@ -22,7 +22,7 @@ namespace Native.LibClang.Restore
                 using (var stream = assembly.GetManifestResourceStream("Native.LibClang.LLVM.zip"))
                 using (var zipArchive = new ZipArchive(stream))
                 {
-                    var directory = new FileInfo(GetFilePath())
+                    string directory = new FileInfo(GetFilePath())
                         .Directory
                         .Parent
                         .Parent

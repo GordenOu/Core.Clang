@@ -69,7 +69,7 @@ namespace Core.Clang
         {
             ThrowIfDisposed();
 
-            return Equals(obj is TypeInfo);
+            return Equals(obj as TypeInfo);
         }
 
         /// <summary>

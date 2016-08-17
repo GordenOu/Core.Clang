@@ -15,7 +15,7 @@ namespace Playground
         static Program()
         {
             var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent.Parent;
-            var path = Environment.GetEnvironmentVariable(nameof(Path));
+            string path = Environment.GetEnvironmentVariable(nameof(Path));
             path = string.Join(Path.PathSeparator.ToString(),
                 Path.Combine(solutionDirectory.FullName, "Native", "LLVM", "bin"),
                 path);
@@ -68,7 +68,7 @@ namespace Playground
                 methodBuilder.AppendLine().AppendLine("[DllImport(dllName)]");
 
                 string resultType = method.ReturnType.ToString();
-                var methodName = method.Identifier.ToString();
+                string methodName = method.Identifier.ToString();
                 var parameters = method.ParameterList.Parameters;
                 if (parameters.Count == 0)
                 {

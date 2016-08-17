@@ -14,7 +14,7 @@ namespace Core.Clang.Tests
         static ClangTests()
         {
             var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent.Parent;
-            var path = Environment.GetEnvironmentVariable(nameof(Path));
+            string path = Environment.GetEnvironmentVariable(nameof(Path));
             path = string.Join(Path.PathSeparator.ToString(),
                 Path.Combine(solutionDirectory.FullName, "Native", "LLVM", "bin"),
                 path);

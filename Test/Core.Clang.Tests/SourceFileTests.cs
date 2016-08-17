@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Core.Clang.Tests
 {
     [TestClass]
-    public unsafe class SourceFileTests : ClangTests, IDisposable
+    public class SourceFileTests : ClangTests, IDisposable
     {
         private Disposables disposables;
 
@@ -76,7 +76,6 @@ namespace Core.Clang.Tests
         public void GetName()
         {
             var add = disposables.Add;
-            var multiply = disposables.Multiply;
 
             Assert.AreEqual(
                 TestFiles.CommonHeader,

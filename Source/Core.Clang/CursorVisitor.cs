@@ -12,7 +12,7 @@ namespace Core.Clang
     /// <summary>
     /// A class that does depth-first traversal on the Clang AST and visits each cursor.
     /// </summary>
-    public unsafe abstract class CursorVisitor
+    public abstract unsafe class CursorVisitor
     {
         /// <summary>
         /// Method invoked for each cursor found by a traversal.
@@ -51,12 +51,9 @@ namespace Core.Clang
             return NativeMethods.clang_visitChildren(
                 cursor.Struct,
                 Marshal.GetFunctionPointerForDelegate<CXCursorVisitor>(
-                    (cxCursor, parent, client_data) =>
-                    {
-                        return (CXChildVisitResult)Visit(
-                            Cursor.Create(cxCursor, cursor.TranslationUnit),
-                            Cursor.Create(parent, cursor.TranslationUnit));
-                    }),
+                    (cxCursor, parent, client_data) => (CXChildVisitResult)Visit(
+                        Cursor.Create(cxCursor, cursor.TranslationUnit),
+                        Cursor.Create(parent, cursor.TranslationUnit))),
                 null) != 0;
         }
     }

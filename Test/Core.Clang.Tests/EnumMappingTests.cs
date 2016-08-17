@@ -31,7 +31,7 @@ namespace Core.Clang.Tests
                         Assert.IsTrue(Enum.IsDefined(type, Enum.ToObject(type, value)));
                     }
                 }
-                foreach (var name in Enum.GetNames(type))
+                foreach (string name in Enum.GetNames(type))
                 {
                     if (type == typeof(NameReferenceFlags) && name == "None")
                     {

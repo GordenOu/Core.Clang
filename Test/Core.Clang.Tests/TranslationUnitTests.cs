@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Core.Clang.Tests
 {
     [TestClass]
-    public unsafe class TranslationUnitTests : ClangTests, IDisposable
+    public class TranslationUnitTests : ClangTests, IDisposable
     {
         private Disposables disposables;
 
@@ -61,7 +61,7 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void SaveAndLoad()
         {
-            var fileName = Path.GetTempFileName();
+            string fileName = Path.GetTempFileName();
             Assert.AreEqual(TranslationUnitSaveError.None, disposables.Add.TrySave(fileName));
             using (var add = disposables.Index.CreateTranslationUnit(fileName))
             {
