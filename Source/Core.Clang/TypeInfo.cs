@@ -369,11 +369,11 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Gets the number of template arguments for given class template specialization, or -1 if
+        /// Gets the number of template arguments for a class template specialization, or -1 if
         /// type <c>T</c> is not a class template specialization.
         /// </summary>
         /// <returns>
-        /// The number of template arguments for given class template specialization, or -1 if type
+        /// The number of template arguments for the class template specialization, or -1 if type
         /// <c>T</c> is not a class template specialization.
         /// </returns>
         /// <remarks>

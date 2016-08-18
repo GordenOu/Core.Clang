@@ -66,7 +66,7 @@ namespace Core.Clang.Diagnostics
             ThrowIfDisposed();
 
             var ptr = NativeMethods.clang_getDiagnosticInSet(Ptr, index);
-            return ptr == null ? null : new Diagnostic(ptr, this);
+            return ptr == null ? null : new Diagnostic(ptr, TranslationUnit);
         }
     }
 }

@@ -10,23 +10,19 @@ namespace Core.Clang.Diagnostics
     {
         internal CXDiagnosticImpl* Ptr { get; }
 
-        internal DiagnosticSet DiagnosticSet { get; }
+        internal TranslationUnit TranslationUnit { get; }
 
-        internal TranslationUnit TranslationUnit => DiagnosticSet.TranslationUnit;
-
-        internal Diagnostic(CXDiagnosticImpl* ptr, DiagnosticSet diagnosticSet)
+        internal Diagnostic(CXDiagnosticImpl* ptr, TranslationUnit translationUnit)
         {
             Debug.Assert(ptr != null);
-            Debug.Assert(diagnosticSet != null);
-            diagnosticSet.ThrowIfDisposed();
 
             Ptr = ptr;
-            DiagnosticSet = diagnosticSet;
+            TranslationUnit = translationUnit;
         }
 
         internal void ThrowIfDisposed()
         {
-            DiagnosticSet.ThrowIfDisposed();
+            TranslationUnit.ThrowIfDisposed();
         }
 
         private string ToString(uint options)
@@ -244,7 +240,7 @@ namespace Core.Clang.Diagnostics
         }
 
         /// <summary>
-        /// Gets the replacement information for a given fix-it.
+        /// Gets the replacement information for a fix-it.
         /// </summary>
         /// <param name="index">The zero-based index of the fix-it.</param>
         /// <param name="replacementRange">
