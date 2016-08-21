@@ -1,8 +1,5 @@
 ﻿{
   "testRunner": "xunit",
-  "buildOptions": {
-    "allowUnsafe": true
-  },
   "dependencies": {
     "Core.Clang": {
       "target": "project"

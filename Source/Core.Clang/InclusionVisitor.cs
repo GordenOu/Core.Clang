@@ -11,7 +11,7 @@ namespace Core.Clang
         CXClientDataImpl* client_data);
 
     /// <summary>
-    /// 
+    /// A class that visits the set of preprocessor inclusions in a translation unit.
     /// </summary>
     public abstract unsafe class InclusionVisitor
     {
