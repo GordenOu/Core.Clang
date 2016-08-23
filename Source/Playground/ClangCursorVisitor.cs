@@ -78,7 +78,7 @@ namespace Playground
             {
                 case TypeKind.Unexposed:
                     string spelling = info.GetTypeDeclaration().GetSpelling();
-                    if (string.IsNullOrEmpty(spelling)) // e.g. typedef struct { } A;
+                    if (string.IsNullOrEmpty(spelling)) // e.g., typedef struct { } A;
                     {
                         // Clear const qualifiers.
                         spelling = info.GetTypeDeclaration().GetTypeInfo().GetSpelling();
@@ -146,7 +146,7 @@ namespace Playground
                 case TypeKind.Typedef:
                     if (knownTypes.TryGetValue(info.GetSpelling(), out typeName))
                     {
-                        // e.g. typedef void* A;
+                        // e.g., typedef void* A;
                         return typeName;
                     }
                     else
@@ -159,12 +159,12 @@ namespace Playground
                     if (elementType.Kind == TypeKind.Pointer &&
                         elementType.GetPointeeType().Kind == TypeKind.Void)
                     {
-                        // e.g. struct A { void* a[3]; };
+                        // e.g., struct A { void* a[3]; };
                         return "fixed ulong";
                     }
                     else
                     {
-                        // e.g. struct A { int a[3]; };
+                        // e.g., struct A { int a[3]; };
                         string temp;
                         return "fixed " + GetTypeName(elementType, out temp);
                     }
@@ -181,7 +181,7 @@ namespace Playground
             builder.AppendLine();
 
             string typeName = cursor.GetSpelling();
-            if (string.IsNullOrEmpty(typeName)) // e.g. typedef enum { } A;
+            if (string.IsNullOrEmpty(typeName)) // e.g., typedef enum { } A;
             {
                 typeName = cursor.GetTypeInfo().GetSpelling();
             }
@@ -208,7 +208,7 @@ namespace Playground
                     string comma = i == constants.Length - 1 ? string.Empty : ",";
 
                     var children = constant.GetChildren();
-                    if (children.Length == 0) // e.g. enum A { A1 };
+                    if (children.Length == 0) // e.g., enum A { A1 };
                     {
                         builder.AppendLine(constantName + comma);
                     }
@@ -217,7 +217,7 @@ namespace Playground
                         var child = children[0];
                         switch (child.Kind)
                         {
-                            case CursorKind.IntegerLiteral: // e.g. enum A { A1 = 0 };
+                            case CursorKind.IntegerLiteral: // e.g., enum A { A1 = 0 };
                                 string literal = child.GetExtent().GetText();
                                 builder.AppendLine($"{constantName} = {literal}{comma}");
                                 break;
@@ -226,7 +226,7 @@ namespace Playground
                                 if (operands.Length == 2 &&
                                     operands.All(x => x.Kind == CursorKind.DeclRefExpr))
                                 {
-                                    // e.g. enum A { A1, A2, A3 = A1 | A2 };
+                                    // e.g., enum A { A1, A2, A3 = A1 | A2 };
                                     builder.AppendLine($"{constantName} =");
                                     string line = $"{operands[0].GetSpelling()} |";
                                     builder.IncreaseIndent().AppendLine(line);
@@ -237,7 +237,7 @@ namespace Playground
                                     operands.Length == 2 &&
                                     operands.All(x => x.Kind == CursorKind.IntegerLiteral))
                                 {
-                                    // e.g. enum A { A1 = 1 << 0 };
+                                    // e.g., enum A { A1 = 1 << 0 };
                                     goto case CursorKind.IntegerLiteral;
                                 }
                                 else
@@ -245,12 +245,12 @@ namespace Playground
                                     BreakOrFail(operands.Length.ToString());
                                 }
                                 break;
-                            case CursorKind.DeclRefExpr: // e.g. enum A { A1, A2 = A1 };
+                            case CursorKind.DeclRefExpr: // e.g., enum A { A1, A2 = A1 };
                                 string referenceName = child.GetSpelling();
                                 builder.AppendLine($"{constantName} = {referenceName}{comma}");
                                 break;
-                            case CursorKind.UnaryOperator: // e.g. enum A { A1 = -1 };
-                            case CursorKind.ParenExpr: // e.g. enum A { A1 = (1 << 0) };
+                            case CursorKind.UnaryOperator: // e.g., enum A { A1 = -1 };
+                            case CursorKind.ParenExpr: // e.g., enum A { A1 = (1 << 0) };
                                 goto case CursorKind.IntegerLiteral;
                             default:
                                 BreakOrFail(child.Kind.ToString());
@@ -272,7 +272,7 @@ namespace Playground
             builder.AppendLine();
 
             string typeName = cursor.GetSpelling();
-            if (string.IsNullOrEmpty(typeName)) // e.g. typedef struct { } A;
+            if (string.IsNullOrEmpty(typeName)) // e.g., typedef struct { } A;
             {
                 typeName = cursor.GetTypeInfo().GetSpelling();
             }
@@ -326,7 +326,7 @@ namespace Playground
                     fieldName = '@' + fieldName;
                 }
 
-                // e.g. public fixed int a[3];
+                // e.g., public fixed int a[3];
                 fieldDeclarations.Add($"public {fieldTypeName} {fieldName}{suffix};");
             }
 
@@ -355,7 +355,7 @@ namespace Playground
                 if (underlyingType.Kind == TypeKind.Pointer)
                 {
                     var pointeeType = underlyingType.GetPointeeType();
-                    if (pointeeType.Kind == TypeKind.Void) // e.g. typedef void* A;
+                    if (pointeeType.Kind == TypeKind.Void) // e.g., typedef void* A;
                     {
                         string spelling = cursor.GetSpelling();
                         string typename = spelling + "Impl";
@@ -378,10 +378,10 @@ namespace Playground
 
                 switch (child.Kind)
                 {
-                    case CursorKind.StructDecl: // e.g. typedef struct { } A;
-                    case CursorKind.EnumDecl: // e.g. typedef enum { } A;
+                    case CursorKind.StructDecl: // e.g., typedef struct { } A;
+                    case CursorKind.EnumDecl: // e.g., typedef enum { } A;
                         break;
-                    case CursorKind.TypeRef: // e.g. typedef struct AImpl* A; 
+                    case CursorKind.TypeRef: // e.g., typedef struct AImpl* A; 
                         string typeName = child.GetCursorReferenced().GetSpelling(); // AImpl
                         string spelling = cursor.GetSpelling(); // A
                         if (cursor.GetTypedefDeclUnderlyingType().Kind == TypeKind.Pointer)
@@ -404,7 +404,7 @@ namespace Playground
                 if (underlyingType.Kind == TypeKind.Pointer &&
                     underlyingType.GetPointeeType().GetResultType().Kind != TypeKind.Invalid)
                 {
-                    // e.g. typedef void (*foo)();
+                    // e.g., typedef void (*foo)();
                     return;
                 }
                 else
@@ -429,7 +429,7 @@ namespace Playground
                 if (child.Kind == CursorKind.ParmDecl)
                 {
                     var parameterType = child.GetTypeInfo();
-                    if (parameterType.Kind == TypeKind.Void) // e.g. void foo(void);
+                    if (parameterType.Kind == TypeKind.Void) // e.g., void foo(void);
                     {
                         break;
                     }
