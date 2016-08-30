@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using Core.Diagnostics;
 using Core.Linq;
 
@@ -40,20 +41,26 @@ namespace Core.Clang
             Requires.NotNull(translationUnit, nameof(translationUnit));
             translationUnit.ThrowIfDisposed();
 
-            NativeMethods.clang_getInclusions(
-                translationUnit.Ptr,
-                Marshal.GetFunctionPointerForDelegate<CXInclusionVisitor>(
-                    (included_file, inclusion_stack, include_len, client_data) =>
-                    {
-                        var inclusionStack = new SourceLocation[include_len];
-                        inclusionStack.SetValues(i => SourceLocation.GetSpellingLocation(
-                            inclusion_stack[i],
-                            translationUnit));
-                        VisitInclusion(
-                            new SourceFile(included_file, translationUnit),
-                            inclusionStack);
-                    }),
-                null);
+            CXInclusionVisitor visitor =
+                (included_file, inclusion_stack, include_len, client_data) =>
+                {
+                    var inclusionStack = new SourceLocation[include_len];
+                    inclusionStack.SetValues(i => SourceLocation.GetSpellingLocation(
+                        inclusion_stack[i],
+                        translationUnit));
+                    VisitInclusion(new SourceFile(included_file, translationUnit), inclusionStack);
+                };
+            try
+            {
+                NativeMethods.clang_getInclusions(
+                    translationUnit.Ptr,
+                    Marshal.GetFunctionPointerForDelegate(visitor),
+                    null);
+            }
+            finally
+            {
+                GC.KeepAlive(visitor);
+            }
         }
     }
 }

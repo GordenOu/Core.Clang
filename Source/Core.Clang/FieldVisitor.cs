@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using Core.Diagnostics;
 
 namespace Core.Clang
@@ -29,21 +30,29 @@ namespace Core.Clang
         {
             Requires.NotNull(typeInfo, nameof(typeInfo));
 
-            return NativeMethods.clang_Type_visitFields(
-                typeInfo.Struct,
-                Marshal.GetFunctionPointerForDelegate<CXFieldVisitor>(
-                    (C, client_data) =>
-                    {
-                        if (VisitField(Cursor.Create(C, typeInfo.TranslationUnit)))
-                        {
-                            return CXVisitorResult.CXVisit_Continue;
-                        }
-                        else
-                        {
-                            return CXVisitorResult.CXVisit_Break;
-                        }
-                    }),
-                null) != 0;
+            var translationUnit = typeInfo.TranslationUnit;
+            CXFieldVisitor visitor = (C, client_data) =>
+            {
+                if (VisitField(Cursor.Create(C, translationUnit)))
+                {
+                    return CXVisitorResult.CXVisit_Continue;
+                }
+                else
+                {
+                    return CXVisitorResult.CXVisit_Break;
+                }
+            };
+            try
+            {
+                return NativeMethods.clang_Type_visitFields(
+                    typeInfo.Struct,
+                    Marshal.GetFunctionPointerForDelegate(visitor),
+                    null) != 0;
+            }
+            finally
+            {
+                GC.KeepAlive(visitor);
+            }
         }
     }
 }

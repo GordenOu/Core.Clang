@@ -38,26 +38,27 @@ namespace Core.Clang
             Requires.NotNull(file, nameof(file));
             cursor.ThrowIfDisposed();
 
+            visit visitor = (context, arg2, arg3) =>
+            {
+                if (Visit(
+                    Cursor.Create(arg2, cursor.TranslationUnit),
+                    SourceRange.Create(arg3, cursor.TranslationUnit)))
+                {
+                    return CXVisitorResult.CXVisit_Continue;
+                }
+                else
+                {
+                    return CXVisitorResult.CXVisit_Break;
+                }
+            };
             var result = NativeMethods.clang_findReferencesInFile(
                 cursor.Struct,
                 file.Ptr,
                 new CXCursorAndRangeVisitor
                 {
-                    visit = Marshal.GetFunctionPointerForDelegate<visit>(
-                        (context, arg2, arg3) =>
-                        {
-                            if (Visit(
-                                Cursor.Create(arg2, cursor.TranslationUnit),
-                                SourceRange.Create(arg3, cursor.TranslationUnit)))
-                            {
-                                return CXVisitorResult.CXVisit_Continue;
-                            }
-                            else
-                            {
-                                return CXVisitorResult.CXVisit_Break;
-                            }
-                        })
+                    visit = Marshal.GetFunctionPointerForDelegate(visitor)
                 });
+            GC.KeepAlive(visitor);
 
             switch (result)
             {
@@ -90,26 +91,27 @@ namespace Core.Clang
             Requires.NotNull(file, nameof(file));
             translationUnit.ThrowIfDisposed();
 
+            visit visitor = (context, arg2, arg3) =>
+            {
+                if (Visit(
+                    Cursor.Create(arg2, translationUnit),
+                    SourceRange.Create(arg3, translationUnit)))
+                {
+                    return CXVisitorResult.CXVisit_Continue;
+                }
+                else
+                {
+                    return CXVisitorResult.CXVisit_Break;
+                }
+            };
             var result = NativeMethods.clang_findIncludesInFile(
                 translationUnit.Ptr,
                 file.Ptr,
                 new CXCursorAndRangeVisitor
                 {
-                    visit = Marshal.GetFunctionPointerForDelegate<visit>(
-                        (context, arg2, arg3) =>
-                        {
-                            if (Visit(
-                                Cursor.Create(arg2, translationUnit),
-                                SourceRange.Create(arg3, translationUnit)))
-                            {
-                                return CXVisitorResult.CXVisit_Continue;
-                            }
-                            else
-                            {
-                                return CXVisitorResult.CXVisit_Break;
-                            }
-                        })
+                    visit = Marshal.GetFunctionPointerForDelegate(visitor)
                 });
+            GC.KeepAlive(visitor);
 
             switch (result)
             {

@@ -48,13 +48,24 @@ namespace Core.Clang
             Requires.NotNull(cursor, nameof(cursor));
             cursor.ThrowIfDisposed();
 
-            return NativeMethods.clang_visitChildren(
-                cursor.Struct,
-                Marshal.GetFunctionPointerForDelegate<CXCursorVisitor>(
-                    (cxCursor, parent, client_data) => (CXChildVisitResult)Visit(
-                        Cursor.Create(cxCursor, cursor.TranslationUnit),
-                        Cursor.Create(parent, cursor.TranslationUnit))),
-                null) != 0;
+            var translationUnit = cursor.TranslationUnit;
+            CXCursorVisitor visitor = (cxCursor, parent, client_data) =>
+            {
+                return (CXChildVisitResult)Visit(
+                    Cursor.Create(cxCursor, translationUnit),
+                    Cursor.Create(parent, translationUnit));
+            };
+            try
+            {
+                return NativeMethods.clang_visitChildren(
+                    cursor.Struct,
+                    Marshal.GetFunctionPointerForDelegate(visitor),
+                    null) != 0;
+            }
+            finally
+            {
+                GC.KeepAlive(visitor);
+            }
         }
     }
 }
