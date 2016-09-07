@@ -37,6 +37,14 @@ namespace Core.Clang.Tests
                     {
                         continue;
                     }
+                    if (type == typeof(EvaluationResultKind) && name == "StringLiteral")
+                    {
+                        continue;
+                    }
+                    if (type == typeof(EvaluationResultKind) && name == "Unexposed")
+                    {
+                        continue;
+                    }
 
                     CollectionAssert.Contains(names, attribute.Prefix + name);
                 }

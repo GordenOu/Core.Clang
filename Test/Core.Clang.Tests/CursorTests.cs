@@ -83,9 +83,33 @@ namespace Core.Clang.Tests
         }
 
         [TestMethod]
+        public void HasAttribute()
+        {
+            string source = "[[deprecated]] void foo() { }";
+            var empty = disposables.Index.ParseTranslationUnit(
+                TestFiles.Empty,
+                new[] { "-std=c++14" },
+                new[]
+                {
+                    new UnsavedFile(TestFiles.Empty, source)
+                },
+                options: TranslationUnitCreationOptions.DetailedPreprocessingRecord);
+            try
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var sb = empty.GetCursor(file.GetLocation(1, 3));
+                Assert.IsTrue(empty.GetCursor(file.GetLocation(1, 16)).HasAttribute());
+            }
+            finally
+            {
+                empty.Dispose();
+            }
+        }
+
+        [TestMethod]
         public void LinkageKinds()
         {
-            string source = "void a() { int b; } static int d; namespace { int c; } ";
+            string source = "void a() { int b; } static int d; namespace { int c; }";
             using (var empty = disposables.WriteToEmpty(source))
             {
                 var file = empty.GetFile(TestFiles.Empty);
@@ -358,6 +382,36 @@ namespace Core.Clang.Tests
         }
 
         [TestMethod]
+        public void CustomFunctionLikeMacro()
+        {
+            string source = "#define Add(a, b) a + b";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var cursor = empty.GetCursor(file.GetLocation(1, 9));
+                Assert.AreEqual(CursorKind.MacroDefinition, cursor.Kind);
+                Assert.IsTrue(cursor.IsFunctionLikeMacro());
+                Assert.IsFalse(cursor.IsBuiltinMacro());
+            }
+        }
+
+        [TestMethod]
+        public void InlineFunction()
+        {
+            string source = "inline void foo() { } void bar() { }";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var cursor = empty.GetCursor(file.GetLocation(1, 9));
+                Assert.AreEqual(CursorKind.FunctionDecl, cursor.Kind);
+                Assert.IsTrue(cursor.IsInlinedFunction());
+                cursor = empty.GetCursor(file.GetLocation(1, 23));
+                Assert.AreEqual(CursorKind.FunctionDecl, cursor.Kind);
+                Assert.IsFalse(cursor.IsInlinedFunction());
+            }
+        }
+
+        [TestMethod]
         public void GetFieldOffset()
         {
             string source = "struct A { int a; int b; };";
@@ -616,7 +670,47 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void CPlusPlusMethods()
         {
-            string source = "class A { mutable int a; };";
+            string source = "class A { A(int a) { } };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("A("));
+                var constructor = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.Constructor, constructor.Kind);
+                Assert.IsTrue(constructor.IsConvertingConstructor());
+            }
+
+            source = "class A { A(A& a) { } };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("A("));
+                var constructor = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.Constructor, constructor.Kind);
+                Assert.IsTrue(constructor.IsCopyConstructor());
+            }
+
+            source = "class A { A() { } };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("A("));
+                var constructor = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.Constructor, constructor.Kind);
+                Assert.IsTrue(constructor.IsDefaultConstructor());
+            }
+
+            source = "class A { A(A&& a) { } };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("A("));
+                var constructor = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.Constructor, constructor.Kind);
+                Assert.IsTrue(constructor.IsMoveConstructor());
+            }
+
+            source = "class A { mutable int a; };";
             using (var empty = disposables.WriteToEmpty(source))
             {
                 var file = empty.GetFile(TestFiles.Empty);
@@ -626,16 +720,14 @@ namespace Core.Clang.Tests
                 Assert.IsTrue(field.IsMutableField());
             }
 
-            source = "class A { virtual void foo() const = 0; };";
+            source = "class A { A() = default; };";
             using (var empty = disposables.WriteToEmpty(source))
             {
                 var file = empty.GetFile(TestFiles.Empty);
-                var location = file.GetLocationFromOffset((uint)source.IndexOf("foo"));
-                var method = empty.GetCursor(location);
-                Assert.AreEqual(CursorKind.CXXMethod, method.Kind);
-                Assert.IsTrue(method.IsPureVirtualMethod());
-                Assert.IsTrue(method.IsVirtualMethod());
-                Assert.IsTrue(method.IsConstMethod());
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("A("));
+                var constructor = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.Constructor, constructor.Kind);
+                Assert.IsTrue(constructor.IsDefaultedMethod());
             }
 
             source = "class A { static void foo(); };";
@@ -686,6 +778,32 @@ namespace Core.Clang.Tests
                 Assert.AreEqual((uint)source.LastIndexOf("a;"), range2.GetEnd().Offset);
                 var range3 = cursor.GetReferenceNameRange(NameReferenceFlags.WantQualifier, 1);
                 Assert.AreEqual(range1, range3);
+            }
+        }
+
+        [TestMethod]
+        public void EvaluateExpressionValue()
+        {
+            string source = "int a = 1; float b = 2; const char* c = \"3\";";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+
+                var location = file.GetLocationFromOffset((uint)source.LastIndexOf("a ="));
+                EvaluationResultKind kind;
+                object result = empty.GetCursor(location).Evaluate(out kind);
+                Assert.AreEqual(EvaluationResultKind.Int, kind);
+                Assert.AreEqual(1, result);
+
+                location = file.GetLocationFromOffset((uint)source.LastIndexOf("b ="));
+                result = empty.GetCursor(location).Evaluate(out kind);
+                Assert.AreEqual(EvaluationResultKind.Float, kind);
+                Assert.AreEqual(2.0, result);
+
+                location = file.GetLocationFromOffset((uint)source.LastIndexOf("c ="));
+                result = empty.GetCursor(location).Evaluate(out kind);
+                Assert.AreEqual(EvaluationResultKind.StringLiteral, kind);
+                Assert.AreEqual("3", result);
             }
         }
     }

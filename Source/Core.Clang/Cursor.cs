@@ -122,6 +122,17 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Determines whether the cursor has any attributes.
+        /// </summary>
+        /// <returns>true if the cursor has any attributes.</returns>
+        public bool HasAttribute()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_Cursor_hasAttrs(Struct) != 0;
+        }
+
+        /// <summary>
         /// Gets the linkage of the entity referred to.
         /// </summary>
         /// <returns>The linkage of the entity referred to.</returns>
@@ -629,6 +640,39 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Determines whether the cursor is a function like macro.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsFunctionLikeMacro()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_Cursor_isMacroFunctionLike(Struct) != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the cursor is a builtin macro.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsBuiltinMacro()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_Cursor_isMacroBuiltin(Struct) != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the cursor is an inline function declaration.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsInlinedFunction()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_Cursor_isFunctionInlined(Struct) != 0;
+        }
+
+        /// <summary>
         /// Gets the return type associated with the cursor.
         /// </summary>
         /// <returns>
@@ -1046,7 +1090,7 @@ namespace Core.Clang
         /// The strings representing the mangled symbols of the C++ constructor or destructor at
         /// the cursor.
         /// </returns>
-        [Unstable("3.8.1", seealso: new[]
+        [Unstable("3.9.0", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXString.cpp"
         })]
@@ -1094,6 +1138,50 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Determines if a if a C++ constructor is a converting constructor.
+        /// </summary>
+        /// <returns>true if the cursor is a converting C++ constructor.</returns>
+        public bool IsConvertingConstructor()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_CXXConstructor_isConvertingConstructor(Struct) != 0;
+        }
+
+        /// <summary>
+        /// Determines if a if a C++ constructor is a copy constructor.
+        /// </summary>
+        /// <returns>true if the cursor is a copy C++ constructor.</returns>
+        public bool IsCopyConstructor()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_CXXConstructor_isCopyConstructor(Struct) != 0;
+        }
+
+        /// <summary>
+        /// Determines if a if a C++ constructor is the default constructor.
+        /// </summary>
+        /// <returns>true if the cursor is the default C++ constructor.</returns>
+        public bool IsDefaultConstructor()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_CXXConstructor_isDefaultConstructor(Struct) != 0;
+        }
+
+        /// <summary>
+        /// Determines if a if a C++ constructor is a move constructor.
+        /// </summary>
+        /// <returns>true if the cursor is a move C++ constructor.</returns>
+        public bool IsMoveConstructor()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_CXXConstructor_isMoveConstructor(Struct) != 0;
+        }
+
+        /// <summary>
         /// Determines if a C++ field is declared 'mutable'.
         /// </summary>
         /// <returns>true if the cursor is a mutable C++ field.</returns>
@@ -1102,6 +1190,17 @@ namespace Core.Clang
             ThrowIfDisposed();
 
             return NativeMethods.clang_CXXField_isMutable(Struct) != 0;
+        }
+
+        /// <summary>
+        /// Determines if a if a C++ method is declared '= default'.
+        /// </summary>
+        /// <returns>true if the cursor is a C++ method is declared '= default'.</returns>
+        public bool IsDefaultedMethod()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_CXXMethod_isDefaulted(Struct) != 0;
         }
 
         /// <summary>
@@ -1243,6 +1342,50 @@ namespace Core.Clang
                 (uint)flags,
                 pieceIndex);
             return SourceRange.Create(cxSourceRange, TranslationUnit);
+        }
+
+        /// <summary>
+        /// If the cursor is a statement declaration tries to evaluate the statement, if it's a
+        /// variable, tries to evaluate its initializer, into its corresponding type.
+        /// </summary>
+        /// <param name="resultKind">The kind of the evaluation result.</param>
+        /// <returns>The value of the evaluation result, or its string representation.</returns>
+        public object Evaluate(out EvaluationResultKind resultKind)
+        {
+            resultKind = EvaluationResultKind.Unexposed;
+            object result = null;
+
+            var ptr = NativeMethods.clang_Cursor_Evaluate(Struct);
+            if (ptr != null)
+            {
+                try
+                {
+                    var kind = NativeMethods.clang_EvalResult_getKind(ptr);
+                    resultKind = (EvaluationResultKind)kind;
+                    switch (kind)
+                    {
+                        case CXEvalResultKind.CXEval_Int:
+                            result = NativeMethods.clang_EvalResult_getAsInt(ptr);
+                            break;
+                        case CXEvalResultKind.CXEval_Float:
+                            result = NativeMethods.clang_EvalResult_getAsDouble(ptr);
+                            break;
+                        default:
+                            var cString = NativeMethods.clang_EvalResult_getAsStr(ptr);
+                            if (cString != null)
+                            {
+                                result = Marshal.PtrToStringAnsi(new IntPtr(cString));
+                            }
+                            break;
+                    }
+                }
+                finally
+                {
+                    NativeMethods.clang_EvalResult_dispose(ptr);
+                }
+            }
+
+            return result;
         }
     }
 }

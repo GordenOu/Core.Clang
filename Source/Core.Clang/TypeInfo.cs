@@ -76,7 +76,7 @@ namespace Core.Clang
         /// Gets the hash code for this <see cref="TypeInfo"/>.
         /// </summary>
         /// <returns>A hash code for the current <see cref="TypeInfo"/>.</returns>
-        [Unstable(version: "3.8.1", seealso: new[]
+        [Unstable(version: "3.9.0", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXType.cpp"
         })]
@@ -261,6 +261,21 @@ namespace Core.Clang
             ThrowIfDisposed();
 
             return NativeMethods.clang_getArraySize(Struct);
+        }
+
+        /// <summary>
+        /// Gets the type named by the qualified-id.
+        /// </summary>
+        /// <returns>
+        /// The type named by the qualified-id, or an invalid type if the type is a  non-elaborated
+        /// type.
+        /// </returns>
+        public TypeInfo GetNamedType()
+        {
+            ThrowIfDisposed();
+
+            var cxType = NativeMethods.clang_Type_getNamedType(Struct);
+            return new TypeInfo(cxType, TranslationUnit);
         }
 
         /// <summary>

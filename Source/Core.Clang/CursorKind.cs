@@ -912,6 +912,15 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Determines whether the cursor kind represents a attribute.
+        /// </summary>
+        /// <returns>true if the cursor kind represents a statement.</returns>
+        public static bool IsAttribute(this CursorKind kind)
+        {
+            return NativeMethods.clang_isAttribute((CXCursorKind)kind) != 0;
+        }
+
+        /// <summary>
         /// Determines whether the cursor kind is invalid.
         /// </summary>
         /// <returns>true if the cursor kind is invalid.</returns>

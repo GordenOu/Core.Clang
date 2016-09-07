@@ -89,6 +89,13 @@ namespace Core.Clang.Tests
         [DataRow("class A { };", 0, nameof(TypeInfo.IsPODType), true, null)]
         [DataRow("int a[1];", 0, nameof(TypeInfo.GetArrayElementType), TypeKind.Int, "get_Kind")]
         [DataRow("int a[1];", 0, nameof(TypeInfo.GetArraySize), 1L, null)]
+        [DataRow("struct A { }; struct A a;", 14, "get_Kind", TypeKind.Elaborated, null)]
+        [DataRow(
+            "struct A { }; struct A a;",
+            14,
+            nameof(TypeInfo.GetNamedType),
+            TypeKind.Record,
+            "get_Kind")]
         [DataRow(
             "class A { }; int A::* b;", 18,
             nameof(TypeInfo.GetClassType),
