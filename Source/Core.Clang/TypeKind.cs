@@ -169,6 +169,11 @@
         /// </summary>
         Dependent = 26,
 
+        /// <summary>
+        /// '__float128'.
+        /// </summary>
+        Float128 = 30,
+
         #endregion
 
         /// <summary>
@@ -258,6 +263,14 @@
         /// initializer is attached, or if the initializer is type-dependent, there is no deduced
         /// type and an auto type is canonical. In the latter case, it is also a dependent type.
         /// </remarks>
-        Auto = 118
+        Auto = 118,
+
+        /// <summary>
+        /// Represents a type that was referred to using an elaborated type keyword.
+        /// </summary>
+        /// <remarks>
+        /// E.g., struct S, or via a qualified name, e.g., N::M::type, or both.
+        /// </remarks>
+        Elaborated = 119
     }
 }

@@ -145,7 +145,8 @@ namespace Core.Clang
         CXTranslationUnit_CXXChainedPCH = 0x20,
         CXTranslationUnit_SkipFunctionBodies = 0x40,
         CXTranslationUnit_IncludeBriefCommentsInCodeCompletion = 0x80,
-        CXTranslationUnit_CreatePreambleOnFirstParse = 0x100
+        CXTranslationUnit_CreatePreambleOnFirstParse = 0x100,
+        CXTranslationUnit_KeepGoing = 0x200
     }
 
     internal enum CXSaveTranslationUnit_Flags
@@ -314,7 +315,8 @@ namespace Core.Clang
         CXCursor_ObjCBoolLiteralExpr = 145,
         CXCursor_ObjCSelfExpr = 146,
         CXCursor_OMPArraySectionExpr = 147,
-        CXCursor_LastExpr = CXCursor_OMPArraySectionExpr,
+        CXCursor_ObjCAvailabilityCheckExpr = 148,
+        CXCursor_LastExpr = CXCursor_ObjCAvailabilityCheckExpr,
         CXCursor_FirstStmt = 200,
         CXCursor_UnexposedStmt = 200,
         CXCursor_LabelStmt = 201,
@@ -378,7 +380,16 @@ namespace Core.Clang
         CXCursor_OMPTaskLoopDirective = 258,
         CXCursor_OMPTaskLoopSimdDirective = 259,
         CXCursor_OMPDistributeDirective = 260,
-        CXCursor_LastStmt = CXCursor_OMPDistributeDirective,
+        CXCursor_OMPTargetEnterDataDirective = 261,
+        CXCursor_OMPTargetExitDataDirective = 262,
+        CXCursor_OMPTargetParallelDirective = 263,
+        CXCursor_OMPTargetParallelForDirective = 264,
+        CXCursor_OMPTargetUpdateDirective = 265,
+        CXCursor_OMPDistributeParallelForDirective = 266,
+        CXCursor_OMPDistributeParallelForSimdDirective = 267,
+        CXCursor_OMPDistributeSimdDirective = 268,
+        CXCursor_OMPTargetParallelForSimdDirective = 269,
+        CXCursor_LastStmt = CXCursor_OMPTargetParallelForSimdDirective,
         CXCursor_TranslationUnit = 300,
         CXCursor_FirstAttr = 400,
         CXCursor_UnexposedAttr = 400,
@@ -411,8 +422,9 @@ namespace Core.Clang
         CXCursor_LastPreprocessing = CXCursor_InclusionDirective,
         CXCursor_ModuleImportDecl = 600,
         CXCursor_TypeAliasTemplateDecl = 601,
+        CXCursor_StaticAssert = 602,
         CXCursor_FirstExtraDecl = CXCursor_ModuleImportDecl,
-        CXCursor_LastExtraDecl = CXCursor_TypeAliasTemplateDecl,
+        CXCursor_LastExtraDecl = CXCursor_StaticAssert,
         CXCursor_OverloadCandidate = 700
     }
 
@@ -495,6 +507,7 @@ namespace Core.Clang
         CXType_ObjCId = 27,
         CXType_ObjCClass = 28,
         CXType_ObjCSel = 29,
+        CXType_Float128 = 30,
         CXType_FirstBuiltin = CXType_Void,
         CXType_LastBuiltin = CXType_ObjCSel,
         CXType_Complex = 100,
@@ -515,7 +528,8 @@ namespace Core.Clang
         CXType_VariableArray = 115,
         CXType_DependentSizedArray = 116,
         CXType_MemberPointer = 117,
-        CXType_Auto = 118
+        CXType_Auto = 118,
+        CXType_Elaborated = 119
     }
 
     internal enum CXCallingConv
@@ -532,6 +546,9 @@ namespace Core.Clang
         CXCallingConv_X86_64Win64 = 10,
         CXCallingConv_X86_64SysV = 11,
         CXCallingConv_X86VectorCall = 12,
+        CXCallingConv_Swift = 13,
+        CXCallingConv_PreserveMost = 14,
+        CXCallingConv_PreserveAll = 15,
         CXCallingConv_Invalid = 100,
         CXCallingConv_Unexposed = 200
     }
@@ -614,7 +631,8 @@ namespace Core.Clang
         CXObjCPropertyAttr_atomic = 0x100,
         CXObjCPropertyAttr_weak = 0x200,
         CXObjCPropertyAttr_strong = 0x400,
-        CXObjCPropertyAttr_unsafe_unretained = 0x800
+        CXObjCPropertyAttr_unsafe_unretained = 0x800,
+        CXObjCPropertyAttr_class = 0x1000
     }
 
     internal enum CXObjCDeclQualifierKind
@@ -728,6 +746,19 @@ namespace Core.Clang
         CXCompletionContext_NaturalLanguage = 1 << 21,
         CXCompletionContext_Unknown = ((1 << 22) - 1)
     }
+
+    internal enum CXEvalResultKind
+    {
+        CXEval_Int = 1,
+        CXEval_Float = 2,
+        CXEval_ObjCStrLiteral = 3,
+        CXEval_StrLiteral = 4,
+        CXEval_CFStr = 5,
+        CXEval_Other = 6,
+        CXEval_UnExposed = 0
+    }
+
+    internal struct CXEvalResultImpl { }
 
     internal struct CXRemappingImpl { }
 

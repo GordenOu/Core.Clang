@@ -462,6 +462,10 @@ namespace Core.Clang
             CXCursorKind arg1);
 
         [DllImport(dllName)]
+        public static extern uint clang_Cursor_hasAttrs(
+            CXCursor C);
+
+        [DllImport(dllName)]
         public static extern uint clang_isInvalid(
             CXCursorKind arg1);
 
@@ -638,6 +642,18 @@ namespace Core.Clang
             CXType T);
 
         [DllImport(dllName)]
+        public static extern uint clang_Cursor_isMacroFunctionLike(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern uint clang_Cursor_isMacroBuiltin(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern uint clang_Cursor_isFunctionInlined(
+            CXCursor C);
+
+        [DllImport(dllName)]
         public static extern uint clang_isVolatileQualifiedType(
             CXType T);
 
@@ -656,6 +672,10 @@ namespace Core.Clang
         [DllImport(dllName)]
         public static extern CXString clang_getDeclObjCTypeEncoding(
             CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_Type_getObjCEncoding(
+            CXType type);
 
         [DllImport(dllName)]
         public static extern CXString clang_getTypeKindSpelling(
@@ -704,6 +724,10 @@ namespace Core.Clang
 
         [DllImport(dllName)]
         public static extern long clang_getArraySize(
+            CXType T);
+
+        [DllImport(dllName)]
+        public static extern CXType clang_Type_getNamedType(
             CXType T);
 
         [DllImport(dllName)]
@@ -932,7 +956,27 @@ namespace Core.Clang
             uint Index);
 
         [DllImport(dllName)]
+        public static extern uint clang_CXXConstructor_isConvertingConstructor(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern uint clang_CXXConstructor_isCopyConstructor(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern uint clang_CXXConstructor_isDefaultConstructor(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern uint clang_CXXConstructor_isMoveConstructor(
+            CXCursor C);
+
+        [DllImport(dllName)]
         public static extern uint clang_CXXField_isMutable(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern uint clang_CXXMethod_isDefaulted(
             CXCursor C);
 
         [DllImport(dllName)]
@@ -1136,6 +1180,30 @@ namespace Core.Clang
             CXTranslationUnitImpl* tu,
             IntPtr visitor,
             CXClientDataImpl* client_data);
+
+        [DllImport(dllName)]
+        public static extern CXEvalResultImpl* clang_Cursor_Evaluate(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern CXEvalResultKind clang_EvalResult_getKind(
+            CXEvalResultImpl* E);
+
+        [DllImport(dllName)]
+        public static extern int clang_EvalResult_getAsInt(
+            CXEvalResultImpl* E);
+
+        [DllImport(dllName)]
+        public static extern double clang_EvalResult_getAsDouble(
+            CXEvalResultImpl* E);
+
+        [DllImport(dllName)]
+        public static extern sbyte* clang_EvalResult_getAsStr(
+            CXEvalResultImpl* E);
+
+        [DllImport(dllName)]
+        public static extern void clang_EvalResult_dispose(
+            CXEvalResultImpl* E);
 
         [DllImport(dllName)]
         public static extern CXRemappingImpl* clang_getRemappings(

@@ -42,6 +42,7 @@ namespace Core.Clang
             CXCursorKind.CXCursor_ObjCBoolLiteralExpr,
             CXCursorKind.CXCursor_ObjCSelfExpr,
             CXCursorKind.CXCursor_OMPArraySectionExpr,
+            CXCursorKind.CXCursor_ObjCAvailabilityCheckExpr,
 
             CXCursorKind.CXCursor_GCCAsmStmt,
             CXCursorKind.CXCursor_ObjCAtTryStmt,
@@ -86,6 +87,15 @@ namespace Core.Clang
             CXCursorKind.CXCursor_OMPTaskLoopDirective,
             CXCursorKind.CXCursor_OMPTaskLoopSimdDirective,
             CXCursorKind.CXCursor_OMPDistributeDirective,
+            CXCursorKind.CXCursor_OMPTargetEnterDataDirective,
+            CXCursorKind.CXCursor_OMPTargetExitDataDirective,
+            CXCursorKind.CXCursor_OMPTargetParallelDirective,
+            CXCursorKind.CXCursor_OMPTargetParallelForDirective,
+            CXCursorKind.CXCursor_OMPTargetUpdateDirective,
+            CXCursorKind.CXCursor_OMPDistributeParallelForDirective,
+            CXCursorKind.CXCursor_OMPDistributeParallelForSimdDirective,
+            CXCursorKind.CXCursor_OMPDistributeSimdDirective,
+            CXCursorKind.CXCursor_OMPTargetParallelForSimdDirective,
 
             CXCursorKind.CXCursor_IBActionAttr,
             CXCursorKind.CXCursor_IBOutletAttr,
@@ -573,7 +583,7 @@ namespace Core.Clang
         CXXDeleteExpr = 135,
 
         /// <summary>
-        /// A unary expression.
+        /// A unary expression (noexcept, sizeof, or other traits).
         /// </summary>
         UnaryExpr = 136,
 
@@ -841,6 +851,11 @@ namespace Core.Clang
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         ModuleImportDecl = 600,
+
+        /// <summary>
+        /// A static_assert node.
+        /// </summary>
+        StaticAssert = 602,
 
         #endregion
 
