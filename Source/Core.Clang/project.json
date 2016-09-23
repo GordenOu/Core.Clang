@@ -5,7 +5,7 @@
     "xmlDoc": true
   },
   "dependencies": {
-    "Core.Extensions": "0.4.1-alpha1"
+    "Core.Extensions": "0.4.1"
   },
   "frameworks": {
     "netstandard1.6": {
