@@ -4,14 +4,14 @@
     "platform": "x64"
   },
   "dependencies": {
-    "Native.LibClang": "3.9.0"
+    "Native.LibClang": "3.9.1"
   },
   "frameworks": {
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {
           "type": "platform",
-          "version": "1.0.0"
+          "version": "1.0.1"
         }
       },
       "imports": "dnxcore50"

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using Core.Clang;
+using Core.Linq;
 
 namespace Playground
 {
@@ -26,11 +27,15 @@ namespace Playground
         /// Generates the source code in Core.Clang/NativeTypes.cs and Core.Clang/NativeMethods.cs.
         /// </summary>
         /// <param name="includePath">Path to LLVM/include/</param>
+        /// <param name="systemIncludePaths">Paths to system header files.</param>
         /// <param name="nativeMethods">
         /// The generated contents in Core.Clang/NativeMethods.cs.
         /// </param>
         /// <returns>The generated contents in Core.Clang/NativeTypes.cs.</returns>
-        private static string ImportNativeTypes(string includePath, out string nativeMethods)
+        private static string ImportNativeTypes(
+            string includePath,
+            string[] systemIncludePaths,
+            out string nativeMethods)
         {
             var builder = new IndentedStringBuilder()
                 .AppendLine("using System;")
@@ -41,7 +46,9 @@ namespace Playground
             var visitor = new ClangCursorVisitor(builder.IncreaseIndent());
 
             string fileName = Path.Combine(includePath, "clang-c", "index.h");
-            var args = new[] { "-v", "-I" + includePath };
+            var args = systemIncludePaths.ToList(path => "-isystem" + path);
+            args.Add("-v");
+            args.Add("-I" + includePath);
             using (var index = new Index(true, true))
             using (var translationUnit = index.ParseTranslationUnit(fileName, args))
             {

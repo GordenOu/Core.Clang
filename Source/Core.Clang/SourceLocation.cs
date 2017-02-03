@@ -147,7 +147,7 @@ namespace Core.Clang
         /// Gets the hash code for this <see cref="SourceLocation"/>.
         /// </summary>
         /// <returns>A hash code for the current <see cref="SourceLocation"/>.</returns>
-        [Unstable(version: "3.9.0", seealso: new[]
+        [Unstable(version: "3.9.1", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXSourceLocation.cpp"
         })]

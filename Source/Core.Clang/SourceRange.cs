@@ -11,7 +11,7 @@ namespace Core.Clang
     /// Use <see cref="GetStart"/> and <see cref="GetEnd"/> to retrieve the starting and end
     /// locations from a source range, respectively.
     /// </remarks>
-    public sealed class SourceRange : IEquatable<SourceRange>
+    public sealed unsafe class SourceRange : IEquatable<SourceRange>
     {
         internal CXSourceRange Struct { get; }
 
@@ -108,6 +108,8 @@ namespace Core.Clang
         /// </returns>
         public override bool Equals(object obj)
         {
+            ThrowIfDisposed();
+
             return Equals(obj as SourceRange);
         }
 
@@ -115,13 +117,19 @@ namespace Core.Clang
         /// Gets the hash code for this <see cref="SourceRange"/>.
         /// </summary>
         /// <returns>The hash code for this <see cref="SourceRange"/>.</returns>
-        [Unstable(version: "3.9.0", seealso: new[]
+        [Unstable(version: "3.9.1", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXSourceLocation.cpp"
         })]
         public override int GetHashCode()
         {
-            return Struct.GetHashCode();
+            ThrowIfDisposed();
+
+            var cxSourceRange = Struct;
+            return cxSourceRange.ptr_data[0].GetHashCode() ^
+                cxSourceRange.ptr_data[1].GetHashCode() ^
+                cxSourceRange.begin_int_data.GetHashCode() ^
+                cxSourceRange.end_int_data.GetHashCode();
         }
 
         /// <summary>

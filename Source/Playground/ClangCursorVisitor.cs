@@ -142,6 +142,7 @@ namespace Playground
                     }
                 case TypeKind.Record:
                 case TypeKind.Enum:
+                case TypeKind.Elaborated:
                     goto case TypeKind.Unexposed;
                 case TypeKind.Typedef:
                     if (knownTypes.TryGetValue(info.GetSpelling(), out typeName))

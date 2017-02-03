@@ -1090,7 +1090,7 @@ namespace Core.Clang
         /// The strings representing the mangled symbols of the C++ constructor or destructor at
         /// the cursor.
         /// </returns>
-        [Unstable("3.9.0", seealso: new[]
+        [Unstable("3.9.1", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXString.cpp"
         })]

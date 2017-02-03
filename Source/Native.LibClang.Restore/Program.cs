@@ -27,7 +27,6 @@ namespace Native.LibClang.Restore
                         .Parent
                         .Parent
                         .CreateSubdirectory("Native")
-                        .CreateSubdirectory("LLVM")
                         .FullName;
                     Directory.Delete(directory, recursive: true);
                     zipArchive.ExtractToDirectory(directory);

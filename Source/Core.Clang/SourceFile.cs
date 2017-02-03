@@ -80,7 +80,7 @@ namespace Core.Clang
         /// Gets the hash code for this <see cref="SourceFile"/>.
         /// </summary>
         /// <returns>A hash code for the current <see cref="SourceFile"/>.</returns>
-        [Unstable(version: "3.9.0", seealso: new[]
+        [Unstable(version: "3.9.1", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CIndex.cpp",
             "https://github.com/llvm-mirror/llvm/blob/master/include/llvm/Support/FileSystem.h"
