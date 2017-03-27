@@ -1,4 +1,4 @@
-# Core.Clang
+ # Core.Clang
 
 |Windows|Ubuntu|
 |:--:|:--:|
@@ -25,7 +25,7 @@ using (var translationUnit = index.ParseTranslationUnit(fileName, new[] { "-v" }
 }
 ```
 
-#Remarks
+# Remarks
 This project ignores:
 - x86
 - CLS compliance
