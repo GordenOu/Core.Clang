@@ -306,8 +306,7 @@ namespace Playground
                 var fieldType = field.GetTypeInfo();
                 var cononicalType = fieldType.GetCanonicalType();
                 string fieldName = field.GetSpelling();
-                string suffix;
-                string fieldTypeName = GetTypeName(fieldType, out suffix);
+                string fieldTypeName = GetTypeName(fieldType, out string suffix);
 
                 if (cononicalType.Kind == TypeKind.Pointer &&
                     cononicalType.GetPointeeType().GetResultType().Kind == TypeKind.Invalid)
@@ -418,8 +417,7 @@ namespace Playground
         public void VisitFunctionDeclaration(Cursor cursor)
         {
             string functionName = cursor.GetSpelling();
-            string suffix;
-            string resultTypeName = GetTypeName(cursor.GetResultType(), out suffix);
+            string resultTypeName = GetTypeName(cursor.GetResultType(), out string suffix);
             var method = SyntaxFactory.MethodDeclaration(
                 SyntaxFactory.ParseTypeName(resultTypeName),
                 functionName);

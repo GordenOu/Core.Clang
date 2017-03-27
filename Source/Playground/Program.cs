@@ -13,6 +13,10 @@ namespace Playground
             return filePath;
         }
 
+        private static string nativeTypesPath;
+
+        private static string nativeMethodsPath;
+
         static Program()
         {
             var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent.Parent;
@@ -21,6 +25,10 @@ namespace Playground
                 Path.Combine(solutionDirectory.FullName, "Native", "LLVM", "bin"),
                 path);
             Environment.SetEnvironmentVariable(nameof(Path), path);
+            nativeTypesPath = Path.Combine(
+                solutionDirectory.FullName, "Source", "Core.Clang", "NativeTypes.cs");
+            nativeMethodsPath = Path.Combine(
+                solutionDirectory.FullName, "Source", "Core.Clang", "NativeMethods.cs");
         }
 
         /// <summary>
@@ -32,10 +40,9 @@ namespace Playground
         /// The generated contents in Core.Clang/NativeMethods.cs.
         /// </param>
         /// <returns>The generated contents in Core.Clang/NativeTypes.cs.</returns>
-        private static string ImportNativeTypes(
+        private static (string nativeTypes, string nativeMethods) ImportNativeTypesAndMethods(
             string includePath,
-            string[] systemIncludePaths,
-            out string nativeMethods)
+            string[] systemIncludePaths)
         {
             var builder = new IndentedStringBuilder()
                 .AppendLine("using System;")
@@ -93,13 +100,22 @@ namespace Playground
             }
             builder.IncreaseIndent().AppendLine("}");
             builder.AppendLine("}");
-            nativeMethods = builder.ToString();
+            string nativeMethods = builder.ToString();
 
-            return nativeTypes;
+            return (nativeTypes: nativeTypes, nativeMethods: nativeMethods);
         }
 
         public static void Main(string[] args)
         {
+            var (nativeTypes, nativeMethods) = ImportNativeTypesAndMethods(
+                includePath: @"C:\Program Files\LLVM\include\",
+                systemIncludePaths: new[]
+                {
+                    @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\include\",
+                    @"C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\ucrt"
+                });
+            Console.WriteLine(File.ReadAllText(nativeTypesPath) == nativeTypes);
+            Console.WriteLine(File.ReadAllText(nativeMethodsPath) == nativeMethods);
             Console.WriteLine("Yo~");
         }
     }

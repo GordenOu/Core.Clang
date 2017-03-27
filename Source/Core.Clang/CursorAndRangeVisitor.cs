@@ -9,7 +9,10 @@ namespace Core.Clang
     /// </summary>
     public abstract unsafe class CursorAndRangeVisitor
     {
-        private delegate CXVisitorResult visit(void* context, CXCursor cursor, CXSourceRange range);
+        private delegate CXVisitorResult visit(
+            void* context,
+            CXCursor cursor,
+            CXSourceRange range);
 
         /// <summary>
         /// Visitor callback that will receive pairs of Cursor/SourceRange for each 

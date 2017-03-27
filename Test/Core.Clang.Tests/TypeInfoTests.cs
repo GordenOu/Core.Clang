@@ -125,31 +125,29 @@ namespace Core.Clang.Tests
         [DataTestMethod]
         [DataRow(
             "int a;", 0,
-            nameof(TypeInfo.TryGetAlignOf), new object[] { null },
-            null, null, 4L)]
+            nameof(TypeInfo.TryGetAlignOf), null,
+            null, 4L)]
         [DataRow(
             "int a;", 0,
-            nameof(TypeInfo.TryGetSizeOf), new object[] { null },
-            null, null, 4L)]
+            nameof(TypeInfo.TryGetSizeOf), null,
+            null, 4L)]
         [DataRow(
             "struct A { int a; int b; };", 0,
-            nameof(TypeInfo.TryGetOffsetOf), new object[] { "a", null },
-            null, null, 0L)]
+            nameof(TypeInfo.TryGetOffsetOf), new object[] { "a" },
+            null, 0L)]
         [DataRow(
             "struct A { int a; int b; };", 0,
-            nameof(TypeInfo.TryGetOffsetOf), new object[] { "b", null },
-            null, null, 32L)]
-        public void TestMethodsWithOneOutParameter(
+            nameof(TypeInfo.TryGetOffsetOf), new object[] { "b" },
+            null, 32L)]
+        public void TypeInfoTestMethodsReturningTuplePairs(
             string source,
             int offset,
             string methodName,
             object[] parameters,
-            object expected,
-            string resultAdapter,
-            object outParameter)
+            TypeLayoutError? expected1,
+            long expected2)
         {
-            TestMethods(source, offset, methodName, parameters, expected, resultAdapter);
-            Assert.AreEqual(outParameter, parameters.Last());
+            TestMethods(source, offset, methodName, parameters, (expected1, expected2), null);
         }
     }
 }

@@ -421,15 +421,14 @@ namespace Core.Clang.Tests
                 var location = file.GetLocationFromOffset((uint)source.IndexOf('a'));
                 var declaration = empty.GetCursor(location);
                 Assert.AreEqual(CursorKind.FieldDecl, declaration.Kind);
-                long offset;
-                var error = declaration.TryGetOffsetOfField(out offset);
+                var (error, offset) = declaration.TryGetOffsetOfField();
                 Assert.IsNull(error);
                 Assert.AreEqual(0, offset);
 
                 location = file.GetLocationFromOffset((uint)source.IndexOf('b'));
                 declaration = empty.GetCursor(location);
                 Assert.AreEqual(CursorKind.FieldDecl, declaration.Kind);
-                error = declaration.TryGetOffsetOfField(out offset);
+                (error, offset) = declaration.TryGetOffsetOfField();
                 Assert.IsNull(error);
                 Assert.AreEqual(32, offset);
             }
@@ -784,25 +783,33 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void EvaluateExpressionValue()
         {
-            string source = "int a = 1; float b = 2; const char* c = \"3\";";
+            string source = "int a = -1; unsigned b = 1; float c = 2; const char* d = \"3\";";
             using (var empty = disposables.WriteToEmpty(source))
             {
                 var file = empty.GetFile(TestFiles.Empty);
 
                 var location = file.GetLocationFromOffset((uint)source.LastIndexOf("a ="));
-                EvaluationResultKind kind;
-                object result = empty.GetCursor(location).Evaluate(out kind);
+                var (kind, result) = empty.GetCursor(location).Evaluate();
                 Assert.AreEqual(EvaluationResultKind.Int, kind);
-                Assert.AreEqual(1, result);
+                Assert.IsInstanceOfType(result, typeof(long));
+                Assert.AreEqual(-1L, result);
 
                 location = file.GetLocationFromOffset((uint)source.LastIndexOf("b ="));
-                result = empty.GetCursor(location).Evaluate(out kind);
-                Assert.AreEqual(EvaluationResultKind.Float, kind);
-                Assert.AreEqual(2.0, result);
+                (kind, result) = empty.GetCursor(location).Evaluate();
+                Assert.AreEqual(EvaluationResultKind.Int, kind);
+                Assert.IsInstanceOfType(result, typeof(ulong));
+                Assert.AreEqual(1ul, result);
 
                 location = file.GetLocationFromOffset((uint)source.LastIndexOf("c ="));
-                result = empty.GetCursor(location).Evaluate(out kind);
+                (kind, result) = empty.GetCursor(location).Evaluate();
+                Assert.AreEqual(EvaluationResultKind.Float, kind);
+                Assert.IsInstanceOfType(result, typeof(double));
+                Assert.AreEqual(2.0, result);
+
+                location = file.GetLocationFromOffset((uint)source.LastIndexOf("d ="));
+                (kind, result) = empty.GetCursor(location).Evaluate();
                 Assert.AreEqual(EvaluationResultKind.StringLiteral, kind);
+                Assert.IsInstanceOfType(result, typeof(string));
                 Assert.AreEqual("3", result);
             }
         }

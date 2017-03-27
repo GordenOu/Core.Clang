@@ -76,7 +76,7 @@ namespace Core.Clang
         /// Gets the hash code for this <see cref="TypeInfo"/>.
         /// </summary>
         /// <returns>A hash code for the current <see cref="TypeInfo"/>.</returns>
-        [Unstable(version: "3.9.1", seealso: new[]
+        [Unstable(version: "4.0.0", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXType.cpp"
         })]
@@ -281,8 +281,8 @@ namespace Core.Clang
         /// <summary>
         /// Gets the alignment of a type in bytes as per C++ [expr.alignof] standard.
         /// </summary>
-        /// <param name="align">The alignment of a type in bytes.</param>
         /// <returns>
+        /// error:
         /// <para>
         /// If the type declaration is invalid, <see cref="TypeLayoutError.Invalid"/> is returned.
         /// </para>
@@ -298,13 +298,15 @@ namespace Core.Clang
         /// If the type declaration is not a constant size type, 
         /// <see cref="TypeLayoutError.NotConstantSize"/> is returned.
         /// </para>
+        /// <para>align: The alignment of a type in bytes.</para>
         /// </returns>
-        public TypeLayoutError? TryGetAlignOf(out long align)
+        public (TypeLayoutError? error, long align) TryGetAlignOf()
         {
             ThrowIfDisposed();
 
-            align = NativeMethods.clang_Type_getAlignOf(Struct);
-            return align < 0 ? (TypeLayoutError?)align : null;
+            long align = NativeMethods.clang_Type_getAlignOf(Struct);
+            var error = align < 0 ? (TypeLayoutError?)align : null;
+            return (error: error, align: align);
         }
 
         /// <summary>
@@ -325,8 +327,8 @@ namespace Core.Clang
         /// <summary>
         /// Gets the size of a type in bytes as per C++ [expr.sizeof] standard.
         /// </summary>
-        /// <param name="size">The alignment of a type in bytes.</param>
         /// <returns>
+        /// error:
         /// <para>
         /// If the type declaration is invalid, <see cref="TypeLayoutError.Invalid"/> is returned.
         /// </para>
@@ -338,13 +340,15 @@ namespace Core.Clang
         /// If the type declaration is a dependent type, <see cref="TypeLayoutError.Dependent"/> is
         /// returned.
         /// </para>
+        /// <para>size: The alignment of a type in bytes.</para>
         /// </returns>
-        public TypeLayoutError? TryGetSizeOf(out long size)
+        public (TypeLayoutError? error, long size) TryGetSizeOf()
         {
             ThrowIfDisposed();
 
-            size = NativeMethods.clang_Type_getSizeOf(Struct);
-            return size < 0 ? (TypeLayoutError?)size : null;
+            long size = NativeMethods.clang_Type_getSizeOf(Struct);
+            var error = size < 0 ? (TypeLayoutError?)size : null;
+            return (error: error, size: size);
         }
 
         /// <summary>
@@ -352,8 +356,8 @@ namespace Core.Clang
         /// bits as it would be returned by __offsetof__ as per C++11 [18.2p4].
         /// </summary>
         /// <param name="fieldName">The name of the field.</param>
-        /// <param name="offset">The offset of the field named <paramref name="fieldName"/></param>
         /// <returns>
+        /// error:
         /// <para>
         /// If the cursor is not a record field declaration, <see cref="TypeLayoutError.Invalid"/>
         /// is returned.
@@ -370,16 +374,18 @@ namespace Core.Clang
         /// If the field's name <paramref name="fieldName"/> is not found,
         /// <see cref="TypeLayoutError.InvalidFieldName"/> is returned.
         /// </para>
+        /// <para>offset: The offset of the field named <paramref name="fieldName"/>.</para>
         /// </returns>
-        public TypeLayoutError? TryGetOffsetOf(string fieldName, out long offset)
+        public (TypeLayoutError? error, long offset) TryGetOffsetOf(string fieldName)
         {
             Requires.NotNullOrEmpty(fieldName, nameof(fieldName));
             ThrowIfDisposed();
 
             using (var cString = new CString(fieldName))
             {
-                offset = NativeMethods.clang_Type_getOffsetOf(Struct, cString.Ptr);
-                return offset < 0 ? (TypeLayoutError?)offset : null;
+                long offset = NativeMethods.clang_Type_getOffsetOf(Struct, cString.Ptr);
+                var error = offset < 0 ? (TypeLayoutError?)offset : null;
+                return (error: error, offset: offset);
             }
         }
 

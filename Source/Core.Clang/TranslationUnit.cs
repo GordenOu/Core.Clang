@@ -35,7 +35,7 @@ namespace Core.Clang
         /// <remarks>
         /// This method invalidates the associated <see cref="Diagnostics.DiagnosticSet"/>.
         /// </remarks>
-        [Unstable(version: "3.9.1", seealso: new[]
+        [Unstable(version: "4.0.0", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CIndex.cpp"
         })]
@@ -141,6 +141,38 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Gets all ranges from all files that were skipped by the preprocessor.
+        /// </summary>
+        /// <remarks>
+        /// The preprocessor will skip lines when they are surrounded by an if/ifdef/ifndef
+        /// directive whose condition does not evaluate to true.
+        /// </remarks>
+        /// <returns>All ranges from all files that were skipped by the preprocessor.</returns>
+        public SourceRange[] GetAllSkippedRanges()
+        {
+            ThrowIfDisposed();
+
+            var ptr = NativeMethods.clang_getAllSkippedRanges(Ptr);
+            if (ptr == null)
+            {
+                return Array.Empty<SourceRange>();
+            }
+            else
+            {
+                try
+                {
+                    var ranges = new SourceRange[ptr->count];
+                    ranges.SetValues(i => SourceRange.Create(ptr->ranges[i], this));
+                    return ranges;
+                }
+                finally
+                {
+                    NativeMethods.clang_disposeSourceRangeList(ptr);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the original translation unit source file name.
         /// </summary>
         /// <returns>The original translation unit source file name.</returns>
@@ -191,14 +223,15 @@ namespace Core.Clang
         /// The files that have not yet been saved to disk but may be required for parsing,
         /// including the contents of those files.
         /// </param>
-        /// <param name="translationUnit">
-        /// The translation unit whose contents were re-parsed.
-        /// </param>
         /// <returns>
+        /// <para>
+        /// errodCode:
         /// <see cref="ErrorCode.Success"/> if the sources could be reparsed. Another error code
         /// will be returned if reparsing was impossible, such that the translation unit is
-        /// invalid. In such cases, the only valid call for <paramref name="translationUnit"/> is
+        /// invalid. In such cases, the only valid call for translationUnit is
         /// <see cref="Dispose"/>.
+        /// </para>
+        /// <para>translationUnit: The translation unit whose contents were re-parsed.</para>
         /// </returns>
         /// <remarks>
         /// <para>
@@ -215,9 +248,8 @@ namespace Core.Clang
         /// translation unit using this routine.
         /// </para>
         /// </remarks>
-        public ErrorCode TryReparse(
-            IEnumerable<UnsavedFile> unsavedFiles,
-            out TranslationUnit translationUnit)
+        public (ErrorCode errorCode, TranslationUnit translationUnit) TryReparse(
+            IEnumerable<UnsavedFile> unsavedFiles)
         {
             ThrowIfDisposed();
 
@@ -229,9 +261,9 @@ namespace Core.Clang
                 (uint)files.Count,
                 filesPtr,
                 NativeMethods.clang_defaultReparseOptions(Ptr));
+            TranslationUnit translationUnit = null;
             if (errorCode != ErrorCode.Success)
             {
-                translationUnit = null;
                 Dispose();
             }
             else
@@ -239,7 +271,7 @@ namespace Core.Clang
                 translationUnit = new TranslationUnit(Ptr, Index);
                 disposed = true;
             }
-            return errorCode;
+            return (errorCode: errorCode, translationUnit: translationUnit);
         }
 
         /// <summary>

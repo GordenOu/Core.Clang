@@ -222,6 +222,10 @@ namespace Core.Clang
             CXFileImpl* file);
 
         [DllImport(dllName)]
+        public static extern CXSourceRangeList* clang_getAllSkippedRanges(
+            CXTranslationUnitImpl* tu);
+
+        [DllImport(dllName)]
         public static extern void clang_disposeSourceRangeList(
             CXSourceRangeList* ranges);
 
@@ -1191,6 +1195,18 @@ namespace Core.Clang
 
         [DllImport(dllName)]
         public static extern int clang_EvalResult_getAsInt(
+            CXEvalResultImpl* E);
+
+        [DllImport(dllName)]
+        public static extern long clang_EvalResult_getAsLongLong(
+            CXEvalResultImpl* E);
+
+        [DllImport(dllName)]
+        public static extern uint clang_EvalResult_isUnsignedInt(
+            CXEvalResultImpl* E);
+
+        [DllImport(dllName)]
+        public static extern ulong clang_EvalResult_getAsUnsigned(
             CXEvalResultImpl* E);
 
         [DllImport(dllName)]

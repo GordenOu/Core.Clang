@@ -96,6 +96,16 @@ namespace Core.Clang
             CXCursorKind.CXCursor_OMPDistributeParallelForSimdDirective,
             CXCursorKind.CXCursor_OMPDistributeSimdDirective,
             CXCursorKind.CXCursor_OMPTargetParallelForSimdDirective,
+            CXCursorKind.CXCursor_OMPTargetSimdDirective,
+            CXCursorKind.CXCursor_OMPTeamsDistributeDirective,
+            CXCursorKind.CXCursor_OMPTeamsDistributeSimdDirective,
+            CXCursorKind.CXCursor_OMPTeamsDistributeParallelForSimdDirective,
+            CXCursorKind.CXCursor_OMPTeamsDistributeParallelForDirective,
+            CXCursorKind.CXCursor_OMPTargetTeamsDirective,
+            CXCursorKind.CXCursor_OMPTargetTeamsDistributeDirective,
+            CXCursorKind.CXCursor_OMPTargetTeamsDistributeParallelForDirective,
+            CXCursorKind.CXCursor_OMPTargetTeamsDistributeParallelForSimdDirective,
+            CXCursorKind.CXCursor_OMPTargetTeamsDistributeSimdDirective,
 
             CXCursorKind.CXCursor_IBActionAttr,
             CXCursorKind.CXCursor_IBOutletAttr,
@@ -856,6 +866,11 @@ namespace Core.Clang
         /// A static_assert node.
         /// </summary>
         StaticAssert = 602,
+
+        /// <summary>
+        /// A friend declaration.
+        /// </summary>
+        FriendDecl = 603,
 
         #endregion
 

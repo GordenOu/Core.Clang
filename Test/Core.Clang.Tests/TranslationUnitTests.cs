@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using Core.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Clang.Tests
@@ -49,6 +50,12 @@ namespace Core.Clang.Tests
             var skippedRanges = add.GetSkippedRanges(file);
             Assert.IsNotNull(skippedRanges);
             Assert.AreEqual(1, skippedRanges.Length);
+            Assert.AreEqual(file, skippedRanges[0].GetStart().SourceFile);
+
+            skippedRanges = add.GetAllSkippedRanges();
+            Assert.IsNotNull(skippedRanges);
+            Assert.AreEqual(1, skippedRanges.Length);
+            Assert.AreEqual(file, skippedRanges[0].GetStart().SourceFile);
         }
 
         [TestMethod]
@@ -74,8 +81,8 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void InvalidatedAfterReparse()
         {
-            TranslationUnit add;
-            Assert.AreEqual(ErrorCode.Success, disposables.Add.TryReparse(null, out add));
+            var (errorCode, add) = disposables.Add.TryReparse(null);
+            Assert.AreEqual(ErrorCode.Success, errorCode);
             Assert.ThrowsException<ObjectDisposedException>(() => disposables.Add.GetSpelling());
             Assert.AreEqual(TestFiles.AddSource, add.GetSpelling());
             add.Dispose();
@@ -97,9 +104,11 @@ namespace Core.Clang.Tests
                 var file = empty.GetFile(TestFiles.Empty);
                 var range = SourceRange.Create(
                     file.GetLocationFromOffset((uint)source.IndexOf("f(x)")),
-                    file.GetLocationFromOffset((uint)(source.IndexOf("f(x)") + 3)));
+                    file.GetLocationFromOffset((uint)(source.IndexOf(" }"))));
                 var tokens = empty.Tokenize(range);
-                Assert.AreEqual(4, tokens.Length);
+                CollectionAssert.AreEqual(
+                    new[] { "f", "(", "x", ")", ";" },
+                    tokens.ToArray(token => token.GetSpelling()));
 
                 Assert.AreEqual(TokenKind.Identifier, tokens[0].GetKind());
                 Assert.AreEqual("f", tokens[0].GetSpelling());

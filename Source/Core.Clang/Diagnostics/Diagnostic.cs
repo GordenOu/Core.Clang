@@ -243,14 +243,12 @@ namespace Core.Clang.Diagnostics
         /// Gets the replacement information for a fix-it.
         /// </summary>
         /// <param name="index">The zero-based index of the fix-it.</param>
-        /// <param name="replacementRange">
-        /// The source range whose contents will be replaced with the returned replacement string.
-        /// Note that source ranges are half-open ranges [a, b), so the source code should be
-        /// replaced from a and up to (but not including) b.
-        /// </param>
         /// <returns>
-        /// A string containing text that should be replace the source code indicated by the
-        /// <paramref name="replacementRange"/>.
+        /// replacementRange: The source range whose contents will be replaced with the returned
+        /// replacement string. Note that source ranges are half-open ranges [a, b), so the source
+        /// code should be replaced from a and up to (but not including) b.<para/>
+        /// replacementText: A string containing text that should be replace the source code
+        /// indicated by the replacementRange.
         /// </returns>
         /// <remarks>
         /// Fix-its are described in terms of a source range whose contents should be replaced by a
@@ -261,7 +259,7 @@ namespace Core.Clang.Diagnostics
         /// range point at the insertion location, and the replacement string provides the text to
         /// insert).
         /// </remarks>
-        public string GetFixIt(uint index, out SourceRange replacementRange)
+        public (SourceRange replacementRange, string replacementText) GetFixIt(uint index)
         {
             ThrowIfDisposed();
 
@@ -270,10 +268,10 @@ namespace Core.Clang.Diagnostics
                 Ptr,
                 index,
                 &cxSourceRange);
-            replacementRange = SourceRange.Create(cxSourceRange, TranslationUnit);
+            var replacementRange = SourceRange.Create(cxSourceRange, TranslationUnit);
             using (var str = new String(cxString))
             {
-                return str.ToString();
+                return (replacementRange: replacementRange, replacementText: str.ToString());
             }
         }
     }

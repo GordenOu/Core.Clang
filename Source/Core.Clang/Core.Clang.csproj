@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Core.Extensions" Version="0.4.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

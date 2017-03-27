@@ -690,8 +690,8 @@ namespace Core.Clang
         /// <summary>
         /// Gets the offset of the field represented by the Cursor.
         /// </summary>
-        /// <param name="offset">The offset of the field.</param>
         /// <returns>
+        /// error:
         /// <para>
         /// If the cursor is not a field declaration, <see cref="TypeLayoutError.Invalid"/> is
         /// returned.
@@ -708,13 +708,15 @@ namespace Core.Clang
         /// If the field's type declaration is a dependent type,
         /// <see cref="TypeLayoutError.Dependent"/> is returned.
         /// </para>
+        /// <para>offset: The offset of the field.</para>
         /// </returns>
-        public TypeLayoutError? TryGetOffsetOfField(out long offset)
+        public (TypeLayoutError? error, long offset) TryGetOffsetOfField()
         {
             ThrowIfDisposed();
 
-            offset = NativeMethods.clang_Cursor_getOffsetOfField(Struct);
-            return offset < 0 ? (TypeLayoutError?)offset : null;
+            long offset = NativeMethods.clang_Cursor_getOffsetOfField(Struct);
+            var error = offset < 0 ? (TypeLayoutError?)offset : null;
+            return (error: error, offset: offset);
         }
 
         /// <summary>
@@ -1090,7 +1092,7 @@ namespace Core.Clang
         /// The strings representing the mangled symbols of the C++ constructor or destructor at
         /// the cursor.
         /// </returns>
-        [Unstable("3.9.1", seealso: new[]
+        [Unstable("4.0.0", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXString.cpp"
         })]
@@ -1348,11 +1350,17 @@ namespace Core.Clang
         /// If the cursor is a statement declaration tries to evaluate the statement, if it's a
         /// variable, tries to evaluate its initializer, into its corresponding type.
         /// </summary>
-        /// <param name="resultKind">The kind of the evaluation result.</param>
-        /// <returns>The value of the evaluation result, or its string representation.</returns>
-        public object Evaluate(out EvaluationResultKind resultKind)
+        /// <returns>
+        /// <para>
+        /// resultKind: The kind of the evaluation result.
+        /// </para>
+        /// <para>
+        /// result: The value of the evaluation result, or its string representation.
+        /// </para>
+        /// </returns>
+        public (EvaluationResultKind resultKind, object result) Evaluate()
         {
-            resultKind = EvaluationResultKind.Unexposed;
+            var resultKind = EvaluationResultKind.Unexposed;
             object result = null;
 
             var ptr = NativeMethods.clang_Cursor_Evaluate(Struct);
@@ -1365,7 +1373,14 @@ namespace Core.Clang
                     switch (kind)
                     {
                         case CXEvalResultKind.CXEval_Int:
-                            result = NativeMethods.clang_EvalResult_getAsInt(ptr);
+                            if (NativeMethods.clang_EvalResult_isUnsignedInt(ptr) != 0)
+                            {
+                                result = NativeMethods.clang_EvalResult_getAsUnsigned(ptr);
+                            }
+                            else
+                            {
+                                result = NativeMethods.clang_EvalResult_getAsLongLong(ptr);
+                            }
                             break;
                         case CXEvalResultKind.CXEval_Float:
                             result = NativeMethods.clang_EvalResult_getAsDouble(ptr);
@@ -1385,7 +1400,7 @@ namespace Core.Clang
                 }
             }
 
-            return result;
+            return (resultKind: resultKind, result: result);
         }
     }
 }

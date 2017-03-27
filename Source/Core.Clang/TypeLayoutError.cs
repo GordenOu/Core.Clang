@@ -1,10 +1,10 @@
 ﻿namespace Core.Clang
 {
     /// <summary>
-    /// Lists the possible error codes for <see cref="TypeInfo.TryGetSizeOf(out long)"/>,
-    /// <see cref="TypeInfo.TryGetAlignOf(out long)"/>,
-    /// <see cref="TypeInfo.TryGetOffsetOf(string, out long)"/> and
-    /// <see cref="Cursor.TryGetOffsetOfField(out long)"/>.
+    /// Lists the possible error codes for <see cref="TypeInfo.TryGetSizeOf"/>,
+    /// <see cref="TypeInfo.TryGetAlignOf"/>,
+    /// <see cref="TypeInfo.TryGetOffsetOf(string)"/> and
+    /// <see cref="Cursor.TryGetOffsetOfField"/>.
     /// </summary>
     [EnumMapping(typeof(CXTypeLayoutError), Prefix = "CXTypeLayoutError_")]
     public enum TypeLayoutError
