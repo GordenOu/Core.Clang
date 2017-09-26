@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Version>5.0.0-alpha1</Version>
+    <Authors>Gordon Ou</Authors>
+    <Company />
+    <Description>[DllImport("libclang")]</Description>
+    <Copyright>OU Qihao</Copyright>
+    <PackageLicenseUrl>https://github.com/GordenOu/Core.Clang/blob/master/License.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/GordenOu/Core.Clang</PackageProjectUrl>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\x64\Debug\netstandard2.0\Core.Clang.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\x64\Release\netstandard2.0\Core.Clang.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Core.Extensions" Version="0.5.0-alpha2" />
+  </ItemGroup>
+
+</Project>

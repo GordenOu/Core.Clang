@@ -25,7 +25,6 @@ namespace Native.LibClang.Restore
                     string directory = new FileInfo(GetFilePath())
                         .Directory
                         .Parent
-                        .Parent
                         .CreateSubdirectory("Native")
                         .FullName;
                     Directory.Delete(directory, recursive: true);
