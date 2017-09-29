@@ -76,12 +76,29 @@ namespace Core.Clang.Tests
             TypeKind.Int, "get_Kind")]
         [DataRow("const int a = 0;", 0, nameof(TypeInfo.IsConstQualified), true, null)]
         [DataRow("volatile int a = 0;", 0, nameof(TypeInfo.IsVolatileQualified), true, null)]
+        [DataRow("typedef unsigned int uint;", 0, nameof(TypeInfo.GetTypedefName), "uint", null)]
         [DataRow("int* a;", 0, nameof(TypeInfo.GetPointeeType), TypeKind.Int, "get_Kind")]
         [DataRow(
             "class A { }; A a;", 14,
             nameof(TypeInfo.GetTypeDeclaration),
             CursorKind.ClassDecl, "get_Kind")]
         [DataRow("void foo();", 0, nameof(TypeInfo.GetResultType), TypeKind.Void, "get_Kind")]
+        [DataRow(
+            "void foo();", 0,
+            nameof(TypeInfo.GetExceptionSpecificationType),
+            ExceptionSpecificationKind.None, null)]
+        [DataRow(
+            "void foo() noexcept;", 0,
+            nameof(TypeInfo.GetExceptionSpecificationType),
+            ExceptionSpecificationKind.BasicNoexcept, null)]
+        [DataRow(
+            "void foo() throw(int);", 0,
+            nameof(TypeInfo.GetExceptionSpecificationType),
+            ExceptionSpecificationKind.Dynamic, null)]
+        [DataRow(
+            "void foo() throw();", 0,
+            nameof(TypeInfo.GetExceptionSpecificationType),
+            ExceptionSpecificationKind.DynamicNone, null)]
         [DataRow("void foo();", 0, nameof(TypeInfo.GetNumArgTypes), 0, null)]
         [DataRow("int a;", 0, nameof(TypeInfo.GetNumArgTypes), -1, null)]
         [DataRow("void foo();", 0, nameof(TypeInfo.IsFunctionTypeVariadic), false, null)]

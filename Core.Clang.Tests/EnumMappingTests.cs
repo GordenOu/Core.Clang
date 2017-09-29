@@ -24,7 +24,7 @@ namespace Core.Clang.Tests
                                where value != null
                                select Enum.ToObject(attribute.Type, value);
                 Assert.IsTrue(names.Length == values.Length);
-                foreach (var value in values)
+                foreach (object value in values)
                 {
                     if (!excluded.Contains(value))
                     {

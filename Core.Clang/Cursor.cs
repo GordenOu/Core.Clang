@@ -688,6 +688,20 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Gets the exception specification type associated with the cursor.
+        /// </summary>
+        /// <returns>
+        /// A valid result if the cursor refers to a function or method.
+        /// </returns>
+        public ExceptionSpecificationKind GetExceptionSpecificationType()
+        {
+            ThrowIfDisposed();
+
+            int result = NativeMethods.clang_getCursorExceptionSpecificationType(Struct);
+            return (ExceptionSpecificationKind)result;
+        }
+
+        /// <summary>
         /// Gets the offset of the field represented by the Cursor.
         /// </summary>
         /// <returns>
@@ -1232,8 +1246,8 @@ namespace Core.Clang
         }
 
         /// <summary>
-        /// Determine if a C++ member function or member function template is explicitly declared
-        /// 'virtual' or if it overrides a virtual method from one of the base classes.
+        /// Determines if a C++ member function or member function template is explicitly declared
+        /// "virtual" or if it overrides a virtual method from one of the base classes.
         /// </summary>
         /// <returns>
         /// true if the cursor is a virtual C++ member function or member function template.
@@ -1243,6 +1257,17 @@ namespace Core.Clang
             ThrowIfDisposed();
 
             return NativeMethods.clang_CXXMethod_isVirtual(Struct) != 0;
+        }
+
+        /// <summary>
+        /// Determines if an enum declaration refers to a scoped enum.
+        /// </summary>
+        /// <returns>true if the enum declaration refers to a scoped enum.</returns>
+        public bool IsScopedEnumDecl()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_EnumDecl_isScoped(Struct) != 0;
         }
 
         /// <summary>

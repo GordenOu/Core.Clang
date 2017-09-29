@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Core.Clang
@@ -35,6 +35,9 @@ namespace Core.Clang
     internal struct CXIndexImpl { }
 
     [StructLayout(LayoutKind.Sequential)]
+    internal struct CXTargetInfoImpl { }
+
+    [StructLayout(LayoutKind.Sequential)]
     internal struct CXTranslationUnitImpl { }
 
     internal struct CXClientDataImpl { }
@@ -61,6 +64,19 @@ namespace Core.Clang
         public int Major;
         public int Minor;
         public int Subminor;
+    }
+
+    internal enum CXCursor_ExceptionSpecificationKind
+    {
+        CXCursor_ExceptionSpecificationKind_None,
+        CXCursor_ExceptionSpecificationKind_DynamicNone,
+        CXCursor_ExceptionSpecificationKind_Dynamic,
+        CXCursor_ExceptionSpecificationKind_MSAny,
+        CXCursor_ExceptionSpecificationKind_BasicNoexcept,
+        CXCursor_ExceptionSpecificationKind_ComputedNoexcept,
+        CXCursor_ExceptionSpecificationKind_Unevaluated,
+        CXCursor_ExceptionSpecificationKind_Uninstantiated,
+        CXCursor_ExceptionSpecificationKind_Unparsed
     }
 
     internal enum CXGlobalOptFlags
@@ -146,7 +162,8 @@ namespace Core.Clang
         CXTranslationUnit_SkipFunctionBodies = 0x40,
         CXTranslationUnit_IncludeBriefCommentsInCodeCompletion = 0x80,
         CXTranslationUnit_CreatePreambleOnFirstParse = 0x100,
-        CXTranslationUnit_KeepGoing = 0x200
+        CXTranslationUnit_KeepGoing = 0x200,
+        CXTranslationUnit_SingleFileParse = 0x400
     }
 
     internal enum CXSaveTranslationUnit_Flags
@@ -519,8 +536,9 @@ namespace Core.Clang
         CXType_ObjCClass = 28,
         CXType_ObjCSel = 29,
         CXType_Float128 = 30,
+        CXType_Half = 31,
         CXType_FirstBuiltin = CXType_Void,
-        CXType_LastBuiltin = CXType_ObjCSel,
+        CXType_LastBuiltin = CXType_Half,
         CXType_Complex = 100,
         CXType_Pointer = 101,
         CXType_BlockPointer = 102,
@@ -540,7 +558,48 @@ namespace Core.Clang
         CXType_DependentSizedArray = 116,
         CXType_MemberPointer = 117,
         CXType_Auto = 118,
-        CXType_Elaborated = 119
+        CXType_Elaborated = 119,
+        CXType_Pipe = 120,
+        CXType_OCLImage1dRO = 121,
+        CXType_OCLImage1dArrayRO = 122,
+        CXType_OCLImage1dBufferRO = 123,
+        CXType_OCLImage2dRO = 124,
+        CXType_OCLImage2dArrayRO = 125,
+        CXType_OCLImage2dDepthRO = 126,
+        CXType_OCLImage2dArrayDepthRO = 127,
+        CXType_OCLImage2dMSAARO = 128,
+        CXType_OCLImage2dArrayMSAARO = 129,
+        CXType_OCLImage2dMSAADepthRO = 130,
+        CXType_OCLImage2dArrayMSAADepthRO = 131,
+        CXType_OCLImage3dRO = 132,
+        CXType_OCLImage1dWO = 133,
+        CXType_OCLImage1dArrayWO = 134,
+        CXType_OCLImage1dBufferWO = 135,
+        CXType_OCLImage2dWO = 136,
+        CXType_OCLImage2dArrayWO = 137,
+        CXType_OCLImage2dDepthWO = 138,
+        CXType_OCLImage2dArrayDepthWO = 139,
+        CXType_OCLImage2dMSAAWO = 140,
+        CXType_OCLImage2dArrayMSAAWO = 141,
+        CXType_OCLImage2dMSAADepthWO = 142,
+        CXType_OCLImage2dArrayMSAADepthWO = 143,
+        CXType_OCLImage3dWO = 144,
+        CXType_OCLImage1dRW = 145,
+        CXType_OCLImage1dArrayRW = 146,
+        CXType_OCLImage1dBufferRW = 147,
+        CXType_OCLImage2dRW = 148,
+        CXType_OCLImage2dArrayRW = 149,
+        CXType_OCLImage2dDepthRW = 150,
+        CXType_OCLImage2dArrayDepthRW = 151,
+        CXType_OCLImage2dMSAARW = 152,
+        CXType_OCLImage2dArrayMSAARW = 153,
+        CXType_OCLImage2dMSAADepthRW = 154,
+        CXType_OCLImage2dArrayMSAADepthRW = 155,
+        CXType_OCLImage3dRW = 156,
+        CXType_OCLSampler = 157,
+        CXType_OCLEvent = 158,
+        CXType_OCLQueue = 159,
+        CXType_OCLReserveID = 160
     }
 
     internal enum CXCallingConv
@@ -555,7 +614,8 @@ namespace Core.Clang
         CXCallingConv_AAPCS_VFP = 7,
         CXCallingConv_X86RegCall = 8,
         CXCallingConv_IntelOclBicc = 9,
-        CXCallingConv_X86_64Win64 = 10,
+        CXCallingConv_Win64 = 10,
+        CXCallingConv_X86_64Win64 = CXCallingConv_Win64,
         CXCallingConv_X86_64SysV = 11,
         CXCallingConv_X86VectorCall = 12,
         CXCallingConv_Swift = 13,
@@ -865,7 +925,8 @@ namespace Core.Clang
         CXIdxEntityLang_None = 0,
         CXIdxEntityLang_C = 1,
         CXIdxEntityLang_ObjC = 2,
-        CXIdxEntityLang_CXX = 3
+        CXIdxEntityLang_CXX = 3,
+        CXIdxEntityLang_Swift = 4
     }
 
     internal enum CXIdxEntityCXXTemplateKind

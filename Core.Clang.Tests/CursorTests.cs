@@ -412,6 +412,20 @@ namespace Core.Clang.Tests
         }
 
         [TestMethod]
+        public void GetExceptionSpecificationType()
+        {
+            string source = "void foo() throw (int);";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var cursor = empty.GetCursor(file.GetLocation(1, 1));
+                Assert.AreEqual(
+                    ExceptionSpecificationKind.Dynamic,
+                    cursor.GetExceptionSpecificationType());
+            }
+        }
+
+        [TestMethod]
         public void GetFieldOffset()
         {
             string source = "struct A { int a; int b; };";
@@ -737,6 +751,50 @@ namespace Core.Clang.Tests
                 var method = empty.GetCursor(location);
                 Assert.AreEqual(CursorKind.CXXMethod, method.Kind);
                 Assert.IsTrue(method.IsStaticMethod());
+            }
+
+            source = "class A { virtual void foo(); };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("foo"));
+                var method = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.CXXMethod, method.Kind);
+                Assert.IsTrue(method.IsVirtualMethod());
+            }
+
+            source = "class A { void foo() const; };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("foo"));
+                var method = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.CXXMethod, method.Kind);
+                Assert.IsTrue(method.IsConstMethod());
+            }
+        }
+
+        [TestMethod]
+        public void ScopedEnum()
+        {
+            string source = "enum class A { A1 };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset(0);
+                var enumDecl = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.EnumDecl, enumDecl.Kind);
+                Assert.IsTrue(enumDecl.IsScopedEnumDecl());
+            }
+
+            source = "enum A { A1 };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset(0);
+                var enumDecl = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.EnumDecl, enumDecl.Kind);
+                Assert.IsFalse(enumDecl.IsScopedEnumDecl());
             }
         }
 

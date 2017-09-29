@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Core.Clang
@@ -395,6 +395,10 @@ namespace Core.Clang
             uint options);
 
         [DllImport(dllName)]
+        public static extern uint clang_suspendTranslationUnit(
+            CXTranslationUnitImpl* arg1);
+
+        [DllImport(dllName)]
         public static extern void clang_disposeTranslationUnit(
             CXTranslationUnitImpl* arg1);
 
@@ -420,6 +424,22 @@ namespace Core.Clang
         [DllImport(dllName)]
         public static extern void clang_disposeCXTUResourceUsage(
             CXTUResourceUsage usage);
+
+        [DllImport(dllName)]
+        public static extern CXTargetInfoImpl* clang_getTranslationUnitTargetInfo(
+            CXTranslationUnitImpl* CTUnit);
+
+        [DllImport(dllName)]
+        public static extern void clang_TargetInfo_dispose(
+            CXTargetInfoImpl* Info);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_TargetInfo_getTriple(
+            CXTargetInfoImpl* Info);
+
+        [DllImport(dllName)]
+        public static extern int clang_TargetInfo_getPointerWidth(
+            CXTargetInfoImpl* Info);
 
         [DllImport(dllName)]
         public static extern CXCursor clang_getNullCursor();
@@ -666,6 +686,14 @@ namespace Core.Clang
             CXType T);
 
         [DllImport(dllName)]
+        public static extern uint clang_getAddressSpace(
+            CXType T);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_getTypedefName(
+            CXType CT);
+
+        [DllImport(dllName)]
         public static extern CXType clang_getPointeeType(
             CXType T);
 
@@ -694,6 +722,10 @@ namespace Core.Clang
             CXType T);
 
         [DllImport(dllName)]
+        public static extern int clang_getExceptionSpecificationType(
+            CXType T);
+
+        [DllImport(dllName)]
         public static extern int clang_getNumArgTypes(
             CXType T);
 
@@ -708,6 +740,10 @@ namespace Core.Clang
 
         [DllImport(dllName)]
         public static extern CXType clang_getCursorResultType(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern int clang_getCursorExceptionSpecificationType(
             CXCursor C);
 
         [DllImport(dllName)]
@@ -732,6 +768,10 @@ namespace Core.Clang
 
         [DllImport(dllName)]
         public static extern CXType clang_Type_getNamedType(
+            CXType T);
+
+        [DllImport(dllName)]
+        public static extern uint clang_Type_isTransparentTagTypedef(
             CXType T);
 
         [DllImport(dllName)]
@@ -900,6 +940,13 @@ namespace Core.Clang
             CXCursor C);
 
         [DllImport(dllName)]
+        public static extern uint clang_Cursor_isExternalSymbol(
+            CXCursor C,
+            CXString* language,
+            CXString* definedIn,
+            uint* isGenerated);
+
+        [DllImport(dllName)]
         public static extern CXSourceRange clang_Cursor_getCommentRange(
             CXCursor C);
 
@@ -993,6 +1040,10 @@ namespace Core.Clang
 
         [DllImport(dllName)]
         public static extern uint clang_CXXMethod_isVirtual(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern uint clang_EnumDecl_isScoped(
             CXCursor C);
 
         [DllImport(dllName)]

@@ -11,6 +11,8 @@
             CXTypeKind.CXType_ObjCClass,
             CXTypeKind.CXType_ObjCSel,
 
+            CXTypeKind.CXType_Half,
+
             CXTypeKind.CXType_Complex,
 
             CXTypeKind.CXType_BlockPointer,
@@ -21,6 +23,48 @@
             CXTypeKind.CXType_FunctionNoProto,
 
             CXTypeKind.CXType_Vector,
+
+            CXTypeKind.CXType_Pipe,
+            CXTypeKind.CXType_OCLImage1dRO,
+            CXTypeKind.CXType_OCLImage1dArrayRO,
+            CXTypeKind.CXType_OCLImage1dBufferRO,
+            CXTypeKind.CXType_OCLImage2dRO,
+            CXTypeKind.CXType_OCLImage2dArrayRO,
+            CXTypeKind.CXType_OCLImage2dDepthRO,
+            CXTypeKind.CXType_OCLImage2dArrayDepthRO,
+            CXTypeKind.CXType_OCLImage2dMSAARO,
+            CXTypeKind.CXType_OCLImage2dArrayMSAARO,
+            CXTypeKind.CXType_OCLImage2dMSAADepthRO,
+            CXTypeKind.CXType_OCLImage2dArrayMSAADepthRO,
+            CXTypeKind.CXType_OCLImage3dRO,
+            CXTypeKind.CXType_OCLImage1dWO,
+            CXTypeKind.CXType_OCLImage1dArrayWO,
+            CXTypeKind.CXType_OCLImage1dBufferWO,
+            CXTypeKind.CXType_OCLImage2dWO,
+            CXTypeKind.CXType_OCLImage2dArrayWO,
+            CXTypeKind.CXType_OCLImage2dDepthWO,
+            CXTypeKind.CXType_OCLImage2dArrayDepthWO,
+            CXTypeKind.CXType_OCLImage2dMSAAWO,
+            CXTypeKind.CXType_OCLImage2dArrayMSAAWO,
+            CXTypeKind.CXType_OCLImage2dMSAADepthWO,
+            CXTypeKind.CXType_OCLImage2dArrayMSAADepthWO,
+            CXTypeKind.CXType_OCLImage3dWO,
+            CXTypeKind.CXType_OCLImage1dRW,
+            CXTypeKind.CXType_OCLImage1dArrayRW,
+            CXTypeKind.CXType_OCLImage1dBufferRW,
+            CXTypeKind.CXType_OCLImage2dRW,
+            CXTypeKind.CXType_OCLImage2dArrayRW,
+            CXTypeKind.CXType_OCLImage2dDepthRW,
+            CXTypeKind.CXType_OCLImage2dArrayDepthRW,
+            CXTypeKind.CXType_OCLImage2dMSAARW,
+            CXTypeKind.CXType_OCLImage2dArrayMSAARW,
+            CXTypeKind.CXType_OCLImage2dMSAADepthRW,
+            CXTypeKind.CXType_OCLImage2dArrayMSAADepthRW,
+            CXTypeKind.CXType_OCLImage3dRW,
+            CXTypeKind.CXType_OCLSampler,
+            CXTypeKind.CXType_OCLEvent,
+            CXTypeKind.CXType_OCLQueue,
+            CXTypeKind.CXType_OCLReserveID
         })]
     public enum TypeKind
     {

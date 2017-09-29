@@ -106,6 +106,11 @@ namespace Core.Clang
         /// and as much information as possible should be reported. Use this flag to enable this
         /// behavior.
         /// </remarks>
-        KeepGoing = 0x200
+        KeepGoing = 0x200,
+
+        /// <summary>
+        /// Sets the preprocessor in a mode for parsing a single file only.
+        /// </summary>
+        SingleFileParse = 0x400
     }
 }

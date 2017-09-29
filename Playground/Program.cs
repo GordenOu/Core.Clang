@@ -19,16 +19,16 @@ namespace Playground
 
         static Program()
         {
-            var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent.Parent;
+            var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent;
             string path = Environment.GetEnvironmentVariable(nameof(Path));
             path = string.Join(Path.PathSeparator.ToString(),
                 Path.Combine(solutionDirectory.FullName, "Native", "LLVM", "bin"),
                 path);
             Environment.SetEnvironmentVariable(nameof(Path), path);
             nativeTypesPath = Path.Combine(
-                solutionDirectory.FullName, "Source", "Core.Clang", "NativeTypes.cs");
+                solutionDirectory.FullName, "Core.Clang", "NativeTypes.cs");
             nativeMethodsPath = Path.Combine(
-                solutionDirectory.FullName, "Source", "Core.Clang", "NativeMethods.cs");
+                solutionDirectory.FullName, "Core.Clang", "NativeMethods.cs");
         }
 
         /// <summary>
@@ -111,11 +111,11 @@ namespace Playground
                 includePath: @"C:\Program Files\LLVM\include\",
                 systemIncludePaths: new[]
                 {
-                    @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\include\",
-                    @"C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\ucrt"
+                    @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.11.25503\include\",
+                    @"C:\Program Files (x86)\Windows Kits\10\Include\10.0.15063.0\ucrt"
                 });
-            Console.WriteLine(File.ReadAllText(nativeTypesPath) == nativeTypes);
-            Console.WriteLine(File.ReadAllText(nativeMethodsPath) == nativeMethods);
+            File.WriteAllText(nativeTypesPath, nativeTypes);
+            File.WriteAllText(nativeMethodsPath, nativeMethods);
             Console.WriteLine("Yo~");
         }
     }

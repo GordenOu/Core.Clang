@@ -96,6 +96,14 @@ namespace Core.Clang.Tests
         }
 
         [TestMethod]
+        public void ProinterWidthIs64bit()
+        {
+            var targetInfo = disposables.Add.GetTargetInfo();
+            Assert.IsFalse(string.IsNullOrEmpty(targetInfo.GetTriple()));
+            Assert.AreEqual(64, targetInfo.GetPointerWidth());
+        }
+
+        [TestMethod]
         public void Tokenization()
         {
             string source = "void f(int x); void g(int x) { f(x); }";

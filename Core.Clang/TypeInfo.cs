@@ -146,6 +146,21 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Gets the typedef name of the given type.
+        /// </summary>
+        /// <returns>The typedef name of the given type.</returns>
+        public string GetTypedefName()
+        {
+            ThrowIfDisposed();
+
+            var cxString = NativeMethods.clang_getTypedefName(Struct);
+            using (var str = new String(cxString))
+            {
+                return str.ToString();
+            }
+        }
+
+        /// <summary>
         /// Gets the type of the pointee for pointer types.
         /// </summary>
         /// <returns>The pointee for pointer types.</returns>
@@ -182,6 +197,27 @@ namespace Core.Clang
 
             var cxType = NativeMethods.clang_getResultType(Struct);
             return new TypeInfo(cxType, TranslationUnit);
+        }
+
+        /// <summary>
+        /// Gets the exception specification type associated with a function type.
+        /// </summary>
+        /// <returns>
+        /// null if the type is a non-function type.
+        /// </returns>
+        public ExceptionSpecificationKind? GetExceptionSpecificationType()
+        {
+            ThrowIfDisposed();
+
+            int kind = NativeMethods.clang_getExceptionSpecificationType(Struct);
+            if (kind == -1)
+            {
+                return null;
+            }
+            else
+            {
+                return (ExceptionSpecificationKind?)kind;
+            }
         }
 
         /// <summary>

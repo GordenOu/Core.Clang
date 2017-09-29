@@ -299,6 +299,18 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Gets target information for this translation unit.
+        /// </summary>
+        /// <returns>The target information for this translation unit.</returns>
+        public TargetInfo GetTargetInfo()
+        {
+            ThrowIfDisposed();
+
+            var cxTargetInfo = NativeMethods.clang_getTranslationUnitTargetInfo(Ptr);
+            return new TargetInfo(cxTargetInfo, this);
+        }
+
+        /// <summary>
         /// Gets the cursor that represents the translation unit.
         /// </summary>
         /// <returns>The cursor that represents the translation unit.</returns>
