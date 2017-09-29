@@ -35,7 +35,7 @@ namespace Core.Clang
         /// <remarks>
         /// This method invalidates the associated <see cref="Diagnostics.DiagnosticSet"/>.
         /// </remarks>
-        [Unstable(version: "4.0.0", seealso: new[]
+        [Unstable(version: "5.0.0", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CIndex.cpp"
         })]

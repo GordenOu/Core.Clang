@@ -11,8 +11,10 @@
     <Copyright>OU Qihao</Copyright>
     <PackageLicenseUrl>https://github.com/GordenOu/Core.Clang/blob/master/License.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/GordenOu/Core.Clang</PackageProjectUrl>
-    <AssemblyVersion>4.0.0.0</AssemblyVersion>
-    <FileVersion>4.0.0.0</FileVersion>
+    <AssemblyVersion>5.0.0.0</AssemblyVersion>
+    <FileVersion>5.0.0.0</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageTags>Core Clang LibClang C C++ CodeAnalysis DllImport Native Interop</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

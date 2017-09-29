@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Native.LibClang" Version="4.0.0" />
+    <PackageReference Include="Native.LibClang" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
