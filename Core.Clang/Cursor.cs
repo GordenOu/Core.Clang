@@ -1340,6 +1340,14 @@ namespace Core.Clang
             return Create(cxCursor, TranslationUnit);
         }
 
+        public Comment GetParsedComment()
+        {
+            ThrowIfDisposed();
+
+            var cxComment = NativeMethods.clang_Cursor_getParsedComment(Struct);
+            return Comment.Create(cxComment);
+        }
+
         /// <summary>
         /// For a cursor that references something else, return the source range covering that
         /// reference.
