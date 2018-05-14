@@ -85,7 +85,7 @@ namespace Core.Clang
             ThrowIfDisposed();
 
             var cxType = Struct;
-            return cxType.data[0].GetHashCode() ^ cxType.data[1].GetHashCode();
+            return cxType.data_0.GetHashCode() ^ cxType.data_1.GetHashCode();
         }
 
         /// <summary>

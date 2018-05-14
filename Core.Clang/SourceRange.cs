@@ -126,8 +126,8 @@ namespace Core.Clang
             ThrowIfDisposed();
 
             var cxSourceRange = Struct;
-            return cxSourceRange.ptr_data[0].GetHashCode() ^
-                cxSourceRange.ptr_data[1].GetHashCode() ^
+            return cxSourceRange.ptr_data_0.GetHashCode() ^
+                cxSourceRange.ptr_data_1.GetHashCode() ^
                 cxSourceRange.begin_int_data.GetHashCode() ^
                 cxSourceRange.end_int_data.GetHashCode();
         }

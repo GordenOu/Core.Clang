@@ -70,9 +70,9 @@ namespace Playground
             }
         }
 
-        private string GetTypeName(TypeInfo info, out string suffix)
+        private string GetTypeName(TypeInfo info, out long count)
         {
-            suffix = string.Empty; // For fixed size buffers.
+            count = 0; // For fixed size buffers.
             string typeName;
             switch (info.Kind)
             {
@@ -138,7 +138,7 @@ namespace Playground
                     }
                     else
                     {
-                        return GetTypeName(pointeeType, out suffix) + '*';
+                        return GetTypeName(pointeeType, out count) + '*';
                     }
                 case TypeKind.Record:
                 case TypeKind.Enum:
@@ -152,25 +152,25 @@ namespace Playground
                     }
                     else
                     {
-                        return GetTypeName(info.GetCanonicalType(), out suffix);
+                        return GetTypeName(info.GetCanonicalType(), out count);
                     }
                 case TypeKind.ConstantArray:
-                    suffix = $"[{info.GetArraySize()}]";
+                    count = info.GetArraySize();
                     var elementType = info.GetArrayElementType();
                     if (elementType.Kind == TypeKind.Pointer &&
                         elementType.GetPointeeType().Kind == TypeKind.Void)
                     {
                         // e.g., struct A { void* a[3]; };
-                        return "fixed ulong";
+                        return "ulong";
                     }
                     else
                     {
                         // e.g., struct A { int a[3]; };
-                        string temp;
-                        return "fixed " + GetTypeName(elementType, out temp);
+                        long temp;
+                        return GetTypeName(elementType, out temp);
                     }
                 case TypeKind.Auto:
-                    return GetTypeName(info.GetCanonicalType(), out suffix);
+                    return GetTypeName(info.GetCanonicalType(), out count);
                 default:
                     BreakOrFail(info.Kind.ToString());
                     return info.GetSpelling();
@@ -186,6 +186,12 @@ namespace Playground
             {
                 typeName = cursor.GetTypeInfo().GetSpelling();
             }
+
+            if (knownTypes.ContainsKey(typeName))
+            {
+                return;
+            }
+
             knownTypes.Add(typeName, typeName);
 
             var constants = cursor.GetChildren();
@@ -277,6 +283,12 @@ namespace Playground
             {
                 typeName = cursor.GetTypeInfo().GetSpelling();
             }
+
+            if (knownTypes.ContainsKey(typeName))
+            {
+                return;
+            }
+
             knownTypes.Add(typeName, typeName);
 
             var fields = cursor.GetChildren();
@@ -306,7 +318,7 @@ namespace Playground
                 var fieldType = field.GetTypeInfo();
                 var cononicalType = fieldType.GetCanonicalType();
                 string fieldName = field.GetSpelling();
-                string fieldTypeName = GetTypeName(fieldType, out string suffix);
+                string fieldTypeName = GetTypeName(fieldType, out long count);
 
                 if (cononicalType.Kind == TypeKind.Pointer &&
                     cononicalType.GetPointeeType().GetResultType().Kind == TypeKind.Invalid)
@@ -314,7 +326,7 @@ namespace Playground
                     // Pointers excluding function pointers.
                     isUnsafe = true;
                 }
-                if (!string.IsNullOrEmpty(suffix))
+                if (count > 0)
                 {
                     // Fixed size buffers.
                     isUnsafe = true;
@@ -327,7 +339,17 @@ namespace Playground
                 }
 
                 // e.g., public fixed int a[3];
-                fieldDeclarations.Add($"public {fieldTypeName} {fieldName}{suffix};");
+                if (count == 0)
+                {
+                    fieldDeclarations.Add($"public {fieldTypeName} {fieldName};");
+                }
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        fieldDeclarations.Add($"public {fieldTypeName} {fieldName}_{i};");
+                    }
+                }
             }
 
             if (isUnsafe)
@@ -360,6 +382,11 @@ namespace Playground
                         string spelling = cursor.GetSpelling();
                         string typename = spelling + "Impl";
                         builder.AppendLine($"internal struct {typename} {{ }}");
+
+                        if (knownTypes.ContainsKey(spelling))
+                        {
+                            return;
+                        }
                         knownTypes.Add(spelling, typename + '*');
                     }
                     else
@@ -386,6 +413,11 @@ namespace Playground
                         string spelling = cursor.GetSpelling(); // A
                         if (cursor.GetTypedefDeclUnderlyingType().Kind == TypeKind.Pointer)
                         {
+                            if (knownTypes.ContainsKey(spelling))
+                            {
+                                break;
+                            }
+
                             knownTypes.Add(spelling, typeName + '*');
                         }
                         else
@@ -417,7 +449,7 @@ namespace Playground
         public void VisitFunctionDeclaration(Cursor cursor)
         {
             string functionName = cursor.GetSpelling();
-            string resultTypeName = GetTypeName(cursor.GetResultType(), out string suffix);
+            string resultTypeName = GetTypeName(cursor.GetResultType(), out long suffix);
             var method = SyntaxFactory.MethodDeclaration(
                 SyntaxFactory.ParseTypeName(resultTypeName),
                 functionName);

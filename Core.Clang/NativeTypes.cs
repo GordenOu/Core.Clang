@@ -94,20 +94,24 @@ namespace Core.Clang
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe struct CXFileUniqueID
     {
-        public fixed ulong data[3];
+        public ulong data_0;
+        public ulong data_1;
+        public ulong data_2;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe struct CXSourceLocation
     {
-        public fixed ulong ptr_data[2];
+        public ulong ptr_data_0;
+        public ulong ptr_data_1;
         public uint int_data;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe struct CXSourceRange
     {
-        public fixed ulong ptr_data[2];
+        public ulong ptr_data_0;
+        public ulong ptr_data_1;
         public uint begin_int_data;
         public uint end_int_data;
     }
@@ -461,7 +465,9 @@ namespace Core.Clang
     {
         public CXCursorKind kind;
         public int xdata;
-        public fixed ulong data[3];
+        public ulong data_0;
+        public ulong data_1;
+        public ulong data_2;
     }
 
     internal enum CXLinkageKind
@@ -629,7 +635,8 @@ namespace Core.Clang
     internal unsafe struct CXType
     {
         public CXTypeKind kind;
-        public fixed ulong data[2];
+        public ulong data_0;
+        public ulong data_1;
     }
 
     internal enum CXTemplateArgumentKind
@@ -739,7 +746,10 @@ namespace Core.Clang
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe struct CXToken
     {
-        public fixed uint int_data[4];
+        public uint int_data_0;
+        public uint int_data_1;
+        public uint int_data_2;
+        public uint int_data_3;
         public void* ptr_data;
     }
 
@@ -865,7 +875,8 @@ namespace Core.Clang
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe struct CXIdxLoc
     {
-        public fixed ulong ptr_data[2];
+        public ulong ptr_data_0;
+        public ulong ptr_data_1;
         public uint int_data;
     }
 
@@ -1115,5 +1126,44 @@ namespace Core.Clang
         CXIndexOpt_IndexImplicitTemplateInstantiations = 0x4,
         CXIndexOpt_SuppressWarnings = 0x8,
         CXIndexOpt_SkipParsedBodiesInSession = 0x10
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe struct CXComment
+    {
+        public void* ASTNode;
+        public CXTranslationUnitImpl* TranslationUnit;
+    }
+
+    internal enum CXCommentKind
+    {
+        CXComment_Null = 0,
+        CXComment_Text = 1,
+        CXComment_InlineCommand = 2,
+        CXComment_HTMLStartTag = 3,
+        CXComment_HTMLEndTag = 4,
+        CXComment_Paragraph = 5,
+        CXComment_BlockCommand = 6,
+        CXComment_ParamCommand = 7,
+        CXComment_TParamCommand = 8,
+        CXComment_VerbatimBlockCommand = 9,
+        CXComment_VerbatimBlockLine = 10,
+        CXComment_VerbatimLine = 11,
+        CXComment_FullComment = 12
+    }
+
+    internal enum CXCommentInlineCommandRenderKind
+    {
+        CXCommentInlineCommandRenderKind_Normal,
+        CXCommentInlineCommandRenderKind_Bold,
+        CXCommentInlineCommandRenderKind_Monospaced,
+        CXCommentInlineCommandRenderKind_Emphasized
+    }
+
+    internal enum CXCommentParamPassDirection
+    {
+        CXCommentParamPassDirection_In,
+        CXCommentParamPassDirection_Out,
+        CXCommentParamPassDirection_InOut
     }
 }
