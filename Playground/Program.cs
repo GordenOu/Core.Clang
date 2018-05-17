@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Core.Clang;
 using Core.Linq;
 
@@ -52,7 +55,7 @@ namespace Playground
                 .Append("{");
             var visitor = new ClangCursorVisitor(builder.IncreaseIndent());
 
-            string fileName = Path.Combine(includePath, "clang-c", "index.h");
+            string fileName = Path.Combine(includePath, "clang-c", "documentation.h");
             var args = systemIncludePaths.ToList(path => "-isystem" + path);
             args.Add("-v");
             args.Add("-I" + includePath);

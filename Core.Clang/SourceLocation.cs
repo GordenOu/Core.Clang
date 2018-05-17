@@ -157,8 +157,8 @@ namespace Core.Clang
 
             var cxSourceLocation = Struct;
             return
-                cxSourceLocation.ptr_data[0].GetHashCode() ^
-                cxSourceLocation.ptr_data[1].GetHashCode() ^
+                cxSourceLocation.ptr_data_0.GetHashCode() ^
+                cxSourceLocation.ptr_data_1.GetHashCode() ^
                 cxSourceLocation.int_data.GetHashCode();
         }
 

@@ -100,7 +100,7 @@ namespace Core.Clang
             }
 
             var value = id.Value;
-            return value.data[0].GetHashCode() ^ value.data[1].GetHashCode();
+            return value.data_0.GetHashCode() ^ value.data_1.GetHashCode();
         }
 
         /// <summary>

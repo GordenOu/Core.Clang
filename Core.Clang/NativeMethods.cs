@@ -1423,5 +1423,147 @@ namespace Core.Clang
             CXType T,
             IntPtr visitor,
             CXClientDataImpl* client_data);
+
+        [DllImport(dllName)]
+        public static extern CXComment clang_Cursor_getParsedComment(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern CXCommentKind clang_Comment_getKind(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_Comment_getNumChildren(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXComment clang_Comment_getChild(
+            CXComment Comment,
+            uint ChildIdx);
+
+        [DllImport(dllName)]
+        public static extern uint clang_Comment_isWhitespace(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_InlineContentComment_hasTrailingNewline(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_TextComment_getText(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_InlineCommandComment_getCommandName(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXCommentInlineCommandRenderKind clang_InlineCommandComment_getRenderKind(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_InlineCommandComment_getNumArgs(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_InlineCommandComment_getArgText(
+            CXComment Comment,
+            uint ArgIdx);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_HTMLTagComment_getTagName(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_HTMLStartTagComment_isSelfClosing(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_HTMLStartTag_getNumAttrs(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_HTMLStartTag_getAttrName(
+            CXComment Comment,
+            uint AttrIdx);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_HTMLStartTag_getAttrValue(
+            CXComment Comment,
+            uint AttrIdx);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_BlockCommandComment_getCommandName(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_BlockCommandComment_getNumArgs(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_BlockCommandComment_getArgText(
+            CXComment Comment,
+            uint ArgIdx);
+
+        [DllImport(dllName)]
+        public static extern CXComment clang_BlockCommandComment_getParagraph(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_ParamCommandComment_getParamName(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_ParamCommandComment_isParamIndexValid(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_ParamCommandComment_getParamIndex(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_ParamCommandComment_isDirectionExplicit(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXCommentParamPassDirection clang_ParamCommandComment_getDirection(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_TParamCommandComment_getParamName(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_TParamCommandComment_isParamPositionValid(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_TParamCommandComment_getDepth(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern uint clang_TParamCommandComment_getIndex(
+            CXComment Comment,
+            uint Depth);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_VerbatimBlockLineComment_getText(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_VerbatimLineComment_getText(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_HTMLTagComment_getAsString(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_FullComment_getAsHTML(
+            CXComment Comment);
+
+        [DllImport(dllName)]
+        public static extern CXString clang_FullComment_getAsXML(
+            CXComment Comment);
     }
 }
