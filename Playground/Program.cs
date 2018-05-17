@@ -11,27 +11,6 @@ namespace Playground
 {
     public class Program
     {
-        private static void CopyClang()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                if (!File.Exists("libclang.dll"))
-                {
-                    var assembly = Assembly.Load(new AssemblyName("Native.LibClang"));
-                    using (var stream = assembly.GetManifestResourceStream("Native.LibClang.LLVM.zip"))
-                    using (var zipArchive = new ZipArchive(stream))
-                    {
-                        var entry = zipArchive.GetEntry("LLVM/bin/libclang.dll");
-                        using (var entryStream = entry.Open())
-                        using (var libraryStream = File.Open("libclang.dll", FileMode.Create, FileAccess.ReadWrite))
-                        {
-                            entryStream.CopyTo(libraryStream);
-                        }
-                    }
-                }
-            }
-        }
-
         private static string GetFilePath([CallerFilePath] string filePath = null)
         {
             return filePath;
@@ -43,8 +22,6 @@ namespace Playground
 
         static Program()
         {
-            CopyClang();
-
             var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent;
             string path = Environment.GetEnvironmentVariable(nameof(Path));
             path = string.Join(Path.PathSeparator.ToString(),
