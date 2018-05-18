@@ -17,6 +17,8 @@ namespace Playground
 
         private static string nativeMethodsPath;
 
+        private static string workingDirectory;
+
         static Program()
         {
             var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent;
@@ -25,10 +27,15 @@ namespace Playground
                 Path.Combine(solutionDirectory.FullName, "Native", "LLVM", "bin"),
                 path);
             Environment.SetEnvironmentVariable(nameof(Path), path);
+            path = string.Join(Path.PathSeparator.ToString(),
+                Path.Combine(solutionDirectory.FullName, "Native", "LLVM"),
+                path);
+            Environment.SetEnvironmentVariable(nameof(Path), path);
             nativeTypesPath = Path.Combine(
                 solutionDirectory.FullName, "Core.Clang", "NativeTypes.cs");
             nativeMethodsPath = Path.Combine(
                 solutionDirectory.FullName, "Core.Clang", "NativeMethods.cs");
+            workingDirectory = Path.Combine(solutionDirectory.FullName, "Native", "LLVM");
         }
 
         /// <summary>
@@ -55,6 +62,7 @@ namespace Playground
             string fileName = Path.Combine(includePath, "clang-c", "documentation.h");
             var args = systemIncludePaths.ToList(path => "-isystem" + path);
             args.Add("-v");
+            args.Add("-working-directory" + workingDirectory);
             args.Add("-I" + includePath);
             using (var index = new Index(true, true))
             using (var translationUnit = index.ParseTranslationUnit(fileName, args))
@@ -109,11 +117,7 @@ namespace Playground
         {
             var (nativeTypes, nativeMethods) = ImportNativeTypesAndMethods(
                 includePath: @"C:\Program Files\LLVM\include\",
-                systemIncludePaths: new[]
-                {
-                    @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.11.25503\include\",
-                    @"C:\Program Files (x86)\Windows Kits\10\Include\10.0.15063.0\ucrt"
-                });
+                systemIncludePaths: Array.Empty<string>());
             File.WriteAllText(nativeTypesPath, nativeTypes);
             File.WriteAllText(nativeMethodsPath, nativeMethods);
             Console.WriteLine("Yo~");
