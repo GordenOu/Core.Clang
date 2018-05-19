@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace Core.Clang.Documentation.Doxygen
 {
@@ -21,7 +22,7 @@ namespace Core.Clang.Documentation.Doxygen
                     break;
                 default:
                     Debug.Fail("Unreachable.");
-                    break;
+                    throw new ArgumentException(nameof(cxComment));
             }
         }
 

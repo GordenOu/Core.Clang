@@ -7,7 +7,7 @@ namespace Core.Clang.Tests
 {
     public class DelegatingInclusionVisitor : InclusionVisitor
     {
-        private Action<SourceFile, SourceLocation[]> visitor;
+        private readonly Action<SourceFile, SourceLocation[]> visitor;
 
         public DelegatingInclusionVisitor(Action<SourceFile, SourceLocation[]> visitor)
         {

@@ -13,11 +13,11 @@ namespace Playground
             return filePath;
         }
 
-        private static string nativeTypesPath;
+        private static readonly string nativeTypesPath;
 
-        private static string nativeMethodsPath;
+        private static readonly string nativeMethodsPath;
 
-        private static string workingDirectory;
+        private static readonly string workingDirectory;
 
         static Program()
         {
@@ -25,10 +25,6 @@ namespace Playground
             string path = Environment.GetEnvironmentVariable(nameof(Path));
             path = string.Join(Path.PathSeparator.ToString(),
                 Path.Combine(solutionDirectory.FullName, "Native", "LLVM", "bin"),
-                path);
-            Environment.SetEnvironmentVariable(nameof(Path), path);
-            path = string.Join(Path.PathSeparator.ToString(),
-                Path.Combine(solutionDirectory.FullName, "Native", "LLVM"),
                 path);
             Environment.SetEnvironmentVariable(nameof(Path), path);
             nativeTypesPath = Path.Combine(

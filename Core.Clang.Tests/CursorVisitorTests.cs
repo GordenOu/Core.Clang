@@ -7,7 +7,7 @@ namespace Core.Clang.Tests
 {
     public class DelegatingCursorVisitor : CursorVisitor
     {
-        private Func<Cursor, Cursor, ChildVisitResult> visitor;
+        private readonly Func<Cursor, Cursor, ChildVisitResult> visitor;
 
         public DelegatingCursorVisitor(Func<Cursor, Cursor, ChildVisitResult> visitor)
         {

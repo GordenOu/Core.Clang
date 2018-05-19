@@ -109,7 +109,7 @@ namespace Core.Clang.Documentation.Doxygen
                     return new VerbatimLineComment(cxComment, TranslationUnit);
                 default:
                     Debug.Fail("Unreachable.");
-                    throw new NotSupportedException(kind.ToString()); ;
+                    throw new NotImplementedException(kind.ToString());
             }
         }
     }
