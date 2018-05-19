@@ -175,7 +175,7 @@ namespace Core.Clang
             using (var args = new CStrings(commandLineArgs))
             using (var files = new CXUnsavedFiles(unsavedFiles))
             {
-                var argsPtr = stackalloc sbyte*[args.Count];
+                sbyte** argsPtr = stackalloc sbyte*[args.Count];
                 args.Apply((arg, i) => argsPtr[i] = arg.Ptr);
                 var filesPtr = stackalloc CXUnsavedFile[files.Count];
                 files.Apply((file, i) => filesPtr[i] = files[i]);
@@ -237,7 +237,7 @@ namespace Core.Clang
             using (var args = new CStrings(commandLineArgs))
             using (var files = new CXUnsavedFiles(unsavedFiles))
             {
-                var argsPtr = stackalloc sbyte*[args.Count];
+                sbyte** argsPtr = stackalloc sbyte*[args.Count];
                 args.Apply((arg, i) => argsPtr[i] = arg.Ptr);
                 var filesPtr = stackalloc CXUnsavedFile[files.Count];
                 files.Apply((file, i) => filesPtr[i] = files[i]);

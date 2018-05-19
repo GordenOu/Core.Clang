@@ -34,7 +34,7 @@ namespace Core.Clang
         /// </returns>
         public static string GetResourceUsageName(TUResourceUsageKind kind)
         {
-            var cString = NativeMethods.clang_getTUResourceUsageName(
+            sbyte* cString = NativeMethods.clang_getTUResourceUsageName(
                 (CXTUResourceUsageKind)kind);
             return Marshal.PtrToStringAnsi(new IntPtr(cString));
         }

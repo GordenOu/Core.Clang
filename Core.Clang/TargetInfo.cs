@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using Core.Diagnostics;
-using Core.Linq;
 
 namespace Core.Clang
 {

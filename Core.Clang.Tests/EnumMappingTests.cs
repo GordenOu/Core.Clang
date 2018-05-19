@@ -18,7 +18,7 @@ namespace Core.Clang.Tests
                 {
                     continue;
                 }
-                var names = Enum.GetNames(attribute.Type);
+                string[] names = Enum.GetNames(attribute.Type);
                 var values = Enum.GetValues(attribute.Type);
                 var excluded = from value in attribute.Excluded ?? Array.Empty<object>()
                                where value != null

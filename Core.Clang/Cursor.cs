@@ -1123,10 +1123,10 @@ namespace Core.Clang
             {
                 try
                 {
-                    var manglings = new string[ptr->Count];
+                    string[] manglings = new string[ptr->Count];
                     manglings.SetValues(i =>
                     {
-                        var cString = NativeMethods.clang_getCString(ptr->Strings[i]);
+                        sbyte* cString = NativeMethods.clang_getCString(ptr->Strings[i]);
                         return Marshal.PtrToStringAnsi(new IntPtr(cString));
                     });
                     return manglings;
@@ -1411,7 +1411,7 @@ namespace Core.Clang
                             result = NativeMethods.clang_EvalResult_getAsDouble(ptr);
                             break;
                         default:
-                            var cString = NativeMethods.clang_EvalResult_getAsStr(ptr);
+                            sbyte* cString = NativeMethods.clang_EvalResult_getAsStr(ptr);
                             if (cString != null)
                             {
                                 result = Marshal.PtrToStringAnsi(new IntPtr(cString));

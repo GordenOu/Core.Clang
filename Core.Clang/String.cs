@@ -42,7 +42,7 @@ namespace Core.Clang
         {
             ThrowIfDisposed();
 
-            var cString = NativeMethods.clang_getCString(Struct);
+            sbyte* cString = NativeMethods.clang_getCString(Struct);
             return Marshal.PtrToStringAnsi(new IntPtr(cString));
         }
     }

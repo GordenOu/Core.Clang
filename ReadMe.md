@@ -29,5 +29,4 @@ using (var translationUnit = index.ParseTranslationUnit(fileName, new[] { "-v" }
 This project ignores:
 - x86
 - CLS compliance
-- Doxygen
 - Objective-C
