@@ -84,6 +84,8 @@ namespace Core.Clang.Documentation.Doxygen
         /// </returns>
         public Comment GetChild(uint index)
         {
+            ThrowIfDisposed();
+
             var cxComment = NativeMethods.clang_Comment_getChild(Struct, index);
             var kind = NativeMethods.clang_Comment_getKind(cxComment);
             switch (kind)
@@ -130,6 +132,8 @@ namespace Core.Clang.Documentation.Doxygen
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string GetNormalizedText()
         {
+            ThrowIfDisposed();
+
             var visitor = new NormalizedTextCommentVisitor();
             visitor.Visit(this);
             return visitor.GetNormalizedText();

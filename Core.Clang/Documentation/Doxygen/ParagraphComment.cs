@@ -13,11 +13,6 @@ namespace Core.Clang.Documentation.Doxygen
             Debug.Assert(GetKind() == CommentKind.Paragraph);
         }
 
-        internal override void Accept(CommentVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
         /// <summary>
         /// A <see cref="CommentKind.Paragraph"/> node is considered whitespace if it contains only
         /// <see cref="CommentKind.Text"/> nodes that are empty or whitespace.
@@ -32,6 +27,13 @@ namespace Core.Clang.Documentation.Doxygen
             ThrowIfDisposed();
 
             return NativeMethods.clang_Comment_isWhitespace(Struct) != 0;
+        }
+
+        internal override void Accept(CommentVisitor visitor)
+        {
+            ThrowIfDisposed();
+
+            visitor.Visit(this);
         }
     }
 }

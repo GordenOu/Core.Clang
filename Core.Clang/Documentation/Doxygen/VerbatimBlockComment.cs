@@ -17,6 +17,8 @@ namespace Core.Clang.Documentation.Doxygen
 
         internal override void Accept(CommentVisitor visitor)
         {
+            ThrowIfDisposed();
+
             visitor.Visit(this);
         }
     }

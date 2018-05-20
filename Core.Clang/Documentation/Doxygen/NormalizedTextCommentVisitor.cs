@@ -40,6 +40,10 @@ namespace Core.Clang.Documentation.Doxygen
         {
             string commandName = comment.GetCommandName();
             string[] arguments = new string[comment.GetNumArgs()];
+            for (uint i = 0; i < arguments.Length; i++)
+            {
+                arguments[i] = comment.GetArgText(i);
+            }
             if (arguments.Length == 0)
             {
                 builder.Append($@"\{commandName}");
@@ -75,6 +79,10 @@ namespace Core.Clang.Documentation.Doxygen
             {
                 string commandName = comment.GetCommandName();
                 string[] arguments = new string[comment.GetNumArgs()];
+                for (uint i = 0; i < arguments.Length; i++)
+                {
+                    arguments[i] = comment.GetArgText(i);
+                }
                 if (arguments.Length == 0)
                 {
                     builder.Append($@"\{commandName}");
@@ -128,6 +136,7 @@ namespace Core.Clang.Documentation.Doxygen
         public override void Visit(VerbatimBlockLineComment comment)
         {
             builder.AppendLine(comment.GetText());
+            base.Visit(comment);
         }
 
         public override void Visit(VerbatimBlockComment comment)
@@ -158,8 +167,11 @@ namespace Core.Clang.Documentation.Doxygen
                     }
                 }
                 Visit(child);
-                builder.AppendLine();
-                builder.AppendLine();
+                if (i != count - 1)
+                {
+                    builder.AppendLine();
+                    builder.AppendLine();
+                }
             }
         }
     }

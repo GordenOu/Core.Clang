@@ -26,5 +26,18 @@ namespace Core.Clang.Tests
         public static string MultiplySource { get; } = Path.Combine(Directory, "multiply.cpp");
 
         public static string Empty { get; } = Path.Combine(Directory, "empty.cpp");
+
+        public static class Doxygen
+        {
+            public static string Documentation { get; } = Path.Combine(
+                Directory,
+                "documentation",
+                "doxygen.cpp");
+
+            public static string DoxygenNormalizedDocumentText { get; } = Path.Combine(
+                Directory,
+                "documentation",
+                "NormalizedDocumentText.txt");
+        }
     }
 }
