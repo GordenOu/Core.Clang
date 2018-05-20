@@ -153,12 +153,15 @@ namespace Core.Clang.Tests.Documentation
                 var comment = Comment.FromCursor(cursor);
                 Assert.IsNotNull(comment);
                 string normalizedText = comment.GetNormalizedText();
+                normalizedText = normalizedText.Replace("\r\n", "\n");
                 string text = File.ReadAllText(TestFiles.Doxygen.DoxygenNormalizedDocumentText);
+                text = text.Replace("\r\n", "\n");
                 Assert.AreEqual(text, normalizedText);
 
                 var visitor = new GetNormailizedStringVisitor();
                 visitor.Visit(comment);
                 normalizedText = visitor.GetNormalizedText();
+                normalizedText = normalizedText.Replace("\r\n", "\n");
                 Assert.AreEqual(text, normalizedText);
                 var visitedCommentKinds = visitor.VisitedCommentKinds;
                 Assert.AreEqual(12, visitedCommentKinds.Count);

@@ -167,9 +167,9 @@ namespace Core.Clang.Documentation.Doxygen
                     }
                 }
                 Visit(child);
+                builder.AppendLine();
                 if (i != count - 1)
                 {
-                    builder.AppendLine();
                     builder.AppendLine();
                 }
             }
