@@ -77,7 +77,18 @@ namespace Core.Clang.Documentation.Doxygen
             ThrowIfDisposed();
 
             var cxComment = NativeMethods.clang_BlockCommandComment_getParagraph(Struct);
+            var kind = NativeMethods.clang_Comment_getKind(cxComment);
+            Debug.Assert(kind == CXCommentKind.CXComment_Paragraph);
+            if (kind != CXCommentKind.CXComment_Paragraph)
+            {
+                throw new NotImplementedException();
+            }
             return new ParagraphComment(cxComment, TranslationUnit);
+        }
+
+        internal override void Accept(CommentVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

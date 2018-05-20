@@ -12,5 +12,10 @@ namespace Core.Clang.Documentation.Doxygen
         {
             Debug.Assert(GetKind() == CommentKind.HTMLEndTag);
         }
+
+        internal override void Accept(CommentVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

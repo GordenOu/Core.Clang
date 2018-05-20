@@ -14,5 +14,10 @@ namespace Core.Clang.Documentation.Doxygen
         {
             Debug.Assert(GetKind() == CommentKind.VerbatimBlockCommand);
         }
+
+        internal override void Accept(CommentVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

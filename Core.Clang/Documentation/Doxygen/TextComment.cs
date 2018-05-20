@@ -22,7 +22,7 @@ namespace Core.Clang.Documentation.Doxygen
         /// Other AST nodes (except <see cref="CommentKind.Paragraph"/> and
         /// <see cref="CommentKind.Text"/>) are never considered whitespace.
         /// </remarks>
-        bool IsWhiteSpace()
+        public bool IsWhiteSpace()
         {
             ThrowIfDisposed();
 
@@ -42,6 +42,11 @@ namespace Core.Clang.Documentation.Doxygen
             {
                 return str.ToString();
             }
+        }
+
+        internal override void Accept(CommentVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

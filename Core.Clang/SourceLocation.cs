@@ -84,12 +84,19 @@ namespace Core.Clang
                     &line,
                     &column,
                     &offset);
-                return new SourceLocation(
-                    cxSourceLocation,
-                    new SourceFile(sourceFilePtr, translationUnit),
-                    line,
-                    column,
-                    offset);
+                if (sourceFilePtr == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new SourceLocation(
+                        cxSourceLocation,
+                        new SourceFile(sourceFilePtr, translationUnit),
+                        line,
+                        column,
+                        offset);
+                }
             }
         }
 

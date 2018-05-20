@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using Core.Diagnostics;
 
@@ -34,7 +35,7 @@ namespace Core.Clang.Documentation.Doxygen
         /// error.
         /// </param>
         /// <returns>The associated parsed comment.</returns>
-        public static Comment FromCursor(Cursor cursor)
+        public static FullComment FromCursor(Cursor cursor)
         {
             Requires.NotNull(cursor, nameof(cursor));
             cursor.ThrowIfDisposed();
@@ -78,13 +79,17 @@ namespace Core.Clang.Documentation.Doxygen
         /// Gets the specified child of the AST node.
         /// </summary>
         /// <param name="index">Child index (zero-based).</param>
-        /// <returns>The specified child of the AST node.</returns>
+        /// <returns>
+        /// The specified child of the AST node, or null if there is no child in the specified index.
+        /// </returns>
         public Comment GetChild(uint index)
         {
             var cxComment = NativeMethods.clang_Comment_getChild(Struct, index);
             var kind = NativeMethods.clang_Comment_getKind(cxComment);
             switch (kind)
             {
+                case CXCommentKind.CXComment_Null:
+                    return null;
                 case CXCommentKind.CXComment_Text:
                     return new TextComment(cxComment, TranslationUnit);
                 case CXCommentKind.CXComment_InlineCommand:
@@ -107,10 +112,27 @@ namespace Core.Clang.Documentation.Doxygen
                     return new VerbatimBlockLineComment(cxComment, TranslationUnit);
                 case CXCommentKind.CXComment_VerbatimLine:
                     return new VerbatimLineComment(cxComment, TranslationUnit);
+                case CXCommentKind.CXComment_FullComment:
+                    Console.Error.WriteLine("Unexpected comment kind.");
+                    return new FullComment(cxComment, TranslationUnit);
                 default:
                     Debug.Fail("Unreachable.");
                     throw new NotImplementedException(kind.ToString());
             }
+        }
+
+        internal abstract void Accept(CommentVisitor visitor);
+
+        /// <summary>
+        /// Gets the normalized text of the comment.
+        /// </summary>
+        /// <returns>The normalized text of the comment.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public string GetNormalizedText()
+        {
+            var visitor = new NormalizedTextCommentVisitor();
+            visitor.Visit(this);
+            return visitor.GetNormalizedText();
         }
     }
 }

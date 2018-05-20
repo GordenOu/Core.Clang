@@ -17,7 +17,7 @@ namespace Core.Clang.Documentation.Doxygen
         /// True if tag is self-closing (for example, &lt;br /&gt;).
         /// </summary>
         /// <returns>true if tag is self-closing.</returns>
-        bool IsSelfClosing()
+        public bool IsSelfClosing()
         {
             ThrowIfDisposed();
 
@@ -30,7 +30,7 @@ namespace Core.Clang.Documentation.Doxygen
         /// <returns>
         /// The number of attributes (name-value pairs) attached to the start tag.
         /// </returns>
-        uint GetNumAttrs()
+        public uint GetNumAttrs()
         {
             ThrowIfDisposed();
 
@@ -42,7 +42,7 @@ namespace Core.Clang.Documentation.Doxygen
         /// </summary>
         /// <param name="index">Attribute index (zero-based).</param>
         /// <returns>The name of the specified attribute.</returns>
-        string GetAttrName(uint index)
+        public string GetAttrName(uint index)
         {
             ThrowIfDisposed();
 
@@ -58,7 +58,7 @@ namespace Core.Clang.Documentation.Doxygen
         /// </summary>
         /// <param name="index">Attribute index (zero-based).</param>
         /// <returns>The value of the specified attribute.</returns>
-        string GetAttrValue(uint index)
+        public string GetAttrValue(uint index)
         {
             ThrowIfDisposed();
 
@@ -67,6 +67,11 @@ namespace Core.Clang.Documentation.Doxygen
             {
                 return str.ToString();
             }
+        }
+
+        internal override void Accept(CommentVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

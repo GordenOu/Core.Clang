@@ -347,6 +347,7 @@ namespace Core.Clang
         /// </remarks>
         public Cursor GetCursor(SourceLocation location)
         {
+            Requires.NotNull(location, nameof(location));
             ThrowIfDisposed();
 
             var cxCursor = NativeMethods.clang_getCursor(Ptr, location.Struct);

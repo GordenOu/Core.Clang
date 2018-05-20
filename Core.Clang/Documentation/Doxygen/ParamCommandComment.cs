@@ -5,7 +5,7 @@ namespace Core.Clang.Documentation.Doxygen
     /// <summary>
     /// A single paragraph that contains inline content.
     /// </summary>
-    public sealed class ParamCommandComment : BlockContentComment
+    public sealed class ParamCommandComment : BlockCommandComment
     {
         internal ParamCommandComment(CXComment cxComment, TranslationUnit translationUnit)
             : base(cxComment, translationUnit)
@@ -39,7 +39,7 @@ namespace Core.Clang.Documentation.Doxygen
         {
             ThrowIfDisposed();
 
-            if (NativeMethods.clang_ParamCommandComment_isParamIndexValid(Struct) == 0)
+            if (NativeMethods.clang_ParamCommandComment_isParamIndexValid(Struct) != 0)
             {
                 uint index = NativeMethods.clang_ParamCommandComment_getParamIndex(Struct);
                 return index;
@@ -73,6 +73,11 @@ namespace Core.Clang.Documentation.Doxygen
 
             var direction = NativeMethods.clang_ParamCommandComment_getDirection(Struct);
             return (CommentParamPassDirection)direction;
+        }
+
+        internal override void Accept(CommentVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

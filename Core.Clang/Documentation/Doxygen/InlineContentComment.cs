@@ -31,7 +31,7 @@ namespace Core.Clang.Documentation.Doxygen
         /// <returns>
         /// true if the Comment is inline content and has a newline immediately following it in the
         /// comment text.</returns>
-        bool HasTrailingNewLine()
+        public bool HasTrailingNewLine()
         {
             ThrowIfDisposed();
 

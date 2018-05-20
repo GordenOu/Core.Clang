@@ -28,5 +28,10 @@ namespace Core.Clang.Documentation.Doxygen
                 return str.ToString();
             }
         }
+
+        internal override void Accept(CommentVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

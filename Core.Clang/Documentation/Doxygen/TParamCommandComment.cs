@@ -40,7 +40,7 @@ namespace Core.Clang.Documentation.Doxygen
         {
             ThrowIfDisposed();
 
-            if (NativeMethods.clang_TParamCommandComment_isParamPositionValid(Struct) == 0)
+            if (NativeMethods.clang_TParamCommandComment_isParamPositionValid(Struct) != 0)
             {
                 uint depth = NativeMethods.clang_TParamCommandComment_getDepth(Struct);
                 return depth;
@@ -73,6 +73,11 @@ namespace Core.Clang.Documentation.Doxygen
             {
                 return null;
             }
+        }
+
+        internal override void Accept(CommentVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }
