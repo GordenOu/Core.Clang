@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Platforms>x64</Platforms>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>5.0.0-alpha1</Version>
+    <Version>5.0.0-alpha2</Version>
     <Authors>Gordon Ou</Authors>
     <Company />
     <Description>[DllImport("libclang")]</Description>

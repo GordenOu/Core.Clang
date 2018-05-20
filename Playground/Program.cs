@@ -17,21 +17,13 @@ namespace Playground
 
         private static readonly string nativeMethodsPath;
 
-        private static readonly string workingDirectory;
-
         static Program()
         {
             var solutionDirectory = new FileInfo(GetFilePath()).Directory.Parent;
-            string path = Environment.GetEnvironmentVariable(nameof(Path));
-            path = string.Join(Path.PathSeparator.ToString(),
-                Path.Combine(solutionDirectory.FullName, "Native", "LLVM", "bin"),
-                path);
-            Environment.SetEnvironmentVariable(nameof(Path), path);
             nativeTypesPath = Path.Combine(
                 solutionDirectory.FullName, "Core.Clang", "NativeTypes.cs");
             nativeMethodsPath = Path.Combine(
                 solutionDirectory.FullName, "Core.Clang", "NativeMethods.cs");
-            workingDirectory = Path.Combine(solutionDirectory.FullName, "Native", "LLVM");
         }
 
         /// <summary>
@@ -58,7 +50,6 @@ namespace Playground
             string fileName = Path.Combine(includePath, "clang-c", "documentation.h");
             var args = systemIncludePaths.ToList(path => "-isystem" + path);
             args.Add("-v");
-            args.Add("-working-directory" + workingDirectory);
             args.Add("-I" + includePath);
             using (var index = new Index(true, true))
             using (var translationUnit = index.ParseTranslationUnit(fileName, args))

@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Clang", "Core.Clang\Core.Clang.csproj", "{0B4339A7-CBE5-4149-8C8A-3F40316529B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Native.LibClang.Restore", "Native.LibClang.Restore\Native.LibClang.Restore.csproj", "{15219E12-8812-4AF5-A57C-4B614330B5EF}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playground", "Playground\Playground.csproj", "{9156CF51-AC8D-4F21-B00D-7A4E9D9DE456}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Clang.Tests", "Core.Clang.Tests\Core.Clang.Tests.csproj", "{2D90E504-BA2C-4E7C-A88A-0139B85842CF}"
@@ -19,20 +17,16 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0B4339A7-CBE5-4149-8C8A-3F40316529B3}.Debug|x64.ActiveCfg = Debug|x64
 		{0B4339A7-CBE5-4149-8C8A-3F40316529B3}.Debug|x64.Build.0 = Debug|x64
-		{0B4339A7-CBE5-4149-8C8A-3F40316529B3}.Release|x64.ActiveCfg = Debug|x64
-		{0B4339A7-CBE5-4149-8C8A-3F40316529B3}.Release|x64.Build.0 = Debug|x64
-		{15219E12-8812-4AF5-A57C-4B614330B5EF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{15219E12-8812-4AF5-A57C-4B614330B5EF}.Debug|x64.Build.0 = Debug|Any CPU
-		{15219E12-8812-4AF5-A57C-4B614330B5EF}.Release|x64.ActiveCfg = Debug|Any CPU
-		{15219E12-8812-4AF5-A57C-4B614330B5EF}.Release|x64.Build.0 = Debug|Any CPU
+		{0B4339A7-CBE5-4149-8C8A-3F40316529B3}.Release|x64.ActiveCfg = Release|x64
+		{0B4339A7-CBE5-4149-8C8A-3F40316529B3}.Release|x64.Build.0 = Release|x64
 		{9156CF51-AC8D-4F21-B00D-7A4E9D9DE456}.Debug|x64.ActiveCfg = Debug|x64
 		{9156CF51-AC8D-4F21-B00D-7A4E9D9DE456}.Debug|x64.Build.0 = Debug|x64
-		{9156CF51-AC8D-4F21-B00D-7A4E9D9DE456}.Release|x64.ActiveCfg = Debug|x64
-		{9156CF51-AC8D-4F21-B00D-7A4E9D9DE456}.Release|x64.Build.0 = Debug|x64
+		{9156CF51-AC8D-4F21-B00D-7A4E9D9DE456}.Release|x64.ActiveCfg = Release|x64
+		{9156CF51-AC8D-4F21-B00D-7A4E9D9DE456}.Release|x64.Build.0 = Release|x64
 		{2D90E504-BA2C-4E7C-A88A-0139B85842CF}.Debug|x64.ActiveCfg = Debug|x64
 		{2D90E504-BA2C-4E7C-A88A-0139B85842CF}.Debug|x64.Build.0 = Debug|x64
-		{2D90E504-BA2C-4E7C-A88A-0139B85842CF}.Release|x64.ActiveCfg = Debug|x64
-		{2D90E504-BA2C-4E7C-A88A-0139B85842CF}.Release|x64.Build.0 = Debug|x64
+		{2D90E504-BA2C-4E7C-A88A-0139B85842CF}.Release|x64.ActiveCfg = Release|x64
+		{2D90E504-BA2C-4E7C-A88A-0139B85842CF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
