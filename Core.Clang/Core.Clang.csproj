@@ -4,15 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Platforms>x64</Platforms>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>5.0.0-alpha2</Version>
+    <Version>6.0.0-alpha1</Version>
     <Authors>Gordon Ou</Authors>
     <Company />
     <Description>[DllImport("libclang")]</Description>
     <Copyright>OU Qihao</Copyright>
     <PackageLicenseUrl>https://github.com/GordenOu/Core.Clang/blob/master/License.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/GordenOu/Core.Clang</PackageProjectUrl>
-    <AssemblyVersion>5.0.0.0</AssemblyVersion>
-    <FileVersion>5.0.0.0</FileVersion>
+    <AssemblyVersion>6.0.0.0</AssemblyVersion>
+    <FileVersion>6.0.0.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags>Core Clang LibClang C C++ CodeAnalysis DllImport Native Interop</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

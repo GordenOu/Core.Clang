@@ -506,6 +506,13 @@ namespace Core.Clang
         CXLanguage_CPlusPlus
     }
 
+    internal enum CXTLSKind
+    {
+        CXTLS_None = 0,
+        CXTLS_Dynamic,
+        CXTLS_Static
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     internal struct CXCursorSetImpl { }
 
@@ -543,8 +550,9 @@ namespace Core.Clang
         CXType_ObjCSel = 29,
         CXType_Float128 = 30,
         CXType_Half = 31,
+        CXType_Float16 = 32,
         CXType_FirstBuiltin = CXType_Void,
-        CXType_LastBuiltin = CXType_Half,
+        CXType_LastBuiltin = CXType_Float16,
         CXType_Complex = 100,
         CXType_Pointer = 101,
         CXType_BlockPointer = 102,

@@ -96,6 +96,11 @@ namespace Core.Clang
             CXIndexImpl* arg1);
 
         [DllImport(dllName)]
+        public static extern void clang_CXIndex_setInvocationEmissionPathOption(
+            CXIndexImpl* arg1,
+            sbyte* Path);
+
+        [DllImport(dllName)]
         public static extern CXString clang_getFileName(
             CXFileImpl* SFile);
 
@@ -117,6 +122,12 @@ namespace Core.Clang
         public static extern CXFileImpl* clang_getFile(
             CXTranslationUnitImpl* tu,
             sbyte* file_name);
+
+        [DllImport(dllName)]
+        public static extern sbyte* clang_getFileContents(
+            CXTranslationUnitImpl* tu,
+            CXFileImpl* file,
+            ulong* size);
 
         [DllImport(dllName)]
         public static extern int clang_File_isEqual(
@@ -533,6 +544,10 @@ namespace Core.Clang
 
         [DllImport(dllName)]
         public static extern CXLanguageKind clang_getCursorLanguage(
+            CXCursor cursor);
+
+        [DllImport(dllName)]
+        public static extern CXTLSKind clang_getCursorTLSKind(
             CXCursor cursor);
 
         [DllImport(dllName)]
@@ -967,6 +982,10 @@ namespace Core.Clang
             CXCursor arg1);
 
         [DllImport(dllName)]
+        public static extern CXStringSet* clang_Cursor_getObjCManglings(
+            CXCursor arg1);
+
+        [DllImport(dllName)]
         public static extern CXModuleImpl* clang_Cursor_getModule(
             CXCursor C);
 
@@ -1040,6 +1059,10 @@ namespace Core.Clang
 
         [DllImport(dllName)]
         public static extern uint clang_CXXMethod_isVirtual(
+            CXCursor C);
+
+        [DllImport(dllName)]
+        public static extern uint clang_CXXRecord_isAbstract(
             CXCursor C);
 
         [DllImport(dllName)]

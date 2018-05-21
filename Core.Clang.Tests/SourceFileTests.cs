@@ -100,6 +100,17 @@ namespace Core.Clang.Tests
         }
 
         [TestMethod]
+        public void GetContent()
+        {
+            string source = "void test();";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                string contents = empty.GetFile(TestFiles.Empty).GetContents();
+                Assert.AreEqual(source, contents);
+            }
+        }
+
+        [TestMethod]
         public void GetValidLocation()
         {
             var add = disposables.Add;

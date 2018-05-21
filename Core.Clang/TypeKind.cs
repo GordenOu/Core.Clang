@@ -218,6 +218,11 @@
         /// </summary>
         Float128 = 30,
 
+        /// <summary>
+        /// '_Float16'.
+        /// </summary>
+        Float16 = 32,
+
         #endregion
 
         /// <summary>

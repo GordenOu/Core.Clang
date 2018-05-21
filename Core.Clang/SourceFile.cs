@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Core.Clang
 {
@@ -80,7 +81,7 @@ namespace Core.Clang
         /// Gets the hash code for this <see cref="SourceFile"/>.
         /// </summary>
         /// <returns>A hash code for the current <see cref="SourceFile"/>.</returns>
-        [Unstable(version: "5.0.0", seealso: new[]
+        [Unstable(version: "6.0.0", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CIndex.cpp",
             "https://github.com/llvm-mirror/llvm/blob/master/include/llvm/Support/FileSystem.h"
@@ -130,6 +131,29 @@ namespace Core.Clang
             ThrowIfDisposed();
 
             return NativeMethods.clang_isFileMultipleIncludeGuarded(TranslationUnit.Ptr, Ptr) != 0;
+        }
+
+        /// <summary>
+        /// Gets the content of the given file.
+        /// </summary>
+        /// <returns>
+        /// The contents of file, or null when the file is not loaded.
+        /// </returns>
+        public string GetContents()
+        {
+            ThrowIfDisposed();
+
+            ulong size;
+            sbyte* ptr = NativeMethods.clang_getFileContents(TranslationUnit.Ptr, Ptr, &size);
+            if (ptr == null)
+            {
+                return null;
+            }
+            else
+            {
+                Debug.Assert(size < int.MaxValue);
+                return Marshal.PtrToStringAnsi(new IntPtr(ptr), (int)size);
+            }
         }
 
         /// <summary>

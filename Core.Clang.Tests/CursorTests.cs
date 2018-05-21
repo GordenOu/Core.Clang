@@ -109,7 +109,7 @@ namespace Core.Clang.Tests
         [TestMethod]
         public void LinkageKinds()
         {
-            string source = "void a() { int b; } static int d; namespace { int c; }";
+            string source = "void a() { int b; } static int c; namespace { class D { }; } D e;";
             using (var empty = disposables.WriteToEmpty(source))
             {
                 var file = empty.GetFile(TestFiles.Empty);
@@ -124,7 +124,7 @@ namespace Core.Clang.Tests
                     empty.GetCursor(file.GetLocation(1, 32)).GetLinkage());
                 Assert.AreEqual(
                     LinkageKind.UniqueExternal,
-                    empty.GetCursor(file.GetLocation(1, 51)).GetLinkage());
+                    empty.GetCursor(file.GetLocation(1, 64)).GetLinkage());
             }
         }
 
@@ -147,6 +147,28 @@ namespace Core.Clang.Tests
                 Assert.AreEqual(
                     LanguageKind.CPlusPlus,
                     empty.GetCursor(file.GetLocation(1, 1)).GetLanguage());
+            }
+        }
+
+        [TestMethod]
+        public void ThreadLocalStorage()
+        {
+            string source = "int a;";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                Assert.AreEqual(
+                    TLSKind.None,
+                    empty.GetCursor(file.GetLocation(1, 5)).GetTLSKind());
+            }
+
+            source = "thread_local int a;";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                Assert.AreEqual(
+                    TLSKind.Dynamic,
+                    empty.GetCursor(file.GetLocation(1, 5)).GetTLSKind());
             }
         }
 
@@ -771,6 +793,20 @@ namespace Core.Clang.Tests
                 var method = empty.GetCursor(location);
                 Assert.AreEqual(CursorKind.CXXMethod, method.Kind);
                 Assert.IsTrue(method.IsConstMethod());
+            }
+        }
+
+        [TestMethod]
+        public void AbstractClass()
+        {
+            string source = "class A { virtual void foo() = 0; };";
+            using (var empty = disposables.WriteToEmpty(source))
+            {
+                var file = empty.GetFile(TestFiles.Empty);
+                var location = file.GetLocationFromOffset((uint)source.IndexOf("A"));
+                var declaration = empty.GetCursor(location);
+                Assert.AreEqual(CursorKind.ClassDecl, declaration.Kind);
+                Assert.IsTrue(declaration.IsAbstractRecord());
             }
         }
 

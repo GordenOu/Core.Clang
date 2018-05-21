@@ -96,6 +96,25 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Sets the invocation emission path option in a CXIndex.
+        /// </summary>
+        /// <param name="path">The invocation emission path.</param>
+        /// <remarks>
+        /// The invocation emission path specifies a path which will contain log files for certain
+        /// libclang invocations.A null value (default) implies that libclang invocations are not
+        /// logged.
+        /// </remarks>
+        public void SetInvocationEmissionPathOption(string path = null)
+        {
+            ThrowIfDisposed();
+
+            using (var cString = new CString(path))
+            {
+                NativeMethods.clang_CXIndex_setInvocationEmissionPathOption(Ptr, cString.Ptr);
+            }
+        }
+
+        /// <summary>
         /// Create a translation unit from an AST file (-emit-ast).
         /// </summary>
         /// <param name="astFileName">The path to the AST file.</param>

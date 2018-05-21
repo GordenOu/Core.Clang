@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Clang.Tests
@@ -39,6 +40,38 @@ namespace Core.Clang.Tests
             Assert.AreEqual(
                 GlobalOptions.ThreadBackgroundPriorityForAll,
                 index.GetGlobalOptions());
+        }
+
+        [TestMethod]
+        public void InvocationEmissionPathForCrashLog()
+        {
+            string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(tempPath);
+            index.SetInvocationEmissionPathOption(tempPath);
+            string source = "void Test();";
+            using (var translationUnit = index.ParseTranslationUnit(
+               TestFiles.Empty,
+               new[] { "-std=c++11" },
+               new[] { new UnsavedFile(TestFiles.Empty, source) },
+               TranslationUnitCreationOptions.DetailedPreprocessingRecord))
+            { }
+            string[] files = Directory.GetFiles(tempPath);
+            Assert.AreEqual(0, files.Length);
+
+            source = "#pragma clang __debug parser_crash";
+            var exception = Assert.ThrowsException<ErrorCodeException>(() =>
+            {
+                using (var translationUnit = index.ParseTranslationUnit(
+                   TestFiles.Empty,
+                   new[] { "-std=c++11" },
+                   new[] { new UnsavedFile(TestFiles.Empty, source) },
+                   TranslationUnitCreationOptions.DetailedPreprocessingRecord))
+                { }
+            });
+            Assert.AreEqual(ErrorCode.Crashed, exception.ErrorCode);
+            files = Directory.GetFiles(tempPath);
+            Assert.AreEqual(1, files.Length);
+            Assert.IsTrue(Path.GetFileName(files[0]).StartsWith("libclang-"));
         }
     }
 }

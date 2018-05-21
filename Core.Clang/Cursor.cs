@@ -155,6 +155,19 @@ namespace Core.Clang
         }
 
         /// <summary>
+        /// Gets the "thread-local storage (TLS) kind" of the declaration referred to by a cursor.
+        /// </summary>
+        /// <returns>
+        /// The "thread-local storage (TLS) kind" of the declaration referred to by a cursor.
+        /// </returns>
+        public TLSKind GetTLSKind()
+        {
+            ThrowIfDisposed();
+
+            return (TLSKind)NativeMethods.clang_getCursorTLSKind(Struct);
+        }
+
+        /// <summary>
         /// Gets the semantic parent of the cursor.
         /// </summary>
         /// <returns>The semantic parent of the cursor.</returns>
@@ -1106,7 +1119,7 @@ namespace Core.Clang
         /// The strings representing the mangled symbols of the C++ constructor or destructor at
         /// the cursor.
         /// </returns>
-        [Unstable("5.0.0", seealso: new[]
+        [Unstable("6.0.0", seealso: new[]
         {
             "https://github.com/llvm-mirror/clang/blob/master/tools/libclang/CXString.cpp"
         })]
@@ -1257,6 +1270,18 @@ namespace Core.Clang
             ThrowIfDisposed();
 
             return NativeMethods.clang_CXXMethod_isVirtual(Struct) != 0;
+        }
+
+        /// <summary>
+        /// Determines if a C++ record is abstract, i.e. whether a class or struct has a pure
+        /// virtual member function.
+        /// </summary>
+        /// <returns>true the cursor is an abstract record.</returns>
+        public bool IsAbstractRecord()
+        {
+            ThrowIfDisposed();
+
+            return NativeMethods.clang_CXXRecord_isAbstract(Struct) != 0;
         }
 
         /// <summary>
